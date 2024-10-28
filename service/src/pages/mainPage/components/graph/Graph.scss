@@ -1,0 +1,36 @@
+@import 'src/assets/styles/index.scss';
+
+.Gmenu {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: auto;
+    height: auto;
+    background-color: $container-secondary;
+    box-shadow: 0px 2px 16px 0px rgb(0 0 0 / 16%);
+    border-radius: 10px;
+    margin-top: 30px;
+    padding: 10px 20px;
+
+    &-container {
+        display: flex;
+        flex-direction: column;
+        width: auto;
+        padding: 10px 0;
+
+        .Gmenu-title {
+            font-size: 13px;
+            height: auto;
+            padding-bottom: 5px;
+        }
+
+        .Gmenu-graph {
+            width: 224px;
+            height: 137px;
+            border: 1px solid gray;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    }
+
+}

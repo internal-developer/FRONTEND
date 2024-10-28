@@ -1,0 +1,21 @@
+// 전체 페이지에 적용되는 font
+// font-family: 'Noto Sans KR', sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;200;300;400;500;600;700;800;900&display=swap');
+* {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 400;
+}
+
+// 로그인 페이지 logo font
+// font-family: "Moul", serif;
+@import url('https://fonts.googleapis.com/css2?family=Moul&display=swap');
+
+// CCTV Menu title font
+// font-family: 'Poppins', sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');

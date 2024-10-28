@@ -1,0 +1,35 @@
+@import 'src/assets/styles/index.scss';
+
+.viewer {
+    display: flex;
+    width: 670px;
+    flex-direction: column;
+
+    &-title {
+        font-size: 18px;
+        font-weight: bolder;
+        height: auto;
+    }
+
+    &-video {
+        height: 390px;
+    }
+
+    &-count {
+        font-size: 15px;
+        height: auto;
+        text-align: right;
+    }
+
+    &-capture {
+        background-color: $container-secondary;
+        box-shadow: 0px 2px 16px 0px rgb(0 0 0 / 16%);
+        height: 110px;
+        width: 100%;
+        margin-top: 20px;
+        border-radius: 10px;
+    }
+
+
+
+}
