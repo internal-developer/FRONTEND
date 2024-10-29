@@ -17,8 +17,8 @@
         display: flex;
 
         // 반응형 웹으로 수정해야함
-        max-height: 660px;
-        max-width: 1325px;
+        max-height: 90%;
+        max-width: 90%;
 
         background-color: $container-primary;
         box-shadow: 0px 2px 16px 0px rgb(0 0 0 / 16%);
@@ -30,6 +30,7 @@
         flex-direction: row;
         justify-content: center;
         align-items: center;
+        height: calc(100% - 71px);
 
         .sidemenu {
             text-align: center;
@@ -44,6 +45,11 @@
             align-items: flex-start;
             display: flex;
             justify-content: center;
+            width: auto;
+        }
+
+        .video-viewer{
+            height: 100%;
         }
     }
 }

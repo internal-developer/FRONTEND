@@ -2,7 +2,7 @@
 
 .viewer {
     display: flex;
-    width: 670px;
+    height: 100%;
     flex-direction: column;
 
     &-title {
@@ -12,7 +12,7 @@
     }
 
     &-video {
-        height: 390px;
+        height: 65%;
     }
 
     &-count {
