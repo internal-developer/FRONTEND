@@ -1,0 +1,162 @@
+/* 회원가입 페이지 */
+.SignUpPage {
+    position: relative;
+    width: 1440px;
+    height: 900px;
+    background: #F6F5FF;
+  
+    /* Rectangle 110 */
+    .rectangle {
+      position: absolute;
+      width: 450px;
+      height: 637px;
+      left: calc(50% - 450px / 2);
+      top: calc(50% - 637px / 2 - 16.5px);
+      background: #FFFFFF;
+      box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.25);
+    }
+  
+    /* 카카오 */
+    .kakao-button {
+      position: absolute;
+      width: 328px;
+      height: 54px;
+      left: calc(50% - 328px / 2);
+      top: 395px;
+      background: #FFEB3B;
+      border-radius: 5px;
+  
+      .kakao-text {
+        position: absolute;
+        width: 161px;
+        height: 22px;
+        left: calc(50% - 161px / 2 + 14.5px);
+        top: calc(50% - 22px / 2);
+        font-family: 'Pretendard';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 20px;
+        line-height: 22px;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: #000000;
+      }
+  
+      .kakao-icon {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        left: calc(50% - 20px / 2 - 86px);
+        top: calc(50% - 20px / 2);
+        background: url(image.png);
+      }
+    }
+  
+    /* 네이버 */
+    .naver-button {
+      position: absolute;
+      width: 328px;
+      height: 54px;
+      left: calc(50% - 328px / 2);
+      top: 465px;
+      background: #00BF18;
+      border-radius: 5px;
+  
+      .naver-text {
+        position: absolute;
+        width: 161px;
+        height: 22px;
+        left: calc(50% - 161px / 2 + 13.5px);
+        top: calc(50% - 22px / 2);
+        font-family: 'Pretendard';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 20px;
+        line-height: 22px;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: #FFFFFF;
+      }
+  
+      .naver-icon {
+        position: absolute;
+        width: 18px;
+        height: 16px;
+        left: calc(50% - 18px / 2 - 86px);
+        top: calc(50% - 16px / 2);
+        background: url(image.png);
+      }
+    }
+  
+    /* 구글 */
+    .google-button {
+      position: absolute;
+      width: 328px;
+      height: 54px;
+      left: calc(50% - 328px / 2);
+      top: 535px;
+      background: #EEEEEE;
+      border-radius: 5px;
+  
+      .google-text {
+        position: absolute;
+        width: 144px;
+        height: 22px;
+        left: calc(50% - 144px / 2 + 13px);
+        top: calc(50% - 22px / 2);
+        font-family: 'Pretendard';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 20px;
+        line-height: 22px;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: #000000;
+      }
+  
+      .google-icon {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        left: calc(50% - 16px / 2 - 77px);
+        top: calc(50% - 16px / 2);
+        background: url(image.png);
+      }
+    }
+  
+    /* Sign up */
+    .sign-up {
+      position: absolute;
+      width: 210px;
+      height: 87px;
+      left: calc(50% - 210px / 2);
+      top: calc(50% - 87px / 2 - 200.5px);
+      font-family: 'Moul';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 48px;
+      line-height: 87px;
+      text-align: center;
+      color: #1D1D1D;
+    }
+  
+    /* 회원가입 */
+    .signup-text {
+      position: absolute;
+      width: 89px;
+      height: 36px;
+      left: calc(50% - 89px / 2 - 0.5px);
+      top: calc(50% - 36px / 2 - 148px);
+      font-family: 'Poppins';
+      font-style: normal;
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 36px;
+      text-align: center;
+      color: #1D1D1D;
+    }
+  }
+  

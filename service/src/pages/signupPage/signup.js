@@ -1,3 +1,5 @@
+import './signup.scss';
+
 export default function SignUpPage() {
 
     return (

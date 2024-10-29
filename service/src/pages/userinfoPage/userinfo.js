@@ -1,3 +1,5 @@
+import './UserInfo.scss';
+
 export default function UserInfoPage() {
 
     return (
