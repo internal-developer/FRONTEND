@@ -1,11 +1,18 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './main.scss'
 import Header from './components/header/Header'
 import CCTVSidemenu from './components/cctvSidemenu/CCTVSidemenu'
 import VideoViewer from './components/videoViewer/VideoViewer'
 import Graph from './components/graph/Graph'
 
+import dumpingData from '../../data/dumpingData.json'
+
 function Main() {
+    const [dumpingEvent, setDumpingEvent] = useState([]);
+
+    useEffect(()=>{
+        setDumpingEvent(dumpingData);
+    }, []);
 
     return (
         <div className='main'>
@@ -19,7 +26,7 @@ function Main() {
                         <VideoViewer />
                     </div>
                     <div className='graph'>
-                        <Graph />
+                        <Graph dumpingEvent={dumpingEvent}/>
                     </div>
                 </div>
 
