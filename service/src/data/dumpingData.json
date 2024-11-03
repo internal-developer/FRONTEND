@@ -11,7 +11,7 @@
       "id": 2,
       "cctvId": 3,
       "name":"inu_345",
-      "timestamp": "2024-11-01T15:20:00Z",
+      "timestamp": "2024-11-01T14:20:00Z",
       "location": "송도1동",
       "captureImageUrl": "https://example.com/image2.jpg"
     },
@@ -35,7 +35,7 @@
       "id": 5,
       "cctvId": 5,
       "name":"solchan_2",
-      "timestamp": "2024-11-08T21:58:00Z",
+      "timestamp": "2024-11-08T12:58:00Z",
       "location": "송도",
       "captureImageUrl": "https://example.com/image5.jpg"
     },
@@ -43,7 +43,7 @@
       "id": 6,
       "cctvId": 4,
       "name":"solchan_1",
-      "timestamp": "2024-12-01T11:11:00Z",
+      "timestamp": "2024-12-01T14:11:00Z",
       "location": "송도",
       "captureImageUrl": "https://example.com/image6.jpg"
     }
