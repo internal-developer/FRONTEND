@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import './CCTVSidemenu.scss'
-import cctvData from '../../../../data/cctvData.json'
 
-function CCTVSidemenu() {
-    const [cctvList, setCctvList] = useState([]);
-
-    useEffect(() => {
-        // api 호출 - 목업 데이터 임시로 넣음(cctvData)
-        setCctvList(cctvData);
-    }, [])
-
+function CCTVSidemenu({cctvList, onCCTVSelect}) {
     return (
         <div className='menu'>
             <div className='menu-title'>Menu</div>
@@ -17,7 +9,7 @@ function CCTVSidemenu() {
             <div className='menu-cctvList'>
                 <ul>
                     {cctvList.map((cctv) => (
-                        <li key={cctv.id}>
+                        <li key={cctv.id} onClick={()=> onCCTVSelect(cctv)}>
                             {cctv.name} ({cctv.location})
                         </li>
                     ))}
