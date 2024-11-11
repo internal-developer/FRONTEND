@@ -1,6 +1,4 @@
-import logo from './logo.svg';
-import './App.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import MainPage from './pages/mainPage/main'
 import SignUpPage from './pages/signupPage/signup'
 import UserInfoPage from './pages/userinfoPage/userinfo'
