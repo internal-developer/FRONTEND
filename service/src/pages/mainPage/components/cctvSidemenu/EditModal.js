@@ -1,7 +1,25 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import './Modal.scss'
 
-function EditModal({ setShowEditModal }) {
+function EditModal({ setShowEditModal, selectedCCTV }) {
+    const [name, setName] = useState('');
+    const [location, setLocation] = useState('');
+    const [status, setStatus] = useState('');
+    const [date, setDate] = useState('');
+    const [url, setUrl] = useState('');
+
+    // selectedCCTV 정보를 불러와서 상태 초기화
+    useEffect(() => {
+        if (selectedCCTV) {
+            setName(selectedCCTV.name || '');
+            setLocation(selectedCCTV.location || '');
+            setStatus(selectedCCTV.status || '');
+            setDate(selectedCCTV.installationDate || '');
+            setUrl(selectedCCTV.VideoUrl || '');
+        }
+    }, [selectedCCTV]);
+
+
     return (
         <div className='add'>
             <div className='add-container'>
@@ -21,27 +39,40 @@ function EditModal({ setShowEditModal }) {
                       */}
                     <div className='add-input-container'>
                         <div>CCTV 이름</div>
-                        <input type='text' name='cctv-name' />
+                        <input type='text' name='cctv-name' value={name} onChange={(e) => setName(e.target.value)} />
                     </div>
                     <div className='add-input-container'>
                         <div>위치</div>
-                        <input type='text' name='cctv-location' />
+                        <input type='text' name='cctv-location' value={location} onChange={(e) => setLocation(e.target.value)} />
                     </div>
                     <div className='add-input-container'>
                         <div>상태</div>
                         <div className='add-radio-container'>
-                            <input type='radio' name='cctv-status' /><span>등록</span>
-                            <input type='radio' name='cctv-status' /><span>미등록</span>
-                            <input type='radio' name='cctv-status' /><span>오류</span>
+                            <input
+                                type='radio'
+                                name='cctv-status'
+                                value='Active'
+                                checked={status === 'Active'}
+                                onChange={(e) => setStatus(e.target.value)} /><span>등록</span>
+                            <input type='radio'
+                                name='cctv-status'
+                                value='Inactive'
+                                checked={status === 'Inactive'}
+                                onChange={(e) => setStatus(e.target.value)} /><span>미등록</span>
+                            <input type='radio'
+                                name='cctv-status'
+                                value='Error'
+                                checked={status === 'Error'}
+                                onChange={(e) => setStatus(e.target.value)} /><span>오류</span>
                         </div>
                     </div>
                     <div className='add-input-container'>
                         <div>설치일자</div>
-                        <input type='datetime-local' name='cctv-date' />
+                        <input type='datetime-local' name='cctv-date' value={date} onChange={(e)=>setDate(e.target.value)}/>
                     </div>
                     <div className='add-input-container'>
                         <div>CCTV Url</div>
-                        <input type='text' name='cctv-url' />
+                        <input type='text' name='cctv-url' value={url} onChange={(e) => setUrl(e.target.value)} />
                     </div>
                 </div>
                 <div className='add-container-footer'>

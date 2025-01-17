@@ -24,7 +24,7 @@
     }
 
     &-cctvList {
-        padding: 15px;
+        padding: 12px;
 
         ul {
             list-style-type: none;
@@ -32,7 +32,7 @@
 
         li {
             cursor: pointer;
-            padding-bottom: 1px;
+            padding-bottom: 4px;
             position: relative;
 
             &:hover {
@@ -77,19 +77,30 @@
 
                 &:nth-child(1):hover,
                 &:nth-child(2):hover {
-                    background-color: $edit-hover; 
-                    color: white; 
+                    background-color: $edit-hover;
+                    color: white;
                 }
 
                 &:nth-child(3):hover {
-                    background-color: $delete-hover; 
-                    color: white; 
+                    background-color: $delete-hover;
+                    color: white;
                 }
             }
         }
-
-
-
     }
 
+    &-multiView-btn {
+        cursor: pointer;
+        border: 1px solid #cccbcb;
+        background-color: $container-secondary;
+        border-radius: 10px;
+        padding: 2px;
+        width: 80%;
+        margin-bottom: 10px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+
+        &:hover {
+            background-color: #e9e7e7;
+        }
+    }
 }

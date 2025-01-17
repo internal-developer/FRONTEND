@@ -1,10 +1,17 @@
 import React, { useState } from 'react'
 import './CCTVSidemenu.scss'
 
-function CCTVSidemenu({ cctvList, onCCTVSelect, setShowAddModal, setShowEditModal, setShowDeleteModal }) {
+function CCTVSidemenu({
+    cctvList,
+    onCCTVSelect,
+    setMultiView,
+    setShowAddModal,
+    setShowEditModal,
+    setShowDeleteModal
+}) {
     const [hoveredCCTV, setHoveredCCTV] = useState(null);
     const [showPopup, setShowPopup] = useState(true);
-    
+
 
     const handleMouseEnter = (cctv) => {
         setHoveredCCTV(cctv);
@@ -25,7 +32,7 @@ function CCTVSidemenu({ cctvList, onCCTVSelect, setShowAddModal, setShowEditModa
                     {cctvList.map((cctv) => (
                         <li
                             key={cctv.id}
-                            onClick={() => onCCTVSelect(cctv)}
+                            onClick={() => { onCCTVSelect(cctv); setMultiView(false);}}
                             onMouseEnter={() => handleMouseEnter(cctv)}
                             onMouseLeave={handleMouseLeave}
                         >
@@ -41,8 +48,9 @@ function CCTVSidemenu({ cctvList, onCCTVSelect, setShowAddModal, setShowEditModa
                     ))}
                 </ul>
             </div>
+            <button className='menu-multiView-btn' onClick={() => setMultiView(true)}>CCTV 멀티뷰</button>
         </div>
-        
+
     )
 }
 

@@ -1,8 +1,7 @@
 [
-    { "id":1, "name": "inu_123", "location": "연수동", "status": "Active", "installationDate": "2023-01-15", "VideoUrl":"https://www.google.com/url?sa=i&url=http%3A%2F%2Fwww.sisanews.kr%2Fnews%2FarticleView.html%3Fidxno%3D109831&psig=AOvVaw1NSeCJixOcTAwABHiR1Adx&ust=1730215718947000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCND_yv2xsYkDFQAAAAAdAAAAABAw" },
-    { "id":2, "name": "inu_234", "location": "송도동", "status": "Inactive", "installationDate": "2023-02-20", "videoUrl": "https://example.com/cctv2.mp4" },
-    { "id":3, "name": "inu_345", "location": "송도1동", "status": "Active", "installationDate": "2023-03-10", "videoUrl": "https://example.com/cctv2.mp4" },
-    { "id":4, "name": "solchan_1", "location": "송도", "status": "Active", "installationDate": "2023-04-05", "VideoUrl":"https://www.google.com/url?sa=i&url=http%3A%2F%2Fwww.sisanews.kr%2Fnews%2FarticleView.html%3Fidxno%3D109831&psig=AOvVaw1NSeCJixOcTAwABHiR1Adx&ust=1730215718947000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCND_yv2xsYkDFQAAAAAdAAAAABAw" },
-    { "id":5, "name": "solchan_2", "location": "송도", "status": "Active", "installationDate": "2023-04-05", "VideoUrl":"https://www.google.com/url?sa=i&url=http%3A%2F%2Fwww.sisanews.kr%2Fnews%2FarticleView.html%3Fidxno%3D109831&psig=AOvVaw1NSeCJixOcTAwABHiR1Adx&ust=1730215718947000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCND_yv2xsYkDFQAAAAAdAAAAABAw" }
+    { "id":1, "name": "inu_123", "location": "연수동", "status": "Active", "installationDate": "2023-01-15T14:32", "VideoUrl":"https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png" },
+    { "id":2, "name": "inu_234", "location": "송도동", "status": "Inactive", "installationDate": "2023-02-20T14:32", "VideoUrl": "https://img.freepik.com/free-photo/tokyo-cityscape-daytime_23-2149209862.jpg?ga=GA1.1.985989454.1730811258&semt=ais_tags_boosted" },
+    { "id":3, "name": "inu_345", "location": "송도1동", "status": "Active", "installationDate": "2023-03-10T14:32", "VideoUrl": "https://img.freepik.com/free-photo/modern-buildings_1127-2851.jpg?ga=GA1.1.985989454.1730811258&semt=ais_tags_boosted" },
+    { "id":4, "name": "solchan_1", "location": "송도", "status": "Active", "installationDate": "2023-04-05T14:32", "VideoUrl":"https://img.freepik.com/free-photo/city-park_1127-3322.jpg?ga=GA1.1.985989454.1730811258&semt=ais_tags_boosted" }
 ]
   

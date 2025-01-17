@@ -14,6 +14,7 @@ function Main() {
     const [dumpingEvent, setDumpingEvent] = useState([]);
     const [cctvList, setCctvList] = useState([]);
     const [selectedCCTV, setSelectedCCTV] = useState(null);
+    const [multiView, setMultiView] = useState(true);
     // modal
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -36,24 +37,35 @@ function Main() {
                         <CCTVSidemenu
                             cctvList={cctvList}
                             onCCTVSelect={setSelectedCCTV}
+                            setMultiView={setMultiView}
                             setShowAddModal={setShowAddModal}
                             setShowEditModal={setShowEditModal}
                             setShowDeleteModal={setShowDeleteModal}
                         />
                     </div>
                     <div className='video-viewer'>
-                        <VideoViewer cctvList={cctvList} selectedCCTV={selectedCCTV} />
+                        <VideoViewer
+                            cctvList={cctvList}
+                            setSelectedCCTV={setSelectedCCTV}
+                            selectedCCTV={selectedCCTV}
+                            multiView={multiView}
+                            setMultiView={setMultiView}
+                        />
                     </div>
                     <div className='graph'>
                         <Graph dumpingEvent={dumpingEvent} />
                     </div>
                 </div>
-            </div> 
-            {showAddModal && <AddModal setShowAddModal={setShowAddModal}/>}  
-            {showEditModal && <EditModal setShowEditModal={setShowEditModal}/>}
-            {showDeleteModal && <DeleteModal setShowDeleteModal={setShowDeleteModal}/>}
+            </div>
+            {showAddModal && <AddModal setShowAddModal={setShowAddModal} />}
+            {showEditModal &&
+                <EditModal
+                    setShowEditModal={setShowEditModal}
+                    selectedCCTV={selectedCCTV}
+                />}
+            {showDeleteModal && <DeleteModal setShowDeleteModal={setShowDeleteModal} />}
         </div>
-        
+
 
     )
 }

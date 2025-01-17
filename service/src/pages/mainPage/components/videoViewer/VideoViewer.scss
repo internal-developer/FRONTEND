@@ -5,6 +5,158 @@
     height: 100%;
     flex-direction: column;
 
+    .multi-viewer-video-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1px;
+        height: 65%;
+        width: 100%;
+
+    }
+
+    .multi-viewer-video {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+        display: inline-block;
+    }
+
+    .multi-viewer-video img {
+        width: 100%;
+        height: 100%;
+        //object-fit: cover;
+    }
+
+    .multi-viewer-icon {
+        height: auto;
+        width: 100%;
+        display: inline-flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 5px;
+    }
+
+    .filter-icon {
+        transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+        cursor: pointer;
+        border-radius: 50%;
+        position: relative;
+        width: 25px;
+        color: #383838;
+        height: 25px;
+    }
+
+    .filter-icon:hover {
+        background-color: #dcdcdc;
+        border-radius: 50%;
+    }
+
+    .fullscreen-icon {
+        height: 18px;
+        width: 18px;
+        opacity: 0;
+        transition: opacity 0.1s ease;
+    }
+
+    .multi-viewer-video:hover .fullscreen-icon {
+        opacity: 1;
+    }
+
+    .multi-viewer-title {
+        position: absolute;
+        bottom: 0px;
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        background-color: rgba(0, 0, 0, 0.428);
+        padding: 4px 5px;
+        height: auto;
+        z-index: 1;
+        cursor: pointer;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        display: flex;
+    }
+
+
+    .multi-dropdown {
+        position: absolute;
+        top: 106px;
+        width: auto;
+        height: auto;
+        max-height: 232px;
+        max-width: 200px;
+        background-color: white;
+        border-radius: 4px;
+        box-shadow: 0 1px 16px rgba(0, 0, 0, 0.1);
+        padding: 10px 10px 2px 10px;
+        z-index: 10;
+        overflow-y: auto;
+        scrollbar-width: thin;
+
+        &-toggle {
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            margin-bottom: 8px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #f1f1f1;
+            }
+
+            .multi-dropdown-toggle-switch {
+                appearance: none;
+                width: 36px;
+                height: 20px;
+                background-color: #ccc;
+                border-radius: 20px;
+                position: relative;
+                outline: none;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+
+                &:checked {
+                    background-color: #6c63ff; 
+
+                    &::after {
+                        transform: translateX(16px);
+                    }
+                }
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    top: 2px;
+                    left: 2px;
+                    width: 16px;
+                    height: 16px;
+                    background-color: white;
+                    border-radius: 50%;
+                    transition: transform 0.3s ease;
+                }
+            }
+
+            .multi-dropdown-toggle-label {
+                margin: 0px 10px;
+                font-size: 14px;
+                color: #333;
+                flex: 1;
+            }
+        }
+    }
+
+
+
+
+
     &-title {
         font-size: 18px;
         font-weight: bolder;
@@ -33,7 +185,7 @@
         .slider-image-container {
             position: relative;
             display: inline-block;
-    
+
             .slider-image {
                 width: 95%;
                 height: 95%;
@@ -44,29 +196,27 @@
 
             .image-info {
                 position: absolute;
-                bottom: 5%; 
+                bottom: 5%;
                 left: 5%;
                 width: 100%;
                 height: 100%;
-                background-color: rgba(0, 0, 0, 0.5); 
+                background-color: rgba(0, 0, 0, 0.5);
                 color: #fff;
                 padding: 10px 5px;
-                font-size: 9px; 
+                font-size: 9px;
                 display: flex;
                 flex-direction: column;
                 align-items: flex-start;
-                max-width: 90%; 
+                max-width: 90%;
                 max-height: 87%;
-                opacity: 1;  
+                opacity: 1;
             }
         }
 
-        .slick-prev::before, .slick-next::before {
-            color: #000; 
+        .slick-prev::before,
+        .slick-next::before {
+            color: #000;
             font-size: 24px;
         }
     }
-
-
-
 }
