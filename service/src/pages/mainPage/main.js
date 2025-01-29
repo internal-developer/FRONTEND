@@ -4,29 +4,38 @@ import Header from './components/header/Header'
 import CCTVSidemenu from './components/cctvSidemenu/CCTVSidemenu'
 import VideoViewer from './components/videoViewer/VideoViewer'
 import Graph from './components/graph/Graph'
-import cctvData from '../../data/cctvData.json'
+//import cctvData from '../../data/cctvData.json'
 import dumpingData from '../../data/dumpingData.json'
 import AddModal from './components/cctvSidemenu/AddModal'
 import EditModal from './components/cctvSidemenu/EditModal'
 import DeleteModal from './components/cctvSidemenu/DeleteModal'
+import api from "../../api/api" // axios 인스턴스 호출
 
 function Main() {
     const [dumpingEvent, setDumpingEvent] = useState([]);
     const [cctvList, setCctvList] = useState([]);
     const [selectedCCTV, setSelectedCCTV] = useState(null);
     const [multiView, setMultiView] = useState(true);
+    const [roleName, setRoleName] = useState('admin'); // 임시 roleName 'admin'
     // modal
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     useEffect(() => {
+        api.get(`/cleanguard/cctv/${roleName}`)
+            .then(response => {
+                setCctvList(response.data);
+                console.log('CCTV 데이터 가져오기 성공:', response.data);
+            }).catch(error => {
+                console.error('CCTV 데이터 가져오기 실패:', error);
+            });
+
         setDumpingEvent(dumpingData);
-        setCctvList(cctvData);
         // 선택된 cctv 디폴트 값 -> 가장 첫번째 cctv 뜨도록 설정
-        if (cctvData.length > 0)
-            setSelectedCCTV(cctvData[0]);
-    }, []);
+        // if (cctvData.length > 0)
+        //     setSelectedCCTV(cctvData[0]);
+    }, [roleName]);
 
     return (
         <div className='main'>

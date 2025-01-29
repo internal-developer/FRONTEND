@@ -31,12 +31,12 @@ function CCTVSidemenu({
                 <ul>
                     {cctvList.map((cctv) => (
                         <li
-                            key={cctv.id}
+                            key={cctv.cctvId}
                             onClick={() => { onCCTVSelect(cctv); setMultiView(false);}}
                             onMouseEnter={() => handleMouseEnter(cctv)}
                             onMouseLeave={handleMouseLeave}
                         >
-                            {cctv.name} ({cctv.location})
+                            {cctv.cctvName} ({cctv.location})
                             {hoveredCCTV === cctv && showPopup === true && (
                                 <div className='popup'>
                                     <div onClick={() => setShowAddModal(true)}>추가</div>

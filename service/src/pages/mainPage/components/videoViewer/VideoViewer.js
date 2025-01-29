@@ -6,7 +6,7 @@ import './VideoViewer.scss'
 import dumpingData from '../../../../data/dumpingData.json'
 
 function VideoViewer({ cctvList, setSelectedCCTV, selectedCCTV, multiView, setMultiView }) {
-    const cctvId = selectedCCTV ? selectedCCTV.id : null;
+    const cctvId = selectedCCTV ? selectedCCTV.cctvId : null;
     const filteredImages = dumpingData.filter(item => item.cctvId === cctvId);
     const [hoveredImageId, setHoveredImageId] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -15,7 +15,7 @@ function VideoViewer({ cctvList, setSelectedCCTV, selectedCCTV, multiView, setMu
     useEffect(() => {
         setShownCctv(
             cctvList.reduce((tmp, cctv) => {
-                tmp[cctv.id] = true;  // 멀티뷰 디폴트 값 -> 모든 cctv true
+                tmp[cctv.cctvId] = true;  // 멀티뷰 디폴트 값 -> 모든 cctv true
                 return tmp;
             }, {})
         );
@@ -39,8 +39,8 @@ function VideoViewer({ cctvList, setSelectedCCTV, selectedCCTV, multiView, setMu
         });
         return cnt;
     };
-    const currentCctv = cctvList.find(cctv => cctv.id === cctvId);
-    const videoUrl = currentCctv ? currentCctv.VideoUrl : '';
+    const currentCctv = cctvList.find(cctv => cctv.cctvId === cctvId);
+    const videoUrl = currentCctv ? currentCctv.videoUrl : '';
 
     // 멀티뷰 상태일 때 UI 
     if (multiView) {
@@ -62,17 +62,17 @@ function VideoViewer({ cctvList, setSelectedCCTV, selectedCCTV, multiView, setMu
                     {showDropdown && (
                         <div className='multi-dropdown'>
                             {cctvList.map((cctv) => (
-                                <div key={cctv.id} className='multi-dropdown-toggle'>
+                                <div key={cctv.cctvId} className='multi-dropdown-toggle'>
                                     <input
                                         type="checkbox"
                                         className='multi-dropdown-toggle-switch'
-                                        id={cctv.id}
-                                        checked={shownCctv[cctv.id]}
+                                        id={cctv.cctvId}
+                                        checked={shownCctv[cctv.cctvId]}
                                         onChange={() => setShownCctv(prev => ({
                                             ...prev,
-                                            [cctv.id]: !prev[cctv.id],
+                                            [cctv.cctvId]: !prev[cctv.cctvId],
                                         }))} />
-                                    <div className="multi-dropdown-toggle-label" htmlFor={cctv.id}>{cctv.name} </div>
+                                    <div className="multi-dropdown-toggle-label" htmlFor={cctv.cctvId}>{cctv.cctvName} </div>
                                 </div>
                             ))}
                         </div>
@@ -81,11 +81,11 @@ function VideoViewer({ cctvList, setSelectedCCTV, selectedCCTV, multiView, setMu
                 </div>
                 <div className='multi-viewer-video-container' style={getGridStyle(countShownCctv())}>
                     {cctvList.map((cctv) => (
-                        shownCctv[cctv.id] && (
-                            <div key={cctv.id} className='multi-viewer-video'>
-                                <img src={cctv.VideoUrl} />
+                        shownCctv[cctv.cctvId] && (
+                            <div key={cctv.cctvId} className='multi-viewer-video'>
+                                <img src={cctv.videoUrl} />
                                 <div className='multi-viewer-title' onClick={() => { setMultiView(false); setSelectedCCTV(cctv); }}>
-                                    {cctv.name}
+                                    {cctv.cctvName}
                                     <RiFullscreenFill className='fullscreen-icon' />
                                 </div>
                             </div>
@@ -127,9 +127,9 @@ function VideoViewer({ cctvList, setSelectedCCTV, selectedCCTV, multiView, setMu
     // 사이드 메뉴에서 CCTV 이름을 클릭했을 때 UI -> 단일뷰 상태
     return (
         <div className='viewer'>
-            <div className='viewer-title'>현재 CCTV: {selectedCCTV ? selectedCCTV.name : '선택되지 않음'}</div>
+            <div className='viewer-title'>현재 CCTV: {selectedCCTV ? selectedCCTV.cctvName : '선택되지 않음'}</div>
             {/* <div className='viewer-video'><img src='https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png'/></div> */}
-            <div className='viewer-video'> {videoUrl ? (<img src={videoUrl} alt={`CCTV ${currentCctv.name}`} />) : (<p>영상 URL을 찾을 수 없습니다.</p>)}</div>
+            <div className='viewer-video'> {videoUrl ? (<img src={videoUrl} alt={`CCTV ${currentCctv.cctvName}`} />) : (<p>영상 URL을 찾을 수 없습니다.</p>)}</div>
             <div className='viewer-count'>금일 투기 적발 건수: {filteredImages.length}건</div>
             <div className='viewer-capture'>
                 <Slider {...sliderSettings} >
