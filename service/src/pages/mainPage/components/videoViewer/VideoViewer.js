@@ -14,7 +14,9 @@ function VideoViewer({
     dumpingData,
 }) {
     const cctvId = selectedCCTV ? selectedCCTV.cctvId : null;
-    const filteredImages = dumpingData.filter((item) => item.cctvId === cctvId);
+    const filteredImages = dumpingData.filter(
+        (item) => item.cctv?.cctvId === cctvId
+    );
     const [hoveredImageId, setHoveredImageId] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const [shownCctv, setShownCctv] = useState({}); // 멀티뷰에서 보여질 cctv
@@ -131,34 +133,37 @@ function VideoViewer({
                     )}
                 </div>
 
-                {/* 
-                    하단 슬라이더 코드는 따로 수정하지 않음. 단일뷰 상태 코드 복붙함 
-                        ==> 코드 수정 요망
-                 */}
+                {/* 슬라이더 코드 */}
                 <div className="viewer-count">
-                    금일 투기 적발 건수: {filteredImages.length}건
+                    금일 투기 적발 건수: {dumpingData.length}건
                 </div>
                 <div className="viewer-capture">
                     <Slider {...sliderSettings}>
-                        {filteredImages.map((item) => (
+                        {dumpingData.map((item) => (
                             <div
-                                key={item.id}
-                                onMouseEnter={() => handleMouseEnter(item.id)}
+                                key={item.imageId}
+                                onMouseEnter={() =>
+                                    handleMouseEnter(item.imageId)
+                                }
                                 onMouseLeave={handleMouseLeave}
                                 className="slider-image-container"
                             >
-                                {/* <img src={item.captureImageUrl} alt={`Capture ${item.id}`} className='slider-image' /> */}
                                 <img
-                                    src="https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png"
-                                    alt={`Capture ${item.id}`}
+                                    src={item.path} // 이미지가 화면에 잘 나오는지 확인 할 필요 있음!!!!!!!!!
+                                    alt={`Capture ${item.imageId}`}
                                     className="slider-image"
                                 />
-                                {hoveredImageId === item.id && (
+                                {/* <img
+                                    src="https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png"
+                                    alt={`Capture ${item.imageId}`}
+                                    className="slider-image"
+                                /> */}
+                                {hoveredImageId === item.imageId && (
                                     <div className="image-info">
-                                        <p>ID: {item.id}</p>
+                                        <p>ID: {item.imageId}</p>
                                         <p>Name: {item.name}</p>
-                                        <p>Location: {item.location}</p>
-                                        <p>Timestamp: {item.timestamp}</p>
+                                        <p>Location: {item.cctv.location}</p>
+                                        <p>Timestamp: {item.time}</p>
                                     </div>
                                 )}
                             </div>
@@ -192,23 +197,23 @@ function VideoViewer({
                 <Slider {...sliderSettings}>
                     {filteredImages.map((item) => (
                         <div
-                            key={item.id}
-                            onMouseEnter={() => handleMouseEnter(item.id)}
+                            key={item.imageId}
+                            onMouseEnter={() => handleMouseEnter(item.imageId)}
                             onMouseLeave={handleMouseLeave}
                             className="slider-image-container"
                         >
                             {/* <img src={item.captureImageUrl} alt={`Capture ${item.id}`} className='slider-image' /> */}
                             <img
                                 src="https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png"
-                                alt={`Capture ${item.id}`}
+                                alt={`Capture ${item.imageId}`}
                                 className="slider-image"
                             />
-                            {hoveredImageId === item.id && (
+                            {hoveredImageId === item.imageId && (
                                 <div className="image-info">
-                                    <p>ID: {item.id}</p>
+                                    <p>ID: {item.imageId}</p>
                                     <p>Name: {item.name}</p>
-                                    <p>Location: {item.location}</p>
-                                    <p>Timestamp: {item.timestamp}</p>
+                                    <p>Location: {item.cctv.location}</p>
+                                    <p>Timestamp: {item.time}</p>
                                 </div>
                             )}
                         </div>
