@@ -24,7 +24,7 @@
     }
 
     &-cctvList {
-        padding: 15px;
+        padding: 12px;
 
         ul {
             list-style-type: none;
@@ -32,12 +32,75 @@
 
         li {
             cursor: pointer;
-            padding-bottom: 1px;
+            padding-bottom: 4px;
+            position: relative;
 
             &:hover {
                 text-decoration: underline;
             }
         }
+
+        .popup {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            background-color: $container-primary;
+            border-radius: 5px;
+            width: 58px;
+            height: 79px;
+            left: 95%;
+            top: -100%;
+            padding: 2px 3px;
+            box-shadow: 0px 2px 16px 0px rgba(0, 0, 0, 0.20);
+
+            // 말풍선 꼬리
+            &::after {
+                content: "";
+                position: absolute;
+                left: -10px;
+                top: 50%;
+                transform: translateY(-50%);
+                border-width: 10px;
+                border-right: 10px solid $container-primary;
+                border-top: 10px solid transparent;
+                border-bottom: 10px solid transparent;
+            }
+
+            div {
+                font-size: 13px;
+                font-weight: bold;
+                cursor: pointer;
+                border-radius: 5px;
+                height: auto;
+                padding: 2px;
+
+                &:nth-child(1):hover,
+                &:nth-child(2):hover {
+                    background-color: $edit-hover;
+                    color: white;
+                }
+
+                &:nth-child(3):hover {
+                    background-color: $delete-hover;
+                    color: white;
+                }
+            }
+        }
     }
 
+    &-multiView-btn {
+        cursor: pointer;
+        border: 1px solid #cccbcb;
+        background-color: $container-secondary;
+        border-radius: 10px;
+        padding: 2px;
+        width: 80%;
+        margin-bottom: 10px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+
+        &:hover {
+            background-color: #e9e7e7;
+        }
+    }
 }

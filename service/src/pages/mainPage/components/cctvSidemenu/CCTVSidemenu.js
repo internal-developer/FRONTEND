@@ -1,14 +1,27 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import './CCTVSidemenu.scss'
-import cctvData from '../../../../data/cctvData.json'
 
-function CCTVSidemenu() {
-    const [cctvList, setCctvList] = useState([]);
+function CCTVSidemenu({
+    cctvList,
+    onCCTVSelect,
+    setMultiView,
+    setShowAddModal,
+    setShowEditModal,
+    setShowDeleteModal
+}) {
+    const [hoveredCCTV, setHoveredCCTV] = useState(null);
+    const [showPopup, setShowPopup] = useState(true);
 
-    useEffect(() => {
-        // api 호출 - 목업 데이터 임시로 넣음(cctvData)
-        setCctvList(cctvData);
-    }, [])
+
+    const handleMouseEnter = (cctv) => {
+        setHoveredCCTV(cctv);
+        setShowPopup(true);
+    };
+
+    const handleMouseLeave = () => {
+        setHoveredCCTV(null);
+        setShowPopup(false);
+    };
 
     return (
         <div className='menu'>
@@ -17,14 +30,27 @@ function CCTVSidemenu() {
             <div className='menu-cctvList'>
                 <ul>
                     {cctvList.map((cctv) => (
-                        <li key={cctv.id}>
-                            {cctv.name} ({cctv.location})
+                        <li
+                            key={cctv.cctvId}
+                            onClick={() => { onCCTVSelect(cctv); setMultiView(false);}}
+                            onMouseEnter={() => handleMouseEnter(cctv)}
+                            onMouseLeave={handleMouseLeave}
+                        >
+                            {cctv.cctvName} ({cctv.location})
+                            {hoveredCCTV === cctv && showPopup === true && (
+                                <div className='popup'>
+                                    <div onClick={() => setShowAddModal(true)}>추가</div>
+                                    <div onClick={() => setShowEditModal(true)}>수정</div>
+                                    <div onClick={() => setShowDeleteModal(true)}>삭제</div>
+                                </div>
+                            )}
                         </li>
                     ))}
                 </ul>
-
             </div>
+            <button className='menu-multiView-btn' onClick={() => setMultiView(true)}>CCTV 멀티뷰</button>
         </div>
+
     )
 }
 
