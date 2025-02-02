@@ -1,23 +1,30 @@
 import React, { useState, useEffect } from 'react'
 import './Modal.scss'
+import api from "../../../../api/api";
 
 function EditModal({ setShowEditModal, selectedCCTV }) {
     const [name, setName] = useState('');
     const [location, setLocation] = useState('');
-    const [status, setStatus] = useState('');
+    //const [status, setStatus] = useState('');
     const [date, setDate] = useState('');
     const [url, setUrl] = useState('');
 
     // selectedCCTV 정보를 불러와서 상태 초기화
     useEffect(() => {
         if (selectedCCTV) {
-            setName(selectedCCTV.name || '');
+            setName(selectedCCTV.cctvName || '');
             setLocation(selectedCCTV.location || '');
-            setStatus(selectedCCTV.status || '');
-            setDate(selectedCCTV.installationDate || '');
-            setUrl(selectedCCTV.VideoUrl || '');
+            //setStatus(selectedCCTV.status || '');
+            setDate(selectedCCTV.cctvDate || '');
+            setUrl(selectedCCTV.videoUrl || '');
         }
     }, [selectedCCTV]);
+
+    const cctvId = selectedCCTV.cctvId;
+    const editCCTV = () => {
+        api.patch(`/cleanguard/cctv/${cctvId}`)
+
+    };
 
 
     return (
@@ -33,10 +40,6 @@ function EditModal({ setShowEditModal, selectedCCTV }) {
                     </div>
                 </div>
                 <div className='add-container-body'>
-                    {/* << body 내용 수정 필요 >>
-                     - 일단 text input으로 구현
-                     - CCTV Url 부분 수정 필요
-                      */}
                     <div className='add-input-container'>
                         <div>CCTV 이름</div>
                         <input type='text' name='cctv-name' value={name} onChange={(e) => setName(e.target.value)} />
@@ -45,7 +48,7 @@ function EditModal({ setShowEditModal, selectedCCTV }) {
                         <div>위치</div>
                         <input type='text' name='cctv-location' value={location} onChange={(e) => setLocation(e.target.value)} />
                     </div>
-                    <div className='add-input-container'>
+                    {/* <div className='add-input-container'>
                         <div>상태</div>
                         <div className='add-radio-container'>
                             <input
@@ -65,10 +68,10 @@ function EditModal({ setShowEditModal, selectedCCTV }) {
                                 checked={status === 'Error'}
                                 onChange={(e) => setStatus(e.target.value)} /><span>오류</span>
                         </div>
-                    </div>
+                    </div> */}
                     <div className='add-input-container'>
                         <div>설치일자</div>
-                        <input type='datetime-local' name='cctv-date' value={date} onChange={(e)=>setDate(e.target.value)}/>
+                        <input type='datetime-local' name='cctv-date' value={date} onChange={(e) => setDate(e.target.value)} />
                     </div>
                     <div className='add-input-container'>
                         <div>CCTV Url</div>

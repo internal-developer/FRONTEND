@@ -5,11 +5,17 @@ import api from "../../../../api/api";
 function AddModal({ setShowAddModal }) {
     const [name, setName] = useState("");
     const [location, setLocation] = useState("");
-    const [status, setStatus] = useState("");
+    //const [status, setStatus] = useState("");
     const [date, setDate] = useState("");
     const [url, setUrl] = useState("");
+
     const addCCTV = () => {
-        const newCCTV = { name, location, status, installationDate: date, url };
+        // if (!url.startsWith("rtsp://") && !url.startsWith("http://")) {
+        //     alert("올바른 CCTV URL을 입력하세요 (rtsp:// 또는 http://)");
+        //     return;
+        // }
+
+        const newCCTV = { cctvName: name, location, cctvDate: date, videoUrl: url };
         api
             .post("/cleanguard/cctv", newCCTV)
             .then((response) => {
@@ -37,10 +43,6 @@ function AddModal({ setShowAddModal }) {
                     </div>
                 </div>
                 <div className="add-container-body">
-                    {/* << body 내용 수정 필요 >>
-                     - 일단 text input으로 구현
-                     - CCTV Url 부분 수정 필요
-                      */}
                     <div className="add-input-container">
                         <div>CCTV 이름</div>
                         <input
@@ -59,7 +61,7 @@ function AddModal({ setShowAddModal }) {
                             onChange={(e) => setLocation(e.target.value)}
                         />
                     </div>
-                    <div className="add-input-container">
+                    {/* <div className="add-input-container">
                         <div>상태</div>
                         <div className="add-radio-container">
                             <input
@@ -84,7 +86,7 @@ function AddModal({ setShowAddModal }) {
                             />
                             <span>오류</span>
                         </div>
-                    </div>
+                    </div> */}
                     <div className="add-input-container">
                         <div>설치일자</div>
                         <input

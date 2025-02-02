@@ -83,7 +83,7 @@ function VideoViewer({ cctvList, setSelectedCCTV, selectedCCTV, multiView, setMu
                     {cctvList.map((cctv) => (
                         shownCctv[cctv.cctvId] && (
                             <div key={cctv.cctvId} className='multi-viewer-video'>
-                                <img src={cctv.videoUrl} />
+                                <video src={cctv.videoUrl} />
                                 <div className='multi-viewer-title' onClick={() => { setMultiView(false); setSelectedCCTV(cctv); }}>
                                     {cctv.cctvName}
                                     <RiFullscreenFill className='fullscreen-icon' />
@@ -129,7 +129,7 @@ function VideoViewer({ cctvList, setSelectedCCTV, selectedCCTV, multiView, setMu
         <div className='viewer'>
             <div className='viewer-title'>현재 CCTV: {selectedCCTV ? selectedCCTV.cctvName : '선택되지 않음'}</div>
             {/* <div className='viewer-video'><img src='https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png'/></div> */}
-            <div className='viewer-video'> {videoUrl ? (<img src={videoUrl} alt={`CCTV ${currentCctv.cctvName}`} />) : (<p>영상 URL을 찾을 수 없습니다.</p>)}</div>
+            <div className='viewer-video'> {videoUrl ? (<video src={videoUrl} alt={`CCTV ${currentCctv.cctvName}`} />) : (<p>영상 URL을 찾을 수 없습니다.</p>)}</div>
             <div className='viewer-count'>금일 투기 적발 건수: {filteredImages.length}건</div>
             <div className='viewer-capture'>
                 <Slider {...sliderSettings} >
