@@ -7,7 +7,7 @@ function EditModal({ setShowEditModal, selectedCCTV }) {
     const [location, setLocation] = useState('');
     //const [status, setStatus] = useState('');
     const [date, setDate] = useState('');
-    const [url, setUrl] = useState('');
+    //const [url, setUrl] = useState('');
 
     // selectedCCTV 정보를 불러와서 상태 초기화
     useEffect(() => {
@@ -16,14 +16,30 @@ function EditModal({ setShowEditModal, selectedCCTV }) {
             setLocation(selectedCCTV.location || '');
             //setStatus(selectedCCTV.status || '');
             setDate(selectedCCTV.cctvDate || '');
-            setUrl(selectedCCTV.videoUrl || '');
+            //setUrl(selectedCCTV.videoUrl || '');
         }
     }, [selectedCCTV]);
 
     const cctvId = selectedCCTV.cctvId;
-    const editCCTV = () => {
-        api.patch(`/cleanguard/cctv/${cctvId}`)
 
+    const editCCTV = () => {
+        const updateCCTV = { cctvName: name, location, cctvDate: date };
+        api.patch(`/cleanguard/cctv/${cctvId}`, updateCCTV)
+            .then((response) => {
+                console.log("수정된 CCTV:", response.data);
+                setShowEditModal(false);
+                alert("CCTV 정보가 성공적으로 수정되었습니다.");
+            })
+            .catch((error) => {
+                console.error("CCTV 수정 실패:", error);
+                if (error.response) {
+                    alert(`CCTV 수정 실패: ${error.response.data.message}`);
+                } else if (error.request) {
+                    alert("서버와의 연결이 원활하지 않습니다. 다시 시도하세요.");
+                } else {
+                    alert("요청을 처리하는 중 오류가 발생했습니다.");
+                }
+            });
     };
 
 
@@ -73,13 +89,13 @@ function EditModal({ setShowEditModal, selectedCCTV }) {
                         <div>설치일자</div>
                         <input type='datetime-local' name='cctv-date' value={date} onChange={(e) => setDate(e.target.value)} />
                     </div>
-                    <div className='add-input-container'>
+                    {/* <div className='add-input-container'>
                         <div>CCTV Url</div>
                         <input type='text' name='cctv-url' value={url} onChange={(e) => setUrl(e.target.value)} />
-                    </div>
+                    </div> */}
                 </div>
                 <div className='add-container-footer'>
-                    <button className='add-button' onClick={() => {/* 추가 로직 */ }}>
+                    <button className='add-button' onClick={editCCTV}>
                         수정
                     </button>
                 </div>

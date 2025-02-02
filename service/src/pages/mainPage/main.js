@@ -16,7 +16,7 @@ function Main() {
     const [cctvList, setCctvList] = useState([]);
     const [selectedCCTV, setSelectedCCTV] = useState(null);
     const [multiView, setMultiView] = useState(true);
-    const [roleName, setRoleName] = useState("admin"); // 임시 roleName 'admin'
+    const [roleName, setRoleName] = useState("user"); // 임시 roleName 'user'
     // modal
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -87,7 +87,9 @@ function Main() {
                 />
             )}
             {showDeleteModal && (
-                <DeleteModal setShowDeleteModal={setShowDeleteModal} />
+                <DeleteModal
+                    setShowDeleteModal={setShowDeleteModal}
+                    selectedCCTV={selectedCCTV} />
             )}
         </div>
     );
