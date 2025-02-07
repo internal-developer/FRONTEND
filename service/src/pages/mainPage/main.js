@@ -22,9 +22,21 @@ function Main() {
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+    // useEffect(() => {
+    //     api.get("/main")
+    //         .then((response) => {
+    //             console.log("로그인된 사용자:", response.data);
+    //         })
+    //         .catch(() => {
+    //             console.log("로그인되지 않음");
+
+    //         });
+    // }, []);
+
     useEffect(() => {
-        // CCTV 데이터 가져오기
-        api.get(`/cleanguard/cctv/${roleName}`)
+        // CCTV 데이터 가져오기 
+        // api.get(`/cleanguard/cctv/${roleName}`) // roleName에 따라 cctv목록 불러오기
+        api.get(`/cleanguard/cctv/`) // 전체 cctv목록 불러오기 -> 수정요망
             .then((response) => {
                 setCctvList(response.data);
                 console.log("CCTV 데이터 가져오기 성공:", response.data);

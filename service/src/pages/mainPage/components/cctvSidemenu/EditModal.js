@@ -3,27 +3,40 @@ import './Modal.scss'
 import api from "../../../../api/api";
 
 function EditModal({ setShowEditModal, selectedCCTV }) {
+    //const [url, setUrl] = useState('');
+    //const [status, setStatus] = useState('');
     const [name, setName] = useState('');
     const [location, setLocation] = useState('');
-    //const [status, setStatus] = useState('');
     const [date, setDate] = useState('');
-    //const [url, setUrl] = useState('');
+    const [webcamList, setWebcamList] = useState([]); // 웹캠 목록 저장용 -> 하단 웹캠 선택 콤보박스에서 사용
+    const [webcam, setWebcam] = useState("");
 
     // selectedCCTV 정보를 불러와서 상태 초기화
     useEffect(() => {
         if (selectedCCTV) {
+            //setUrl(selectedCCTV.videoUrl || '');
+            //setStatus(selectedCCTV.status || '');
             setName(selectedCCTV.cctvName || '');
             setLocation(selectedCCTV.location || '');
-            //setStatus(selectedCCTV.status || '');
             setDate(selectedCCTV.cctvDate || '');
-            //setUrl(selectedCCTV.videoUrl || '');
+            setWebcam(selectedCCTV.webcamId || '');
         }
+
+        // local에 연결된 웹캠 목록 가져오기
+        navigator.mediaDevices.enumerateDevices()
+            .then(devices => {
+                const videoDevices = devices.filter(device => device.kind === 'videoinput'); // 웹캠만 뜨도록 필터링
+                setWebcamList(videoDevices);
+            })
+            .catch(error => {
+                console.error("웹캠 목록 가져오기 실패:", error);
+            });
     }, [selectedCCTV]);
 
     const cctvId = selectedCCTV.cctvId;
 
     const editCCTV = () => {
-        const updateCCTV = { cctvName: name, location, cctvDate: date };
+        const updateCCTV = { cctvName: name, location, cctvDate: date, webcamId: webcam };
         api.patch(`/cleanguard/cctv/${cctvId}`, updateCCTV)
             .then((response) => {
                 console.log("수정된 CCTV:", response.data);
@@ -93,6 +106,20 @@ function EditModal({ setShowEditModal, selectedCCTV }) {
                         <div>CCTV Url</div>
                         <input type='text' name='cctv-url' value={url} onChange={(e) => setUrl(e.target.value)} />
                     </div> */}
+                    <div className="add-input-container">
+                        <div>웹캠</div>
+                        <select
+                            className="webcam-dropbox"
+                            value={webcam || ""}
+                            onChange={(e) => setWebcam(e.target.value)}
+                        >
+                            {webcamList.map(webcam => (
+                                <option key={webcam.deviceId} value={webcam.deviceId}>
+                                    {webcam.label || `Webcam ${webcam.deviceId}`}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
                 <div className='add-container-footer'>
                     <button className='add-button' onClick={editCCTV}>

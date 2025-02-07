@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Webcam from "react-webcam";
 import { IoIosSettings } from "react-icons/io";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { RiFullscreenFill } from "react-icons/ri";
@@ -21,8 +22,21 @@ function VideoViewer({
     const [hoveredImageId, setHoveredImageId] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const [shownCctv, setShownCctv] = useState({}); // 멀티뷰에서 보여질 cctv
+    const [availableWebcams, setAvailableWebcams] = useState([]); // 연결 가능한 웹캠들
     // const [showCheckboxes, setShowCheckboxes] = useState(false);
     // const [selectedImages, setSelectedImages] = useState({}); // 삭제할 슬라이드 이미지
+
+    useEffect(() => {
+        // 웹캠 목록 가져오기
+        navigator.mediaDevices.enumerateDevices()
+            .then(devices => {
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                setAvailableWebcams(videoDevices);
+            })
+            .catch(error => {
+                console.error("웹캠 목록을 가져오는 중 오류 발생:", error);
+            });
+    }, []);
 
     useEffect(() => {
         setShownCctv(
@@ -63,7 +77,11 @@ function VideoViewer({
     // };
 
     const currentCctv = cctvList.find((cctv) => cctv.cctvId === cctvId);
-    const videoUrl = currentCctv ? currentCctv.videoUrl : "";
+    const webcamId = currentCctv ? currentCctv.webcamId : "";
+    // 웹캠과 cctvList의의 webcamId가 일치하는지 확인
+    const isWebcamAvailable = (webcamId) => {
+        return availableWebcams.some(webcam => webcam.deviceId === webcamId);
+    };
 
     // 멀티뷰 상태일 때 UI
     if (multiView) {
@@ -129,11 +147,23 @@ function VideoViewer({
                     {cctvList.map(
                         (cctv) =>
                             shownCctv[cctv.cctvId] && (
-                                <div
-                                    key={cctv.cctvId}
-                                    className="multi-viewer-video"
-                                >
-                                    <img src={cctv.videoUrl} />
+                                <div key={cctv.cctvId} className="multi-viewer-video">
+                                    {isWebcamAvailable(cctv.webcamId) ? (
+                                        <Webcam
+                                            audio={false}
+                                            style={{
+                                                objectFit: "fill",
+                                                position: "absolute",
+                                                width: "100%",
+                                                height: "100%",
+                                            }}
+                                            videoConstraints={{
+                                                deviceId: cctv.webcamId,
+                                            }}
+                                        />
+                                    ) : (
+                                        <p>웹캠 연결 오류</p>
+                                    )}
                                     <div
                                         className="multi-viewer-title"
                                         onClick={() => {
@@ -202,10 +232,20 @@ function VideoViewer({
             {/* <div className='viewer-video'><img src='https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png'/></div> */}
             <div className="viewer-video">
                 {" "}
-                {videoUrl ? (
-                    <img src={videoUrl} alt={`CCTV ${currentCctv.cctvName}`} />
+                {webcamId && isWebcamAvailable(webcamId) ? (
+                    <Webcam
+                        style={{
+                            objectFit: "fill",
+                            //position: "absolute",
+                            width: "100%",
+                            height: "100%",
+                        }}
+                        audio={false}
+                        videoConstraints={{
+                            deviceId: webcamId
+                        }} />
                 ) : (
-                    <p>영상 URL을 찾을 수 없습니다.</p>
+                    <p>웹캠 연결 오류</p>
                 )}
             </div>
             <div className="viewer-count">

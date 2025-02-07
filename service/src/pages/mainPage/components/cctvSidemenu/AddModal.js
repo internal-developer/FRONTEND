@@ -1,28 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import Webcam from "react-webcam";
 import "./Modal.scss";
 import api from "../../../../api/api";
 
 function AddModal({ setShowAddModal }) {
+    //const [url, setUrl] = useState("");
+    //const [status, setStatus] = useState("");
     const [name, setName] = useState("");
     const [location, setLocation] = useState("");
-    //const [status, setStatus] = useState("");
     const [date, setDate] = useState("");
-    //const [url, setUrl] = useState("");
+    const [webcamList, setWebcamList] = useState([]); // 웹캠 목록 저장용 -> 하단 웹캠 선택 콤보박스에서 사용
+    const [webcam, setWebcam] = useState("");
+
+    useEffect(() => {
+        // local에 연결된 웹캠 목록 가져오기
+        navigator.mediaDevices.enumerateDevices()
+            .then(devices => {
+                const videoDevices = devices.filter(device => device.kind === 'videoinput'); // 웹캠만 뜨도록 필터링
+                setWebcamList(videoDevices);
+                console.log("웹캠 목록:", videoDevices); // 웹캠 목록 확인 로그
+                if (videoDevices.length > 0) {
+                    setWebcam(videoDevices[0].deviceId); // 디폴트로 첫번째 웹캠 선택하도록 설정
+                }
+            })
+            .catch(error => {
+                console.error("웹캠 목록 가져오기 실패:", error);
+            });
+    }, []);
 
     const addCCTV = () => {
-        const newCCTV = { cctvName: name, location, cctvDate: date };
+        const newCCTV = { cctvName: name, location, cctvDate: date, webcamId: webcam };
         api
-            .post("/cleanguard/cctv", newCCTV)
+            .post("/cleanguard/cctv/", newCCTV)
             .then((response) => {
                 console.log("추가된 CCTV :", response.data);
                 setShowAddModal(false);
                 alert("CCTV가 성공적으로 추가되었습니다.");
+                console.log(newCCTV)
             })
             .catch((error) => {
                 console.error("CCTV 추가 실패:", error);
                 alert("CCTV 추가 중 오류가 발생했습니다. 다시 시도하세요");
             });
     };
+
+
 
     return (
         <div className="add">
@@ -100,6 +122,26 @@ function AddModal({ setShowAddModal }) {
                             onChange={(e) => setUrl(e.target.value)}
                         />
                     </div> */}
+                    <div className="add-input-container">
+                        <div>현재 연결된 웹캠 목록</div>
+                        <select
+                            className="webcam-dropbox"
+                            value={webcam || ""}
+                            onChange={(e) => setWebcam(e.target.value)}
+                        >
+                            {webcamList.length === 0 ? ( // 연결된 웹캠이 없을 시시
+                                <option value="" disabled>
+                                    현재 연결된 웹캠이 없습니다.
+                                </option>
+                            ) : (
+                                webcamList.map(webcam => (
+                                    <option key={webcam.deviceId} value={webcam.deviceId}>
+                                        {webcam.label || `Webcam ${webcam.deviceId}`}
+                                    </option>
+                                ))
+                            )}
+                        </select>
+                    </div>
                 </div>
                 <div className="add-container-footer">
                     <button className="add-button" onClick={addCCTV}>
