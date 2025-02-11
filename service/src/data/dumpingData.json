@@ -1,51 +1,68 @@
 [
     {
-      "id": 1,
-      "cctvId": 1,
-      "name":"inu_123",
-      "timestamp": "2024-11-01T14:32:00Z",
-      "location": "연수동",
-      "captureImageUrl": "https://example.com/image1.jpg"
+        "imageId": 1,
+        "name": "frame12",
+        "cctv": {
+            "cctvId": 1,
+            "location": "송도0",
+            "cctvDate": 20250122
+        },
+        "path": "fwnofnw",
+        "time": 202501210201
     },
     {
-      "id": 2,
-      "cctvId": 3,
-      "name":"inu_345",
-      "timestamp": "2024-11-01T14:20:00Z",
-      "location": "송도1동",
-      "captureImageUrl": "https://example.com/image2.jpg"
+        "imageId": 2,
+        "name": "frame12",
+        "cctv": {
+            "cctvId": 2,
+            "location": "서울",
+            "cctvDate": 20250122
+        },
+        "path": "fwnofnw",
+        "time": 202501210201
     },
     {
-      "id": 3,
-      "cctvId": 5,
-      "name":"solchan_2",
-      "timestamp": "2024-11-01T18:15:00Z",
-      "location": "송도",
-      "captureImageUrl": "https://example.com/image3.jpg"
+        "imageId": 3,
+        "name": "frame12",
+        "cctv": {
+            "cctvId": 3,
+            "location": "송도1",
+            "cctvDate": 20250122
+        },
+        "path": "fwnofnw",
+        "time": 202501210201
     },
     {
-      "id": 4,
-      "cctvId": 5,
-      "name":"solchan_2",
-      "timestamp": "2024-11-01T20:15:00Z",
-      "location": "송도",
-      "captureImageUrl": "https://example.com/image4.jpg"
+        "imageId": 4,
+        "name": "frame12",
+        "cctv": {
+            "cctvId": 4,
+            "location": "송도2",
+            "cctvDate": 20250122
+        },
+        "path": "fwnofnw",
+        "time": 202501210201
     },
     {
-      "id": 5,
-      "cctvId": 5,
-      "name":"solchan_2",
-      "timestamp": "2024-11-08T12:58:00Z",
-      "location": "송도",
-      "captureImageUrl": "https://example.com/image5.jpg"
+        "imageId": 5,
+        "name": "frame12",
+        "cctv": {
+            "cctvId": 5,
+            "location": "송도3",
+            "cctvDate": 20250122
+        },
+        "path": "fwnofnw",
+        "time": 202501210201
     },
     {
-      "id": 6,
-      "cctvId": 4,
-      "name":"solchan_1",
-      "timestamp": "2024-12-01T14:11:00Z",
-      "location": "송도",
-      "captureImageUrl": "https://example.com/image6.jpg"
+        "imageId": 6,
+        "name": "frame12",
+        "cctv": {
+            "cctvId": 6,
+            "location": "송도4",
+            "cctvDate": 20250122
+        },
+        "path": "fwnofnw",
+        "time": 202501210201
     }
-    
-  ]
+]

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { IoIosSettings } from "react-icons/io";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import { RiFullscreenFill } from "react-icons/ri";
 import Slider from "react-slick";
 import "./VideoViewer.scss";
-// import dumpingData from '../../../../data/dumpingData.json'
+// import dumpingData from "../../../../data/dumpingData.json";
 
 function VideoViewer({
     cctvList,
@@ -20,6 +21,8 @@ function VideoViewer({
     const [hoveredImageId, setHoveredImageId] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const [shownCctv, setShownCctv] = useState({}); // 멀티뷰에서 보여질 cctv
+    // const [showCheckboxes, setShowCheckboxes] = useState(false);
+    // const [selectedImages, setSelectedImages] = useState({}); // 삭제할 슬라이드 이미지
 
     useEffect(() => {
         setShownCctv(
@@ -50,6 +53,15 @@ function VideoViewer({
         });
         return cnt;
     };
+    // 삭제 아이콘에 연결된 함수
+    // const toggleCheckboxes = () => setShowCheckboxes((prev) => !prev);
+    // const handleImageSelect = (imageId) => {
+    //     setSelectedImages((prev) => ({
+    //         ...prev,
+    //         [imageId]: !prev[imageId],
+    //     }));
+    // };
+
     const currentCctv = cctvList.find((cctv) => cctv.cctvId === cctvId);
     const videoUrl = currentCctv ? currentCctv.videoUrl : "";
 
@@ -71,6 +83,10 @@ function VideoViewer({
         return (
             <div className="viewer">
                 <div className="multi-viewer-icon">
+                    {/* <RiDeleteBin6Line
+                        className="filter-icon"
+                        onClick={toggleCheckboxes}
+                    /> */}
                     <IoIosSettings
                         className="filter-icon"
                         onClick={() => setShowDropdown(!showDropdown)}
@@ -148,22 +164,24 @@ function VideoViewer({
                                 onMouseLeave={handleMouseLeave}
                                 className="slider-image-container"
                             >
-                                <img
+                                {/* <img
                                     src={item.path} // 이미지가 화면에 잘 나오는지 확인 할 필요 있음!!!!!!!!!
                                     alt={`Capture ${item.imageId}`}
                                     className="slider-image"
-                                />
-                                {/* <img
+                                /> */}
+
+                                {/* 임시 이미지 */}
+                                <img
                                     src="https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png"
                                     alt={`Capture ${item.imageId}`}
                                     className="slider-image"
-                                /> */}
+                                />
                                 {hoveredImageId === item.imageId && (
                                     <div className="image-info">
-                                        <p>ID: {item.imageId}</p>
-                                        <p>Name: {item.name}</p>
-                                        <p>Location: {item.cctv.location}</p>
-                                        <p>Timestamp: {item.time}</p>
+                                        {/* <p>ID: {item.imageId}</p>
+                                        <p>Name: {item.name}</p> */}
+                                        <p>{item.cctv.location}</p>
+                                        <p>{item.time}</p>
                                     </div>
                                 )}
                             </div>
@@ -202,7 +220,9 @@ function VideoViewer({
                             onMouseLeave={handleMouseLeave}
                             className="slider-image-container"
                         >
-                            {/* <img src={item.captureImageUrl} alt={`Capture ${item.id}`} className='slider-image' /> */}
+                            {/* <img src={item.path} alt={`Capture ${item.imageId}`} className='slider-image' /> */}
+
+                            {/* 임시 이미지 */}
                             <img
                                 src="https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png"
                                 alt={`Capture ${item.imageId}`}
@@ -210,10 +230,10 @@ function VideoViewer({
                             />
                             {hoveredImageId === item.imageId && (
                                 <div className="image-info">
-                                    <p>ID: {item.imageId}</p>
-                                    <p>Name: {item.name}</p>
-                                    <p>Location: {item.cctv.location}</p>
-                                    <p>Timestamp: {item.time}</p>
+                                    {/* <p>ID: {item.imageId}</p>
+                                    <p>Name: {item.name}</p> */}
+                                    <p>{item.cctv.location}</p>
+                                    <p>{item.time}</p>
                                 </div>
                             )}
                         </div>

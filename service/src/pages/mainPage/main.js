@@ -5,7 +5,7 @@ import CCTVSidemenu from "./components/cctvSidemenu/CCTVSidemenu";
 import VideoViewer from "./components/videoViewer/VideoViewer";
 import Graph from "./components/graph/Graph";
 //import cctvData from '../../data/cctvData.json'
-// import dumpingData from '../../data/dumpingData.json'
+import dumpingData from "../../data/dumpingData.json";
 import AddModal from "./components/cctvSidemenu/AddModal";
 import EditModal from "./components/cctvSidemenu/EditModal";
 import DeleteModal from "./components/cctvSidemenu/DeleteModal";
@@ -34,14 +34,14 @@ function Main() {
             });
 
         // dumpingData 가져오기
-        api.get(`/cleanguard/image/${roleName}`)
-            .then((response) => {
-                setDumpingEvent(response.data);
-                console.log("Dumping 데이터 가져오기 성공:", response.data);
-            })
-            .catch((error) => {
-                console.error("Dumping 데이터 가져오기 실패:", error);
-            });
+        // api.get(`/cleanguard/image/${roleName}`)
+        //     .then((response) => {
+        //         setDumpingEvent(response.data);
+        //         console.log("Dumping 데이터 가져오기 성공:", response.data);
+        //     })
+        //     .catch((error) => {
+        //         console.error("Dumping 데이터 가져오기 실패:", error);
+        //     });
 
         // 선택된 cctv 디폴트 값 -> 가장 첫번째 cctv 뜨도록 설정
         // if (cctvData.length > 0)
@@ -70,7 +70,8 @@ function Main() {
                             selectedCCTV={selectedCCTV}
                             multiView={multiView}
                             setMultiView={setMultiView}
-                            dumpingData={dumpingEvent}
+                            // dumpingData={dumpingEvent}
+                            dumpingData={dumpingData}
                         />
                     </div>
                     <div className="graph">
