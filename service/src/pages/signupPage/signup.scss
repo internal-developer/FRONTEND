@@ -8,9 +8,6 @@
 
     .form-container {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
         background-color: #ffffff;
         padding: 30px 20px; 
         border-radius: 8px;
@@ -26,7 +23,7 @@
         font-size: 48px;
         font-weight: 400;
         color: #1D1D1D;
-        margin-bottom: 10px; // 여백 조정
+        margin-bottom: 10px;
     }
 
     /* 회원가입 */
@@ -35,42 +32,24 @@
         font-size: 24px;
         font-weight: 700;
         color: #1D1D1D;
-        margin-bottom: 20px; // 여백 조정
+        margin-bottom: 20px; 
     }
 
     /* 공통 버튼 스타일 */
-    .login-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .kakao-login-btn {
         width: 328px;
-        height: 150px;
+        height: 140px;
         border-radius: 5px;
         font-size: 16px;
         font-weight: bold;
         margin: 6px 0; // 버튼 간격 조정
         background-repeat: no-repeat;
-        background-position: 16px center;
     }
 
     /* 카카오 버튼 */
-    #kakao-button {
+    .kakao-login-btn {
         background-color: #FFEB3B;
         background-image: url('../../assets/images/loginbutton/kakao.png');
-        color: #1D1D1D;
-    }
-
-    /* 네이버 버튼 */
-    #naver-button {
-        background-color: #00BF18;
-        background-image: url('../../assets/images/loginbutton/naver.png');
-        color: #FFFFFF;
-    }
-
-    /* 구글 버튼 */
-    #google-button {
-        background-color: #EEEEEE;
-        background-image: url('../../assets/images/loginbutton/google.png');
         color: #1D1D1D;
     }
 }
