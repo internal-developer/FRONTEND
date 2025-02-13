@@ -1,0 +1,52 @@
+.SignUpPage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    background-color: #F6F5FF;
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #ffffff;
+        padding: 40px 20px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        max-width: 450px;
+        max-height: 637px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .sign-up {
+        font-family: 'Moul', sans-serif;
+        font-size: 48px;
+        color: #1D1D1D;
+        margin-bottom: 8px;
+    }
+
+    .signup-text {
+        font-family: 'Poppins', sans-serif;
+        font-size: 24px;
+        color: #1D1D1D;
+        margin-bottom: -10px;
+    }
+
+    .login-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 328px;
+        height: 54px;
+        margin: 8px 0;
+        background-repeat: no-repeat;
+    }
+
+    #kakao-button {
+        background-color: #FFEB3B;
+        background-image: url('../../assets/images/loginbutton/kakao.png');
+        // color: #1D1D1D;
+    }
+}
