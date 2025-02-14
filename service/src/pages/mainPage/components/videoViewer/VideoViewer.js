@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { IoIosSettings } from "react-icons/io";
-import { RiDeleteBin6Line } from "react-icons/ri";
+// import { RiDeleteBin6Line } from "react-icons/ri";
 import { RiFullscreenFill } from "react-icons/ri";
 import Slider from "react-slick";
 import "./VideoViewer.scss";
