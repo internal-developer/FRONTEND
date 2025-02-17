@@ -22,21 +22,16 @@ function Main() {
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-    // useEffect(() => {
-    //     api.get("/main")
-    //         .then((response) => {
-    //             console.log("로그인된 사용자:", response.data);
-    //         })
-    //         .catch(() => {
-    //             console.log("로그인되지 않음");
-
-    //         });
-    // }, []);
-
     useEffect(() => {
-        // CCTV 데이터 가져오기 
-        // api.get(`/cleanguard/cctv/${roleName}`) // roleName에 따라 cctv목록 불러오기
-        api.get(`/cleanguard/cctv/`) // 전체 cctv목록 불러오기 -> 수정요망
+        // < ==== 임시 -> jwt 토큰을 로컬 스토리지에 저장하는 코드 ==== >
+        const query = new URLSearchParams(window.location.search);
+        const token = query.get("access_token");
+        console.log("URL에서 가져온 token:", token); // 콘솔에 토큰 출력
+        localStorage.setItem("accessToken", token); // 토큰을 로컬 스토리지에 저장
+        const savedToken = localStorage.getItem("accessToken");
+
+        // jwt 토큰을 쿼리 파라미터에 담아 요청
+        api.get(`/cleanguard/cctv/?access_token=${savedToken}`) // 전체 cctv목록 불러오기 
             .then((response) => {
                 setCctvList(response.data);
                 console.log("CCTV 데이터 가져오기 성공:", response.data);
@@ -44,6 +39,7 @@ function Main() {
             .catch((error) => {
                 console.error("CCTV 데이터 가져오기 실패:", error);
             });
+
 
         // dumpingData 가져오기
         // api.get(`/cleanguard/image/${roleName}`)
@@ -58,7 +54,7 @@ function Main() {
         // 선택된 cctv 디폴트 값 -> 가장 첫번째 cctv 뜨도록 설정
         // if (cctvData.length > 0)
         //     setSelectedCCTV(cctvData[0]);
-    }, [roleName]);
+    }, [window.location.search]);
 
     return (
         <div className="main">
