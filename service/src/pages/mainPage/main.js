@@ -28,10 +28,9 @@ function Main() {
         const token = query.get("access_token");
         console.log("URL에서 가져온 token:", token); // 콘솔에 토큰 출력
         localStorage.setItem("accessToken", token); // 토큰을 로컬 스토리지에 저장
-        const savedToken = localStorage.getItem("accessToken");
 
-        // jwt 토큰을 쿼리 파라미터에 담아 요청
-        api.get(`/cleanguard/cctv/?access_token=${savedToken}`) // 전체 cctv목록 불러오기 
+        // cctv 데이터 요청
+        api.get("/cleanguard/cctv/") 
             .then((response) => {
                 setCctvList(response.data);
                 console.log("CCTV 데이터 가져오기 성공:", response.data);

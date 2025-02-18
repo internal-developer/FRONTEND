@@ -27,6 +27,15 @@ function EditModal({ setShowEditModal, selectedCCTV }) {
             .then(devices => {
                 const videoDevices = devices.filter(device => device.kind === 'videoinput'); // 웹캠만 뜨도록 필터링
                 setWebcamList(videoDevices);
+
+                // 저장된 웹캠이 local 웹캠 목록에 존재하면 선택
+                const matchedWebcam = videoDevices.find(device => device.deviceId === selectedCCTV?.webcamId);
+                if (matchedWebcam) {
+                    setWebcam(matchedWebcam.deviceId);
+                } else {
+                    setWebcam("UNAVAILABLE"); // 존재하지 않으면 UNAVAILABLE로 임시 저장
+                }
+
             })
             .catch(error => {
                 console.error("웹캠 목록 가져오기 실패:", error);
@@ -36,7 +45,7 @@ function EditModal({ setShowEditModal, selectedCCTV }) {
     const cctvId = selectedCCTV.cctvId;
 
     const editCCTV = () => {
-        const updateCCTV = { cctvName: name, location, cctvDate: date, webcamId: webcam };
+        const updateCCTV = { cctvName: name, location, cctvDate: date, webcamId: webcam === "UNAVAILABLE" ? selectedCCTV.webcamId : webcam };
         api.patch(`/cleanguard/cctv/${cctvId}`, updateCCTV)
             .then((response) => {
                 console.log("수정된 CCTV:", response.data);
@@ -113,6 +122,10 @@ function EditModal({ setShowEditModal, selectedCCTV }) {
                             value={webcam || ""}
                             onChange={(e) => setWebcam(e.target.value)}
                         >
+                            {webcam === "UNAVAILABLE" && (
+                                <option value="UNAVAILABLE" disabled>저장된 웹캠을 찾을 수 없습니다</option>
+                            )}
+
                             {webcamList.map(webcam => (
                                 <option key={webcam.deviceId} value={webcam.deviceId}>
                                     {webcam.label || `Webcam ${webcam.deviceId}`}
