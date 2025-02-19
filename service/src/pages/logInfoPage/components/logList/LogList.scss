@@ -33,10 +33,18 @@
 
 /* 개별 로그 아이템 */
 .log-item {
+    position: relative;
     width: 210px;
     height: 200px;
 }
-
+.log-checkbox {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
 /* 로그 이미지 */
 .log-image {
     width: 210px;

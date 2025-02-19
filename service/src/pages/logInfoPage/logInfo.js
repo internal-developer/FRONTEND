@@ -2,6 +2,7 @@ import LogList from "./components/logList/LogList";
 import "./logInfo.scss";
 import countryHouseIcon from "../../assets/images/country_house.png";
 import logExample from "../../assets/images/logExample.png";
+import dumpingData from "../../data/dumpingData.json";
 
 import React, { useState, useEffect } from "react";
 import Header from "../mainPage/components/header/Header";
@@ -9,6 +10,7 @@ import CCTVSidemenu from "../mainPage/components/cctvSidemenu/CCTVSidemenu";
 import AddModal from "../mainPage/components/cctvSidemenu/AddModal";
 import EditModal from "../mainPage/components/cctvSidemenu/EditModal";
 import DeleteModal from "../mainPage/components/cctvSidemenu/DeleteModal";
+import { useNavigate } from "react-router-dom";
 
 export default function LogInfoPage() {
     const [showAddModal, setShowAddModal] = useState(false);
@@ -16,6 +18,20 @@ export default function LogInfoPage() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [cctvList, setCctvList] = useState([]); // CCTV 리스트 예시
     const [selectedCCTV, setSelectedCCTV] = useState(null);
+
+    const navigate = useNavigate();
+    const navigateToMain = () => navigate("/main");
+
+    // api imageDTO list 가져오기. 일단 예시로 작성해놓음.
+    const [logData, setLogData] = useState([]);
+    const handleDeleteLogs = (selectedIds) => {
+        setLogData((prevLogs) =>
+            prevLogs.fillter((log) => !selectedIds.includes(log.id))
+        );
+    };
+    // const filteredImages = dumpingData.filter(
+    //     (item) => item.cctv?.cctvId === cctvId
+    // );
 
     return (
         <div className="main">
@@ -39,7 +55,10 @@ export default function LogInfoPage() {
                                     ? selectedCCTV.cctvName
                                     : "선택되지 않음"}
                             </div>
-                            <button className="viewer-main-button">
+                            <button
+                                className="viewer-main-button"
+                                onClick={navigateToMain}
+                            >
                                 <img
                                     src={countryHouseIcon}
                                     alt="아이콘"

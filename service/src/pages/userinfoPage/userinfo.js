@@ -1,14 +1,16 @@
-import './userinfo.scss';
-
+import "./userinfo.scss";
 
 export default function UserInfoPage() {
     return (
-        <div className="userinfo-container">
-            <div className="form-container">
+        <div className="main">
+            <div className="userinfo-main-container">
                 <form>
                     <label>
                         닉네임을 입력해주세요.
-                        <input type="text" placeholder="8-16자의 한글만 사용 가능합니다." />
+                        <input
+                            type="text"
+                            placeholder="8-16자의 한글만 사용 가능합니다."
+                        />
                     </label>
                     <label>
                         전화번호를 입력해주세요.

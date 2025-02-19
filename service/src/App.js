@@ -3,6 +3,7 @@ import MainPage from "./pages/mainPage/main";
 import SignUpPage from "./pages/signupPage/signup";
 import UserInfoPage from "./pages/userinfoPage/userinfo";
 import KakaoCallback from "./auth/kakaocallback";
+import LogInfoPage from "./pages/logInfoPage/logInfo";
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                     path="/auth/kakao/callback"
                     element={<KakaoCallback />}
                 ></Route>
+                <Route path="/loginfo" element={<LogInfoPage />}></Route>
             </Routes>
         </div>
     );
