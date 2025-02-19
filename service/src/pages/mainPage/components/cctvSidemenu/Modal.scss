@@ -64,6 +64,21 @@
             flex-direction: column;
             gap: 12px;
 
+            .webcam-dropbox {
+                padding: 10px 12px;
+                font-size: 14px;
+                border: 1px solid #e6e6e6;
+                border-radius: 8px;
+                transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+                &:focus {
+                    outline: none;
+                    border-color: #6c63ff;
+                    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+                }
+
+            }
+
             .add-input-container {
                 display: flex;
                 flex-direction: column;
@@ -102,7 +117,7 @@
                         margin-right: 4px;
                     }
 
-                    &>span{
+                    &>span {
                         margin-right: 20px;
                         width: auto;
                     }
@@ -121,7 +136,7 @@
                 font-size: 16px;
                 font-weight: bold;
                 color: #fff;
-                background-color: #6c63ff;
+                background-color: $primary-color;
                 border: none;
                 border-radius: 8px;
                 cursor: pointer;
@@ -175,7 +190,7 @@
             padding: 0 16px;
             border-bottom: 1px solid #e6e5e5;
 
-            & > div {
+            &>div {
                 height: auto;
                 width: auto;
             }
@@ -200,7 +215,7 @@
             text-align: center;
 
             p {
-                font-size: 16px;
+                font-size: 14px;
                 font-weight: 500;
                 color: #525252;
             }

@@ -1,21 +1,44 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import Webcam from "react-webcam";
 import "./Modal.scss";
 import api from "../../../../api/api";
 
 function AddModal({ setShowAddModal }) {
+    //const [url, setUrl] = useState("");
+    //const [status, setStatus] = useState("");
     const [name, setName] = useState("");
     const [location, setLocation] = useState("");
-    const [status, setStatus] = useState("");
     const [date, setDate] = useState("");
-    const [url, setUrl] = useState("");
+    const [webcamList, setWebcamList] = useState([]); // 웹캠 목록 저장용 -> 하단 웹캠 선택 콤보박스에서 사용
+    const [webcam, setWebcam] = useState("");
+
+    useEffect(() => {
+        // local에 연결된 웹캠 목록 가져오기
+        navigator.mediaDevices.enumerateDevices()
+            .then(devices => {
+                const videoDevices = devices.filter(device => device.kind === 'videoinput'); // 웹캠만 뜨도록 필터링
+                setWebcamList(videoDevices);
+                console.log("웹캠 목록:", videoDevices); // 웹캠 목록 확인 로그
+                
+                // 디폴트로 첫번째 웹캠 선택되도록 설정
+                if (videoDevices.length > 0) {
+                    setWebcam(videoDevices[0].deviceId); 
+                }
+            })
+            .catch(error => {
+                console.error("웹캠 목록 가져오기 실패:", error);
+            });
+    }, []);
+
     const addCCTV = () => {
-        const newCCTV = { name, location, status, installationDate: date, url };
+        const newCCTV = { cctvName: name, location, cctvDate: date, webcamId: webcam };
         api
-            .post("/cleanguard/cctv", newCCTV)
+            .post("/cleanguard/cctv/", newCCTV)
             .then((response) => {
                 console.log("추가된 CCTV :", response.data);
                 setShowAddModal(false);
                 alert("CCTV가 성공적으로 추가되었습니다.");
+                console.log(newCCTV)
             })
             .catch((error) => {
                 console.error("CCTV 추가 실패:", error);
@@ -37,10 +60,6 @@ function AddModal({ setShowAddModal }) {
                     </div>
                 </div>
                 <div className="add-container-body">
-                    {/* << body 내용 수정 필요 >>
-                     - 일단 text input으로 구현
-                     - CCTV Url 부분 수정 필요
-                      */}
                     <div className="add-input-container">
                         <div>CCTV 이름</div>
                         <input
@@ -59,7 +78,7 @@ function AddModal({ setShowAddModal }) {
                             onChange={(e) => setLocation(e.target.value)}
                         />
                     </div>
-                    <div className="add-input-container">
+                    {/* <div className="add-input-container">
                         <div>상태</div>
                         <div className="add-radio-container">
                             <input
@@ -84,7 +103,7 @@ function AddModal({ setShowAddModal }) {
                             />
                             <span>오류</span>
                         </div>
-                    </div>
+                    </div> */}
                     <div className="add-input-container">
                         <div>설치일자</div>
                         <input
@@ -94,7 +113,7 @@ function AddModal({ setShowAddModal }) {
                             onChange={(e) => setDate(e.target.value)}
                         />
                     </div>
-                    <div className="add-input-container">
+                    {/* <div className="add-input-container">
                         <div>CCTV Url</div>
                         <input
                             type="text"
@@ -102,6 +121,26 @@ function AddModal({ setShowAddModal }) {
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
                         />
+                    </div> */}
+                    <div className="add-input-container">
+                        <div>현재 연결된 웹캠 목록</div>
+                        <select
+                            className="webcam-dropbox"
+                            value={webcam || ""}
+                            onChange={(e) => setWebcam(e.target.value)}
+                        >
+                            {webcamList.length === 0 ? ( // 연결된 웹캠이 없을 시
+                                <option value="" disabled>
+                                    현재 연결된 웹캠이 없습니다.
+                                </option>
+                            ) : (
+                                webcamList.map(webcam => (
+                                    <option key={webcam.deviceId} value={webcam.deviceId}>
+                                        {webcam.label || `Webcam ${webcam.deviceId}`}
+                                    </option>
+                                ))
+                            )}
+                        </select>
                     </div>
                 </div>
                 <div className="add-container-footer">

@@ -16,15 +16,21 @@ function Main() {
     const [cctvList, setCctvList] = useState([]);
     const [selectedCCTV, setSelectedCCTV] = useState(null);
     const [multiView, setMultiView] = useState(true);
-    const [roleName, setRoleName] = useState("admin"); // 임시 roleName 'admin'
+    const [roleName, setRoleName] = useState("user"); // 임시 roleName 'user'
     // modal
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     useEffect(() => {
-        // CCTV 데이터 가져오기
-        api.get(`/cleanguard/cctv/${roleName}`)
+        // < ==== 임시 -> jwt 토큰을 로컬 스토리지에 저장하는 코드 ==== >
+        const query = new URLSearchParams(window.location.search);
+        const token = query.get("access_token");
+        console.log("URL에서 가져온 token:", token); // 콘솔에 토큰 출력
+        localStorage.setItem("accessToken", token); // 토큰을 로컬 스토리지에 저장
+
+        // cctv 데이터 요청
+        api.get("/cleanguard/cctv/") 
             .then((response) => {
                 setCctvList(response.data);
                 console.log("CCTV 데이터 가져오기 성공:", response.data);
@@ -32,6 +38,7 @@ function Main() {
             .catch((error) => {
                 console.error("CCTV 데이터 가져오기 실패:", error);
             });
+
 
         // dumpingData 가져오기
         // api.get(`/cleanguard/image/${roleName}`)
@@ -46,7 +53,7 @@ function Main() {
         // 선택된 cctv 디폴트 값 -> 가장 첫번째 cctv 뜨도록 설정
         // if (cctvData.length > 0)
         //     setSelectedCCTV(cctvData[0]);
-    }, [roleName]);
+    }, [window.location.search]);
 
     return (
         <div className="main">
@@ -87,7 +94,9 @@ function Main() {
                 />
             )}
             {showDeleteModal && (
-                <DeleteModal setShowDeleteModal={setShowDeleteModal} />
+                <DeleteModal
+                    setShowDeleteModal={setShowDeleteModal}
+                    selectedCCTV={selectedCCTV} />
             )}
         </div>
     );
