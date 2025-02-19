@@ -2,13 +2,16 @@ import React from 'react';
 import './Modal.scss';
 import api from "../../../../api/api";
 
-function DeleteModal({ setShowDeleteModal, selectedCCTV }) {
+function DeleteModal({ setShowDeleteModal, selectedCCTV, setCctvList, setMultiView }) {
     const cctvId = selectedCCTV.cctvId;
     const deleteCCTV = () => {
         api
             .delete(`/cleanguard/cctv/${cctvId}`)
             .then((response) => {
                 console.log("CCTV 삭제:", response.data);
+                // cctv 리스트에서 삭제된 cctv 제거
+                setCctvList(prevList => prevList.filter(cctv => cctv.cctvId !== cctvId));
+                setMultiView(true); // 삭제 후 cctv 멀티뷰 모드로 전환
                 setShowDeleteModal(false);
                 alert("CCTV가 삭제되었습니다.");
             })
