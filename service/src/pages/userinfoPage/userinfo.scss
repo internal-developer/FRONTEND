@@ -16,19 +16,19 @@
     box-shadow: 0px 2px 16px 0px rgb(0 0 0 / 16%);
 }
 
-form {
+.userinfo-form {
     width: 75%;
     height: 65%;
 }
-label {
+.userinfo-label {
     color: $text-color;
     font-size: 17px;
     font-family: "Poppins", sans-serif;
     width: 100%;
     height: 10%;
 }
-input,
-select {
+.userinfo-input,
+.userinfo-select {
     font-size: 13px;
     color: $text-muted;
     font-family: "Poppins", sans-serif;
@@ -40,11 +40,12 @@ select {
     padding-left: 15px;
     margin-top: 2%;
     margin-bottom: 10%;
+    outline: none;
 }
-input::placeholder {
+.userinfo-input::placeholder {
     color: $text-muted;
 }
-button {
+.userinfo-button {
     width: 100%;
     height: 12%;
     border: none;
@@ -53,4 +54,9 @@ button {
     color: white;
     font-weight: bolder;
     font-size: 16px;
+    cursor: pointer;
+
+    &:hover {
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    }
 }
