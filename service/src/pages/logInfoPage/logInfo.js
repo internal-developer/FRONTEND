@@ -1,7 +1,6 @@
 import LogList from "./components/logList/LogList";
 import "./logInfo.scss";
 import countryHouseIcon from "../../assets/images/country_house.png";
-import logExample from "../../assets/images/logExample.png";
 import dumpingData from "../../data/dumpingData.json";
 
 import React, { useState, useEffect } from "react";
@@ -22,16 +21,13 @@ export default function LogInfoPage() {
     const navigate = useNavigate();
     const navigateToMain = () => navigate("/main");
 
-    // api imageDTO list 가져오기. 일단 예시로 작성해놓음.
-    const [logData, setLogData] = useState([]);
-    const handleDeleteLogs = (selectedIds) => {
-        setLogData((prevLogs) =>
-            prevLogs.fillter((log) => !selectedIds.includes(log.id))
-        );
-    };
+    // api imageDTO list 가져오기. 일단 예시로 작성해놓음(dumpingData)
+
     // const filteredImages = dumpingData.filter(
     //     (item) => item.cctv?.cctvId === cctvId
     // );
+
+    const [checkedItems, setCheckedItems] = useState([]);
 
     return (
         <div className="main">
@@ -81,7 +77,11 @@ export default function LogInfoPage() {
                                 </button>
                             </div>
                         </div>
-                        <LogList />
+                        <LogList
+                            logs={dumpingData}
+                            checkedItems={checkedItems}
+                            setCheckedItems={setCheckedItems}
+                        />
                     </div>
                 </div>
             </div>
