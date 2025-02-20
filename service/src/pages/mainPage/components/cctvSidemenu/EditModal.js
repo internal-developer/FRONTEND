@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import './Modal.scss'
 import api from "../../../../api/api";
 
-function EditModal({ setShowEditModal, selectedCCTV }) {
+function EditModal({ setShowEditModal, selectedCCTV, setSelectedCCTV, setCctvList }) {
     //const [url, setUrl] = useState('');
     //const [status, setStatus] = useState('');
     const [name, setName] = useState('');
@@ -49,6 +49,12 @@ function EditModal({ setShowEditModal, selectedCCTV }) {
         api.patch(`/cleanguard/cctv/${cctvId}`, updateCCTV)
             .then((response) => {
                 console.log("수정된 CCTV:", response.data);
+                // CCTV 리스트에서 수정된 CCTV만 업데이트
+                setCctvList(prevList =>
+                    prevList.map(cctv =>
+                        cctv.cctvId === cctvId ? { ...cctv, ...response.data } : cctv
+                    ));
+                setSelectedCCTV(response.data);
                 setShowEditModal(false);
                 alert("CCTV 정보가 성공적으로 수정되었습니다.");
             })

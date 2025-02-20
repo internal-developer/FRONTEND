@@ -3,7 +3,7 @@ import Webcam from "react-webcam";
 import "./Modal.scss";
 import api from "../../../../api/api";
 
-function AddModal({ setShowAddModal }) {
+function AddModal({ setShowAddModal, setCctvList }) {
     //const [url, setUrl] = useState("");
     //const [status, setStatus] = useState("");
     const [name, setName] = useState("");
@@ -19,10 +19,10 @@ function AddModal({ setShowAddModal }) {
                 const videoDevices = devices.filter(device => device.kind === 'videoinput'); // 웹캠만 뜨도록 필터링
                 setWebcamList(videoDevices);
                 console.log("웹캠 목록:", videoDevices); // 웹캠 목록 확인 로그
-                
+
                 // 디폴트로 첫번째 웹캠 선택되도록 설정
                 if (videoDevices.length > 0) {
-                    setWebcam(videoDevices[0].deviceId); 
+                    setWebcam(videoDevices[0].deviceId);
                 }
             })
             .catch(error => {
@@ -36,6 +36,8 @@ function AddModal({ setShowAddModal }) {
             .post("/cleanguard/cctv/", newCCTV)
             .then((response) => {
                 console.log("추가된 CCTV :", response.data);
+                // cctv 리스트에 새 cctv 추가
+                setCctvList(prevList => [...prevList, response.data]);
                 setShowAddModal(false);
                 alert("CCTV가 성공적으로 추가되었습니다.");
                 console.log(newCCTV)

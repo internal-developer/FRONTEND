@@ -25,12 +25,13 @@ function Main() {
     useEffect(() => {
         // < ==== 임시 -> jwt 토큰을 로컬 스토리지에 저장하는 코드 ==== >
         const query = new URLSearchParams(window.location.search);
-        const token = query.get("access_token");
-        console.log("URL에서 가져온 token:", token); // 콘솔에 토큰 출력
-        localStorage.setItem("accessToken", token); // 토큰을 로컬 스토리지에 저장
+        const accessToken = query.get("access_token");
+        const refreshToken = query.get("refresh_token");
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
 
         // cctv 데이터 요청
-        api.get("/cleanguard/cctv/") 
+        api.get("/cleanguard/cctv/")
             .then((response) => {
                 setCctvList(response.data);
                 console.log("CCTV 데이터 가져오기 성공:", response.data);
@@ -86,17 +87,26 @@ function Main() {
                     </div>
                 </div>
             </div>
-            {showAddModal && <AddModal setShowAddModal={setShowAddModal} />}
+            {showAddModal &&
+                <AddModal
+                    setShowAddModal={setShowAddModal}
+                    setCctvList={setCctvList}
+                />}
             {showEditModal && (
                 <EditModal
                     setShowEditModal={setShowEditModal}
                     selectedCCTV={selectedCCTV}
+                    setSelectedCCTV={setSelectedCCTV}
+                    setCctvList={setCctvList}
                 />
             )}
             {showDeleteModal && (
                 <DeleteModal
                     setShowDeleteModal={setShowDeleteModal}
-                    selectedCCTV={selectedCCTV} />
+                    selectedCCTV={selectedCCTV}
+                    setCctvList={setCctvList}
+                    setMultiView={setMultiView}
+                />
             )}
         </div>
     );
