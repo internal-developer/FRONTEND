@@ -40,16 +40,15 @@ function Main() {
                 console.error("CCTV 데이터 가져오기 실패:", error);
             });
 
-
-        // dumpingData 가져오기
-        // api.get(`/cleanguard/image/${roleName}`)
-        //     .then((response) => {
-        //         setDumpingEvent(response.data);
-        //         console.log("Dumping 데이터 가져오기 성공:", response.data);
-        //     })
-        //     .catch((error) => {
-        //         console.error("Dumping 데이터 가져오기 실패:", error);
-        //     });
+        // image 데이터 요청
+        api.get("/cleanguard/image/user")
+            .then((response) => {
+                setDumpingEvent(response.data);
+                console.log("Dumping 데이터 가져오기 성공:", response.data);
+            })
+            .catch((error) => {
+                console.error("Dumping 데이터 가져오기 실패:", error);
+            });
 
         // 선택된 cctv 디폴트 값 -> 가장 첫번째 cctv 뜨도록 설정
         // if (cctvData.length > 0)
@@ -78,8 +77,8 @@ function Main() {
                             selectedCCTV={selectedCCTV}
                             multiView={multiView}
                             setMultiView={setMultiView}
-                            // dumpingData={dumpingEvent}
-                            dumpingData={dumpingData}
+                            dumpingData={dumpingEvent}
+                            // dumpingData={dumpingData}
                         />
                     </div>
                     <div className="graph">
@@ -87,11 +86,12 @@ function Main() {
                     </div>
                 </div>
             </div>
-            {showAddModal &&
+            {showAddModal && (
                 <AddModal
                     setShowAddModal={setShowAddModal}
                     setCctvList={setCctvList}
-                />}
+                />
+            )}
             {showEditModal && (
                 <EditModal
                     setShowEditModal={setShowEditModal}

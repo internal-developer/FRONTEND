@@ -5,7 +5,6 @@ import { IoIosSettings } from "react-icons/io";
 import { RiFullscreenFill } from "react-icons/ri";
 import Slider from "react-slick";
 import "./VideoViewer.scss";
-// import dumpingData from "../../../../data/dumpingData.json";
 
 function VideoViewer({
     cctvList,
@@ -28,12 +27,15 @@ function VideoViewer({
 
     useEffect(() => {
         // 웹캠 목록 가져오기
-        navigator.mediaDevices.enumerateDevices()
-            .then(devices => {
-                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        navigator.mediaDevices
+            .enumerateDevices()
+            .then((devices) => {
+                const videoDevices = devices.filter(
+                    (device) => device.kind === "videoinput"
+                );
                 setAvailableWebcams(videoDevices);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error("웹캠 목록을 가져오는 중 오류 발생:", error);
             });
     }, []);
@@ -80,7 +82,7 @@ function VideoViewer({
     const webcamId = currentCctv ? currentCctv.webcamId : "";
     // 웹캠과 cctvList의의 webcamId가 일치하는지 확인
     const isWebcamAvailable = (webcamId) => {
-        return availableWebcams.some(webcam => webcam.deviceId === webcamId);
+        return availableWebcams.some((webcam) => webcam.deviceId === webcamId);
     };
 
     // 멀티뷰 상태일 때 UI
@@ -147,7 +149,10 @@ function VideoViewer({
                     {cctvList.map(
                         (cctv) =>
                             shownCctv[cctv.cctvId] && (
-                                <div key={cctv.cctvId} className="multi-viewer-video">
+                                <div
+                                    key={cctv.cctvId}
+                                    className="multi-viewer-video"
+                                >
                                     {isWebcamAvailable(cctv.webcamId) ? (
                                         <Webcam
                                             audio={false}
@@ -194,24 +199,31 @@ function VideoViewer({
                                 onMouseLeave={handleMouseLeave}
                                 className="slider-image-container"
                             >
-                                {/* <img
-                                    src={item.path} // 이미지가 화면에 잘 나오는지 확인 할 필요 있음!!!!!!!!!
-                                    alt={`Capture ${item.imageId}`}
-                                    className="slider-image"
-                                /> */}
-
-                                {/* 임시 이미지 */}
                                 <img
-                                    src="https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png"
+                                    src={item.path}
                                     alt={`Capture ${item.imageId}`}
                                     className="slider-image"
                                 />
+
+                                {/* 임시 이미지 */}
+                                {/* <img
+                                    src="https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png"
+                                    alt={`Capture ${item.imageId}`}
+                                    className="slider-image"
+                                /> */}
                                 {hoveredImageId === item.imageId && (
                                     <div className="image-info">
-                                        {/* <p>ID: {item.imageId}</p>
-                                        <p>Name: {item.name}</p> */}
                                         <p>{item.cctv.location}</p>
-                                        <p>{item.time}</p>
+                                        <p>
+                                            {new Date(
+                                                item.time
+                                            ).toLocaleDateString()}
+                                        </p>
+                                        <p>
+                                            {new Date(
+                                                item.time
+                                            ).toLocaleTimeString()}
+                                        </p>
                                     </div>
                                 )}
                             </div>
@@ -242,8 +254,9 @@ function VideoViewer({
                         }}
                         audio={false}
                         videoConstraints={{
-                            deviceId: webcamId
-                        }} />
+                            deviceId: webcamId,
+                        }}
+                    />
                 ) : (
                     <p>웹캠 연결 오류</p>
                 )}
@@ -260,20 +273,30 @@ function VideoViewer({
                             onMouseLeave={handleMouseLeave}
                             className="slider-image-container"
                         >
-                            {/* <img src={item.path} alt={`Capture ${item.imageId}`} className='slider-image' /> */}
-
                             {/* 임시 이미지 */}
-                            <img
+                            {/* <img
                                 src="https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png"
+                                alt={`Capture ${item.imageId}`}
+                                className="slider-image"
+                            /> */}
+                            <img
+                                src={item.path}
                                 alt={`Capture ${item.imageId}`}
                                 className="slider-image"
                             />
                             {hoveredImageId === item.imageId && (
                                 <div className="image-info">
-                                    {/* <p>ID: {item.imageId}</p>
-                                    <p>Name: {item.name}</p> */}
                                     <p>{item.cctv.location}</p>
-                                    <p>{item.time}</p>
+                                    <p>
+                                        {new Date(
+                                            item.time
+                                        ).toLocaleDateString()}
+                                    </p>
+                                    <p>
+                                        {new Date(
+                                            item.time
+                                        ).toLocaleTimeString()}
+                                    </p>
                                 </div>
                             )}
                         </div>
