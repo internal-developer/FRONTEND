@@ -14,16 +14,12 @@ function VideoViewer({
     setMultiView,
     dumpingData,
 }) {
-    const cctvId = selectedCCTV ? selectedCCTV.cctvId : null;
-    const filteredImages = dumpingData.filter(
-        (item) => item.cctv?.cctvId === cctvId
-    );
     const [hoveredImageId, setHoveredImageId] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const [shownCctv, setShownCctv] = useState({}); // 멀티뷰에서 보여질 cctv
     const [availableWebcams, setAvailableWebcams] = useState([]); // 연결 가능한 웹캠들
-    // const [showCheckboxes, setShowCheckboxes] = useState(false);
-    // const [selectedImages, setSelectedImages] = useState({}); // 삭제할 슬라이드 이미지
+
+    const cctvId = selectedCCTV ? selectedCCTV.cctvId : null;
 
     useEffect(() => {
         // 웹캠 목록 가져오기
@@ -49,6 +45,40 @@ function VideoViewer({
         );
     }, [cctvList]);
 
+    const [filteredImages, setFilteredImages] = useState([]);
+    useEffect(() => {
+        // 멀티뷰일 경우, 모든 투기 데이터를 보여줌
+        if (multiView) {
+            setFilteredImages(dumpingData);
+            setSelectedCCTV(null);
+        }
+        // 단일뷰일 경우, 선택된 CCTV의 투기 데이터만 보여줌
+        else if (cctvId !== null) {
+            // cctvId가 null이 아닐 때만 필터링 실행
+            setFilteredImages(
+                dumpingData.filter((item) => item.cctv.cctvId === cctvId)
+            );
+        } else {
+            setFilteredImages([]); // 선택된 CCTV가 없으면 빈 배열
+        }
+    }, [multiView, dumpingData, cctvId]);
+
+    // useEffect(() => {
+    //     console.log(
+    //         "multiView: ",
+    //         multiView,
+    //         "\n",
+    //         "selectedCCTV: ",
+    //         selectedCCTV,
+    //         "\n",
+    //         "cctvId: ",
+    //         cctvId,
+    //         "\n",
+    //         "filteredImages: ",
+    //         filteredImages
+    //     );
+    // }, [filteredImages]);
+
     const sliderSettings = {
         dots: false,
         infinite: false,
@@ -69,14 +99,6 @@ function VideoViewer({
         });
         return cnt;
     };
-    // 삭제 아이콘에 연결된 함수
-    // const toggleCheckboxes = () => setShowCheckboxes((prev) => !prev);
-    // const handleImageSelect = (imageId) => {
-    //     setSelectedImages((prev) => ({
-    //         ...prev,
-    //         [imageId]: !prev[imageId],
-    //     }));
-    // };
 
     const currentCctv = cctvList.find((cctv) => cctv.cctvId === cctvId);
     const webcamId = currentCctv ? currentCctv.webcamId : "";
@@ -189,8 +211,11 @@ function VideoViewer({
                     금일 투기 적발 건수: {dumpingData.length}건
                 </div>
                 <div className="viewer-capture">
-                    <Slider {...sliderSettings}>
-                        {dumpingData.map((item) => (
+                    <Slider
+                        {...sliderSettings}
+                        key={(multiView ? dumpingData : filteredImages).length}
+                    >
+                        {filteredImages.map((item) => (
                             <div
                                 key={item.imageId}
                                 onMouseEnter={() =>
@@ -205,12 +230,6 @@ function VideoViewer({
                                     className="slider-image"
                                 />
 
-                                {/* 임시 이미지 */}
-                                {/* <img
-                                    src="https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png"
-                                    alt={`Capture ${item.imageId}`}
-                                    className="slider-image"
-                                /> */}
                                 {hoveredImageId === item.imageId && (
                                     <div className="image-info">
                                         <p>{item.cctv.location}</p>
@@ -265,7 +284,10 @@ function VideoViewer({
                 금일 투기 적발 건수: {filteredImages.length}건
             </div>
             <div className="viewer-capture">
-                <Slider {...sliderSettings}>
+                <Slider
+                    {...sliderSettings}
+                    key={(multiView ? dumpingData : filteredImages).length}
+                >
                     {filteredImages.map((item) => (
                         <div
                             key={item.imageId}
@@ -273,12 +295,6 @@ function VideoViewer({
                             onMouseLeave={handleMouseLeave}
                             className="slider-image-container"
                         >
-                            {/* 임시 이미지 */}
-                            {/* <img
-                                src="https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png"
-                                alt={`Capture ${item.imageId}`}
-                                className="slider-image"
-                            /> */}
                             <img
                                 src={item.path}
                                 alt={`Capture ${item.imageId}`}
