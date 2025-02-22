@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Webcam from "react-webcam";
 import { IoIosSettings } from "react-icons/io";
-// import { RiDeleteBin6Line } from "react-icons/ri";
 import { RiFullscreenFill } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "./VideoViewer.scss";
 
@@ -78,6 +78,9 @@ function VideoViewer({
     //         filteredImages
     //     );
     // }, [filteredImages]);
+
+    const navigate = useNavigate();
+    const navigateToLoginfo = () => navigate("/loginfo");
 
     const sliderSettings = {
         dots: false,
@@ -248,6 +251,12 @@ function VideoViewer({
                             </div>
                         ))}
                     </Slider>
+                    <button
+                        className="viewer-capture-button"
+                        onClick={navigateToLoginfo}
+                    >
+                        상세페이지 보러가기
+                    </button>
                 </div>
             </div>
         );
@@ -318,6 +327,12 @@ function VideoViewer({
                         </div>
                     ))}
                 </Slider>
+                <button
+                    className="viewer-capture-button"
+                    onClick={navigateToLoginfo}
+                >
+                    상세페이지 보러가기
+                </button>
             </div>
         </div>
     );
