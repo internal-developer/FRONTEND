@@ -78,7 +78,6 @@ function Main() {
                             multiView={multiView}
                             setMultiView={setMultiView}
                             dumpingData={dumpingEvent}
-                            // dumpingData={dumpingData}
                         />
                     </div>
                     <div className="graph">

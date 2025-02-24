@@ -19,13 +19,16 @@ export default function LogInfoPage() {
     const [selectedCCTV, setSelectedCCTV] = useState(null);
 
     const navigate = useNavigate();
-    const navigateToMain = () => navigate("/main");
+    const navigateToMain = () => {
+        const accessToken = localStorage.getItem("accessToken");
+        const refreshToken = localStorage.getItem("refreshToken");
+
+        navigate(
+            `/main?access_token=${accessToken}&refresh_token=${refreshToken}`
+        );
+    };
 
     // api imageDTO list 가져오기. 일단 예시로 작성해놓음(dumpingData)
-
-    // const filteredImages = dumpingData.filter(
-    //     (item) => item.cctv?.cctvId === cctvId
-    // );
 
     const [checkedItems, setCheckedItems] = useState([]);
 

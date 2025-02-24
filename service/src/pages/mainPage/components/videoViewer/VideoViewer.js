@@ -80,7 +80,14 @@ function VideoViewer({
     // }, [filteredImages]);
 
     const navigate = useNavigate();
-    const navigateToLoginfo = () => navigate("/loginfo");
+    const navigateToLoginfo = () => {
+        const accessToken = localStorage.getItem("accessToken");
+        const refreshToken = localStorage.getItem("refreshToken");
+
+        navigate(
+            `/loginfo?access_token=${accessToken}&refresh_token=${refreshToken}`
+        );
+    };
 
     const sliderSettings = {
         dots: false,

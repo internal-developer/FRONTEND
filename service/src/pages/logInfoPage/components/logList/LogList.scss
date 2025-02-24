@@ -5,13 +5,20 @@
     width: 90%;
     height: 85%;
     background-color: $input-color;
-    padding: 10px 0px;
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
+    padding: 3%;
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 40%;
+    row-gap: 20%;
+    column-gap: 20px;
+
     overflow-y: scroll;
     border-radius: 8px;
     margin-top: 5px;
+    // display: flex;
+    // justify-content: space-evenly;
+    // flex-wrap: wrap;
 
     /* 스크롤바 스타일 */
     &::-webkit-scrollbar {
@@ -34,8 +41,8 @@
 /* 개별 로그 아이템 */
 .log-item {
     position: relative;
-    width: 210px;
-    height: 200px;
+    width: 100%;
+    height: 100%;
 }
 .log-checkbox {
     position: absolute;
@@ -44,12 +51,33 @@
     width: 15px;
     height: 15px;
     cursor: pointer;
+    appearance: none;
+    background-color: #fff;
+    border: 2px solid #a9a9a9;
+    border-radius: 3px;
+
+    &:checked {
+        background-color: #fff;
+        border: 2px solid #9acd32;
+    }
+
+    &:checked::after {
+        content: "";
+        display: block;
+        width: 2px;
+        height: 7px;
+        border: solid #6b8e23;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+        position: relative;
+        left: 3.5px;
+        top: 0px;
+    }
 }
 /* 로그 이미지 */
 .log-image {
-    width: 210px;
-    height: 137px;
-    object-fit: cover; // 이미지가 컨테이너 크기에 맞게 조정되도록
+    width: 100%;
+    height: 75%;
 }
 
 /* 로그 정보 */
