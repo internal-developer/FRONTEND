@@ -1,29 +1,38 @@
-import './userinfo.scss';
-
+import "./userinfo.scss";
 
 export default function UserInfoPage() {
     return (
-        <div className="userinfo-container">
-            <div className="form-container">
-                <form>
-                    <label>
+        <div className="main">
+            <div className="userinfo-main-container">
+                <form className="userinfo-form">
+                    <label className="userinfo-label">
                         닉네임을 입력해주세요.
-                        <input type="text" placeholder="8-16자의 한글만 사용 가능합니다." />
+                        <input
+                            className="userinfo-input"
+                            type="text"
+                            placeholder="8-16자의 한글만 사용 가능합니다."
+                        />
                     </label>
-                    <label>
+                    <label className="userinfo-label">
                         전화번호를 입력해주세요.
-                        <input type="text" placeholder="010-1234-5678" />
+                        <input
+                            className="userinfo-input"
+                            type="text"
+                            placeholder="010-1234-5678"
+                        />
                     </label>
-                    <label>
+                    <label className="userinfo-label">
                         역할을 선택해주세요.
-                        <select>
+                        <select className="userinfo-select">
                             <option value="">역할을 선택해주세요.</option>
                             <option value="role1">관리자</option>
                             <option value="role2">매니저</option>
                             <option value="role3">일반 사용자</option>
                         </select>
                     </label>
-                    <button type="submit">시작하기</button>
+                    <button className="userinfo-button" type="submit">
+                        시작하기
+                    </button>
                 </form>
             </div>
         </div>

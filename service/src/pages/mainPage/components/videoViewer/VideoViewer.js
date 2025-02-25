@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Webcam from "react-webcam";
 import { IoIosSettings } from "react-icons/io";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import { RiFullscreenFill } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "./VideoViewer.scss";
-// import dumpingData from "../../../../data/dumpingData.json";
 
 function VideoViewer({
     cctvList,
@@ -15,25 +14,24 @@ function VideoViewer({
     setMultiView,
     dumpingData,
 }) {
-    const cctvId = selectedCCTV ? selectedCCTV.cctvId : null;
-    const filteredImages = dumpingData.filter(
-        (item) => item.cctv?.cctvId === cctvId
-    );
     const [hoveredImageId, setHoveredImageId] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const [shownCctv, setShownCctv] = useState({}); // 멀티뷰에서 보여질 cctv
     const [availableWebcams, setAvailableWebcams] = useState([]); // 연결 가능한 웹캠들
-    // const [showCheckboxes, setShowCheckboxes] = useState(false);
-    // const [selectedImages, setSelectedImages] = useState({}); // 삭제할 슬라이드 이미지
+
+    const cctvId = selectedCCTV ? selectedCCTV.cctvId : null;
 
     useEffect(() => {
         // 웹캠 목록 가져오기
-        navigator.mediaDevices.enumerateDevices()
-            .then(devices => {
-                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        navigator.mediaDevices
+            .enumerateDevices()
+            .then((devices) => {
+                const videoDevices = devices.filter(
+                    (device) => device.kind === "videoinput"
+                );
                 setAvailableWebcams(videoDevices);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error("웹캠 목록을 가져오는 중 오류 발생:", error);
             });
     }, []);
@@ -46,6 +44,50 @@ function VideoViewer({
             }, {})
         );
     }, [cctvList]);
+
+    const [filteredImages, setFilteredImages] = useState([]);
+    useEffect(() => {
+        // 멀티뷰일 경우, 모든 투기 데이터를 보여줌
+        if (multiView) {
+            setFilteredImages(dumpingData);
+            setSelectedCCTV(null);
+        }
+        // 단일뷰일 경우, 선택된 CCTV의 투기 데이터만 보여줌
+        else if (cctvId !== null) {
+            // cctvId가 null이 아닐 때만 필터링 실행
+            setFilteredImages(
+                dumpingData.filter((item) => item.cctv.cctvId === cctvId)
+            );
+        } else {
+            setFilteredImages([]); // 선택된 CCTV가 없으면 빈 배열
+        }
+    }, [multiView, dumpingData, cctvId]);
+
+    // useEffect(() => {
+    //     console.log(
+    //         "multiView: ",
+    //         multiView,
+    //         "\n",
+    //         "selectedCCTV: ",
+    //         selectedCCTV,
+    //         "\n",
+    //         "cctvId: ",
+    //         cctvId,
+    //         "\n",
+    //         "filteredImages: ",
+    //         filteredImages
+    //     );
+    // }, [filteredImages]);
+
+    const navigate = useNavigate();
+    const navigateToLoginfo = () => {
+        const accessToken = localStorage.getItem("accessToken");
+        const refreshToken = localStorage.getItem("refreshToken");
+
+        navigate(
+            `/loginfo?access_token=${accessToken}&refresh_token=${refreshToken}`
+        );
+    };
 
     const sliderSettings = {
         dots: false,
@@ -67,20 +109,12 @@ function VideoViewer({
         });
         return cnt;
     };
-    // 삭제 아이콘에 연결된 함수
-    // const toggleCheckboxes = () => setShowCheckboxes((prev) => !prev);
-    // const handleImageSelect = (imageId) => {
-    //     setSelectedImages((prev) => ({
-    //         ...prev,
-    //         [imageId]: !prev[imageId],
-    //     }));
-    // };
 
     const currentCctv = cctvList.find((cctv) => cctv.cctvId === cctvId);
     const webcamId = currentCctv ? currentCctv.webcamId : "";
     // 웹캠과 cctvList의의 webcamId가 일치하는지 확인
     const isWebcamAvailable = (webcamId) => {
-        return availableWebcams.some(webcam => webcam.deviceId === webcamId);
+        return availableWebcams.some((webcam) => webcam.deviceId === webcamId);
     };
 
     // 멀티뷰 상태일 때 UI
@@ -147,7 +181,10 @@ function VideoViewer({
                     {cctvList.map(
                         (cctv) =>
                             shownCctv[cctv.cctvId] && (
-                                <div key={cctv.cctvId} className="multi-viewer-video">
+                                <div
+                                    key={cctv.cctvId}
+                                    className="multi-viewer-video"
+                                >
                                     {isWebcamAvailable(cctv.webcamId) ? (
                                         <Webcam
                                             audio={false}
@@ -184,8 +221,11 @@ function VideoViewer({
                     금일 투기 적발 건수: {dumpingData.length}건
                 </div>
                 <div className="viewer-capture">
-                    <Slider {...sliderSettings}>
-                        {dumpingData.map((item) => (
+                    <Slider
+                        {...sliderSettings}
+                        key={(multiView ? dumpingData : filteredImages).length}
+                    >
+                        {filteredImages.map((item) => (
                             <div
                                 key={item.imageId}
                                 onMouseEnter={() =>
@@ -194,29 +234,36 @@ function VideoViewer({
                                 onMouseLeave={handleMouseLeave}
                                 className="slider-image-container"
                             >
-                                {/* <img
-                                    src={item.path} // 이미지가 화면에 잘 나오는지 확인 할 필요 있음!!!!!!!!!
-                                    alt={`Capture ${item.imageId}`}
-                                    className="slider-image"
-                                /> */}
-
-                                {/* 임시 이미지 */}
                                 <img
-                                    src="https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png"
+                                    src={item.path}
                                     alt={`Capture ${item.imageId}`}
                                     className="slider-image"
                                 />
+
                                 {hoveredImageId === item.imageId && (
                                     <div className="image-info">
-                                        {/* <p>ID: {item.imageId}</p>
-                                        <p>Name: {item.name}</p> */}
                                         <p>{item.cctv.location}</p>
-                                        <p>{item.time}</p>
+                                        <p>
+                                            {new Date(
+                                                item.time
+                                            ).toLocaleDateString()}
+                                        </p>
+                                        <p>
+                                            {new Date(
+                                                item.time
+                                            ).toLocaleTimeString()}
+                                        </p>
                                     </div>
                                 )}
                             </div>
                         ))}
                     </Slider>
+                    <button
+                        className="viewer-capture-button"
+                        onClick={navigateToLoginfo}
+                    >
+                        상세페이지 보러가기
+                    </button>
                 </div>
             </div>
         );
@@ -242,8 +289,9 @@ function VideoViewer({
                         }}
                         audio={false}
                         videoConstraints={{
-                            deviceId: webcamId
-                        }} />
+                            deviceId: webcamId,
+                        }}
+                    />
                 ) : (
                     <p>웹캠 연결 오류</p>
                 )}
@@ -252,7 +300,10 @@ function VideoViewer({
                 금일 투기 적발 건수: {filteredImages.length}건
             </div>
             <div className="viewer-capture">
-                <Slider {...sliderSettings}>
+                <Slider
+                    {...sliderSettings}
+                    key={(multiView ? dumpingData : filteredImages).length}
+                >
                     {filteredImages.map((item) => (
                         <div
                             key={item.imageId}
@@ -260,25 +311,35 @@ function VideoViewer({
                             onMouseLeave={handleMouseLeave}
                             className="slider-image-container"
                         >
-                            {/* <img src={item.path} alt={`Capture ${item.imageId}`} className='slider-image' /> */}
-
-                            {/* 임시 이미지 */}
                             <img
-                                src="https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png"
+                                src={item.path}
                                 alt={`Capture ${item.imageId}`}
                                 className="slider-image"
                             />
                             {hoveredImageId === item.imageId && (
                                 <div className="image-info">
-                                    {/* <p>ID: {item.imageId}</p>
-                                    <p>Name: {item.name}</p> */}
                                     <p>{item.cctv.location}</p>
-                                    <p>{item.time}</p>
+                                    <p>
+                                        {new Date(
+                                            item.time
+                                        ).toLocaleDateString()}
+                                    </p>
+                                    <p>
+                                        {new Date(
+                                            item.time
+                                        ).toLocaleTimeString()}
+                                    </p>
                                 </div>
                             )}
                         </div>
                     ))}
                 </Slider>
+                <button
+                    className="viewer-capture-button"
+                    onClick={navigateToLoginfo}
+                >
+                    상세페이지 보러가기
+                </button>
             </div>
         </div>
     );
