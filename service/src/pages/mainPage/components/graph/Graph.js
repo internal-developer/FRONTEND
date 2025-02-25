@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 // chart js
 import {
     Chart as ChartJS,
@@ -13,6 +13,7 @@ import {
 } from 'chart.js';
 import { Bar, Line } from 'react-chartjs-2'
 import './Graph.scss'
+import api from '../../../../api/api';
 
 ChartJS.register(
     CategoryScale,
@@ -25,10 +26,23 @@ ChartJS.register(
     Legend
 );
 
-function Graph({ dumpingEvent }) {
+function Graph({ roleName }) {
+    const [dumpingEvent, setDumpingEvent] = useState([]);
+    useEffect(() => {
+        api.get(`/cleanguard/image/${roleName}`)
+            .then((response) => {
+                setDumpingEvent(response.data);
+                console.log("투기 데이터 가져오기 성공(Graph.js):", response.data);
+            })
+            .catch((error) => {
+                console.error("투기 데이터 가져오기 실패(Graph.js):", error);
+            })
+    }, [roleName]);
+
+
     // 지역별 사건 수 집계
     const locationCount = dumpingEvent.reduce((acc, event) => {
-        acc[event.location] = (acc[event.location] || 0) + 1;
+        acc[event.cctv.location] = (acc[event.cctv.location] || 0) + 1;
         return acc;
     }, {});
 
@@ -62,7 +76,7 @@ function Graph({ dumpingEvent }) {
 
     // 시간대별 사건 수 집계
     const timeCount = dumpingEvent.reduce((acc, event) => {
-        const hour = new Date(event.timestamp).getUTCHours() ; 
+        const hour = new Date(event.time).getHours();
         acc[hour] = (acc[hour] || 0) + 1;
         return acc;
     }, {});
@@ -73,13 +87,13 @@ function Graph({ dumpingEvent }) {
     const lineOptions = {
         responsive: true,
         plugins: {
-            legend: { 
-                position: 'top' 
+            legend: {
+                position: 'top'
             },
-            title: { 
+            title: {
                 display: false,
                 text: '시간별 투기 건수'
-             },
+            },
         },
     };
 
@@ -94,7 +108,6 @@ function Graph({ dumpingEvent }) {
             },
         ],
     };
-
 
     return (
         <div className='Gmenu'>

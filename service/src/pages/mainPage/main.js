@@ -83,7 +83,7 @@ function Main() {
                         />
                     </div>
                     <div className="graph">
-                        <Graph dumpingEvent={dumpingEvent} />
+                        <Graph roleName={roleName} />
                     </div>
                 </div>
             </div>
