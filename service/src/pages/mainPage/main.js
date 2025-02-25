@@ -16,7 +16,7 @@ function Main() {
     const [cctvList, setCctvList] = useState([]);
     const [selectedCCTV, setSelectedCCTV] = useState(null);
     const [multiView, setMultiView] = useState(true);
-    const [roleName, setRoleName] = useState("user"); // 임시 roleName 'user'
+    const [roleName, setRoleName] = useState(""); // 역할 정보(roleName) 저장 
     // modal
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -30,6 +30,16 @@ function Main() {
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
 
+        // 사용자 데이터 요청
+        api.get("/cleanguard")
+            .then((response) => {
+                setRoleName(response.data.role.roleName); // 역할 정보 저장
+                console.log("사용자 정보 가져오기 성공:", response.data);
+            })
+            .catch((error) => {
+                console.error("사용자 정보 가져오기 실패:", error);
+            });
+
         // cctv 데이터 요청
         api.get("/cleanguard/cctv/")
             .then((response) => {
@@ -39,21 +49,21 @@ function Main() {
             .catch((error) => {
                 console.error("CCTV 데이터 가져오기 실패:", error);
             });
-
-        // image 데이터 요청
-        api.get("/cleanguard/image/user")
-            .then((response) => {
-                setDumpingEvent(response.data);
-                console.log("Dumping 데이터 가져오기 성공:", response.data);
-            })
-            .catch((error) => {
-                console.error("Dumping 데이터 가져오기 실패:", error);
-            });
-
-        // 선택된 cctv 디폴트 값 -> 가장 첫번째 cctv 뜨도록 설정
-        // if (cctvData.length > 0)
-        //     setSelectedCCTV(cctvData[0]);
     }, [window.location.search]);
+
+    useEffect(() => {
+        // image 데이터 요청
+        if (roleName) {
+            api.get(`/cleanguard/image/${roleName}`)
+                .then((response) => {
+                    setDumpingEvent(response.data);
+                    console.log("Dumping 데이터 가져오기 성공:", response.data);
+                })
+                .catch((error) => {
+                    console.error("Dumping 데이터 가져오기 실패:", error);
+                });
+        }
+    }, [roleName]);
 
     return (
         <div className="main">
@@ -81,7 +91,8 @@ function Main() {
                         />
                     </div>
                     <div className="graph">
-                        <Graph roleName={roleName} />
+                        <Graph
+                            dumpingEvent={dumpingEvent} />
                     </div>
                 </div>
             </div>
