@@ -1,4 +1,4 @@
-import logExample from "../../../../assets/images/logExample.png";
+// import logExample from "../../../../assets/images/logExample.png";
 import "./LogList.scss";
 import { useEffect } from "react";
 
@@ -25,22 +25,36 @@ export default function LogList({ logs, checkedItems, setCheckedItems }) {
                         checked={checkedItems.includes(log.imageId)}
                         onChange={() => handleCheckbox(log.imageId)}
                     />
-                    {/* <img className="log-image" src={log.path} alt="logImage" /> */}
-                    {/* 예시 이미지 */}
-                    <img
-                        className="log-image"
-                        src={logExample}
-                        alt="logImage"
-                    />
+                    <img className="log-image" src={log.path} alt="logImage" />
                     <div className="log-info">
                         <span>
-                            날짜: {log.time.toString().slice(0, 4)}-
-                            {log.time.toString().slice(4, 6)}-
-                            {log.time.toString().slice(6, 8)}
+                            날짜: {new Date(log.time).getFullYear()}-
+                            {String(new Date(log.time).getMonth() + 1).padStart(
+                                2,
+                                "0"
+                            )}
+                            -
+                            {String(new Date(log.time).getDate()).padStart(
+                                2,
+                                "0"
+                            )}
                         </span>
                         <span>
-                            시간: {log.time.toString().slice(8, 10)}:
-                            {log.time.toString().slice(10)}
+                            시간:{" "}
+                            {String(new Date(log.time).getHours()).padStart(
+                                2,
+                                "0"
+                            )}
+                            :
+                            {String(new Date(log.time).getMinutes()).padStart(
+                                2,
+                                "0"
+                            )}
+                            :
+                            {String(new Date(log.time).getSeconds()).padStart(
+                                2,
+                                "0"
+                            )}
                         </span>
                     </div>
                 </div>

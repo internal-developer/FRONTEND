@@ -244,14 +244,24 @@ function VideoViewer({
                                     <div className="image-info">
                                         <p>{item.cctv.location}</p>
                                         <p>
-                                            {new Date(
-                                                item.time
-                                            ).toLocaleDateString()}
+                                            {new Date(item.time).getFullYear()}-
+                                            {String(
+                                                new Date(item.time).getMonth() +
+                                                    1
+                                            ).padStart(2, "0")}
+                                            -
+                                            {String(
+                                                new Date(item.time).getDate()
+                                            ).padStart(2, "0")}
                                         </p>
                                         <p>
-                                            {new Date(
-                                                item.time
-                                            ).toLocaleTimeString()}
+                                            {String(
+                                                new Date(item.time).getHours()
+                                            ).padStart(2, "0")}
+                                            :
+                                            {String(
+                                                new Date(item.time).getMinutes()
+                                            ).padStart(2, "0")}
                                         </p>
                                     </div>
                                 )}
@@ -320,14 +330,23 @@ function VideoViewer({
                                 <div className="image-info">
                                     <p>{item.cctv.location}</p>
                                     <p>
-                                        {new Date(
-                                            item.time
-                                        ).toLocaleDateString()}
+                                        {new Date(item.time).getFullYear()}-
+                                        {String(
+                                            new Date(item.time).getMonth() + 1
+                                        ).padStart(2, "0")}
+                                        -
+                                        {String(
+                                            new Date(item.time).getDate()
+                                        ).padStart(2, "0")}
                                     </p>
                                     <p>
-                                        {new Date(
-                                            item.time
-                                        ).toLocaleTimeString()}
+                                        {String(
+                                            new Date(item.time).getHours()
+                                        ).padStart(2, "0")}
+                                        :
+                                        {String(
+                                            new Date(item.time).getMinutes()
+                                        ).padStart(2, "0")}
                                     </p>
                                 </div>
                             )}

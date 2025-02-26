@@ -1,7 +1,8 @@
 import LogList from "./components/logList/LogList";
+import FeedbackModal from "./components/modal/FeedbackModal";
 import "./logInfo.scss";
 import countryHouseIcon from "../../assets/images/country_house.png";
-import dumpingData from "../../data/dumpingData.json";
+// import dumpingData from "../../data/dumpingData.json";
 
 import React, { useState, useEffect } from "react";
 import Header from "../mainPage/components/header/Header";
@@ -10,6 +11,7 @@ import AddModal from "../mainPage/components/cctvSidemenu/AddModal";
 import EditModal from "../mainPage/components/cctvSidemenu/EditModal";
 import DeleteModal from "../mainPage/components/cctvSidemenu/DeleteModal";
 import { useNavigate } from "react-router-dom";
+import api from "../../api/api";
 
 export default function LogInfoPage() {
     const [showAddModal, setShowAddModal] = useState(false);
@@ -17,6 +19,28 @@ export default function LogInfoPage() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [cctvList, setCctvList] = useState([]); // CCTV 리스트 예시
     const [selectedCCTV, setSelectedCCTV] = useState(null);
+
+    const [checkedItems, setCheckedItems] = useState([]);
+    const [dumpingEvent, setDumpingEvent] = useState([]);
+    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+
+    useEffect(() => {
+        // image 데이터 요청
+        api.get("/cleanguard/image/user")
+            .then((response) => {
+                setDumpingEvent(response.data);
+                console.log(
+                    "로그상세페이지 Dumping 데이터 가져오기 성공:",
+                    response.data
+                );
+            })
+            .catch((error) => {
+                console.error(
+                    "로그상세페이지 Dumping 데이터 가져오기 실패:",
+                    error
+                );
+            });
+    }, [window.location.search]);
 
     const navigate = useNavigate();
     const navigateToMain = () => {
@@ -28,12 +52,51 @@ export default function LogInfoPage() {
         );
     };
 
-    // api imageDTO list 가져오기. 일단 예시로 작성해놓음(dumpingData)
+    const handleClassificationError = () => {
+        if (checkedItems.length === 0) {
+            alert("선택된 항목이 없습니다.");
+            return;
+        }
 
-    const [checkedItems, setCheckedItems] = useState([]);
+        const data = checkedItems;
+        api.delete("/cleanguard/image", { data })
+            .then((response) => {
+                console.log(
+                    "상세페이지 분류 오류 처리(로그 삭제) 성공:",
+                    response.data
+                );
+
+                // 성공 모달 표시
+                setShowFeedbackModal(true);
+
+                // 리스트 갱신: 서버에서 최신 데이터를 다시 가져오기
+                api.get("/cleanguard/image/user")
+                    .then((response) => {
+                        setDumpingEvent(response.data); // 리스트 업데이트
+                        setCheckedItems([]); // 선택된 항목 초기화
+                        console.log(
+                            "상세페이지 로그 삭제 후 목록 갱신 성공:",
+                            response.data
+                        );
+                    })
+                    .catch((error) => {
+                        console.error(
+                            "상세페이지 로그 삭제 후후 목록 갱신 실패:",
+                            error
+                        );
+                    });
+            })
+            .catch((error) => {
+                console.error("상세페이지 분류 오류 처리 실패:", error);
+                alert("오류가 발생했습니다. 다시 시도해주세요.");
+            });
+    };
 
     return (
         <div className="main">
+            {showFeedbackModal && (
+                <FeedbackModal onClose={() => setShowFeedbackModal(false)} />
+            )}
             <div className="main-container">
                 <Header />
                 <div className="main-content">
@@ -44,7 +107,6 @@ export default function LogInfoPage() {
                             setShowEditModal={setShowEditModal}
                             setShowDeleteModal={setShowDeleteModal}
                         />
-                        {/* <img src={logExample} alt="이미지" /> */}
                     </div>
                     <div className="viewer">
                         <div className="viewer-topbar">
@@ -69,6 +131,7 @@ export default function LogInfoPage() {
                                 <button
                                     className="viewer-button-group-action"
                                     style={{ backgroundColor: "#A0A0A0" }}
+                                    onClick={handleClassificationError}
                                 >
                                     분류 오류
                                 </button>
@@ -81,7 +144,7 @@ export default function LogInfoPage() {
                             </div>
                         </div>
                         <LogList
-                            logs={dumpingData}
+                            logs={dumpingEvent}
                             checkedItems={checkedItems}
                             setCheckedItems={setCheckedItems}
                         />
