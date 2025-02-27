@@ -1,4 +1,4 @@
-import "../modal/FeedbackModal.scss";
+import "./FeedbackModal.scss";
 import checkMark from "../../../../assets/images/check_mark.png";
 import { useEffect } from "react";
 

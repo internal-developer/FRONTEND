@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Webcam from "react-webcam";
 import { IoIosSettings } from "react-icons/io";
 import { RiFullscreenFill } from "react-icons/ri";
-import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "./VideoViewer.scss";
 
@@ -13,6 +12,7 @@ function VideoViewer({
     multiView,
     setMultiView,
     dumpingData,
+    onShowLog,
 }) {
     const [hoveredImageId, setHoveredImageId] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -79,16 +79,6 @@ function VideoViewer({
     //     );
     // }, [filteredImages]);
 
-    const navigate = useNavigate();
-    const navigateToLoginfo = () => {
-        const accessToken = localStorage.getItem("accessToken");
-        const refreshToken = localStorage.getItem("refreshToken");
-
-        navigate(
-            `/loginfo?access_token=${accessToken}&refresh_token=${refreshToken}`
-        );
-    };
-
     const sliderSettings = {
         dots: false,
         infinite: false,
@@ -135,10 +125,6 @@ function VideoViewer({
         return (
             <div className="viewer">
                 <div className="multi-viewer-icon">
-                    {/* <RiDeleteBin6Line
-                        className="filter-icon"
-                        onClick={toggleCheckboxes}
-                    /> */}
                     <IoIosSettings
                         className="filter-icon"
                         onClick={() => setShowDropdown(!showDropdown)}
@@ -270,9 +256,9 @@ function VideoViewer({
                     </Slider>
                     <button
                         className="viewer-capture-button"
-                        onClick={navigateToLoginfo}
+                        onClick={onShowLog}
                     >
-                        상세페이지 보러가기
+                        상세기록 보러가기
                     </button>
                 </div>
             </div>
@@ -353,11 +339,8 @@ function VideoViewer({
                         </div>
                     ))}
                 </Slider>
-                <button
-                    className="viewer-capture-button"
-                    onClick={navigateToLoginfo}
-                >
-                    상세페이지 보러가기
+                <button className="viewer-capture-button" onClick={onShowLog}>
+                    상세기록 보러가기
                 </button>
             </div>
         </div>

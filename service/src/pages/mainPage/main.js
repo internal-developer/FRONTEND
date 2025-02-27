@@ -4,6 +4,7 @@ import Header from "./components/header/Header";
 import CCTVSidemenu from "./components/cctvSidemenu/CCTVSidemenu";
 import VideoViewer from "./components/videoViewer/VideoViewer";
 import Graph from "./components/graph/Graph";
+import Log from "./components/log/Log";
 //import cctvData from '../../data/cctvData.json'
 import dumpingData from "../../data/dumpingData.json";
 import AddModal from "./components/cctvSidemenu/AddModal";
@@ -16,7 +17,9 @@ function Main() {
     const [cctvList, setCctvList] = useState([]);
     const [selectedCCTV, setSelectedCCTV] = useState(null);
     const [multiView, setMultiView] = useState(true);
-    const [roleName, setRoleName] = useState(""); // 역할 정보(roleName) 저장 
+    const [roleName, setRoleName] = useState(""); // 역할 정보(roleName) 저장
+    const [showLog, setShowLog] = useState(false);
+
     // modal
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -80,20 +83,32 @@ function Main() {
                             setShowDeleteModal={setShowDeleteModal}
                         />
                     </div>
-                    <div className="video-viewer">
-                        <VideoViewer
-                            cctvList={cctvList}
+                    {showLog ? (
+                        <Log
                             setSelectedCCTV={setSelectedCCTV}
                             selectedCCTV={selectedCCTV}
+                            onShowLog={() => setShowLog(false)}
                             multiView={multiView}
-                            setMultiView={setMultiView}
                             dumpingData={dumpingEvent}
                         />
-                    </div>
-                    <div className="graph">
-                        <Graph
-                            dumpingEvent={dumpingEvent} />
-                    </div>
+                    ) : (
+                        <>
+                            <div className="video-viewer">
+                                <VideoViewer
+                                    cctvList={cctvList}
+                                    setSelectedCCTV={setSelectedCCTV}
+                                    selectedCCTV={selectedCCTV}
+                                    multiView={multiView}
+                                    setMultiView={setMultiView}
+                                    dumpingData={dumpingEvent}
+                                    onShowLog={() => setShowLog(true)}
+                                />
+                            </div>
+                            <div className="graph">
+                                <Graph dumpingEvent={dumpingEvent} />
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
             {showAddModal && (
