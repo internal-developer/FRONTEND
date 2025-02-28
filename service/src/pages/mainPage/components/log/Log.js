@@ -33,7 +33,7 @@ export default function Log({
         } else {
             setFilteredImages([]); // 선택된 CCTV가 없으면 빈 배열
         }
-    }, [multiView, dumpingData, cctvId, filteredImages]);
+    }, [multiView, dumpingData, cctvId]);
 
     // useEffect(() => {
     //     console.log(

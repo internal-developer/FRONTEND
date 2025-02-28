@@ -104,6 +104,7 @@ function VideoViewer({
     const webcamId = currentCctv ? currentCctv.webcamId : "";
     // 웹캠과 cctvList의의 webcamId가 일치하는지 확인
     const isWebcamAvailable = (webcamId) => {
+        if (!webcamId) return availableWebcams.length > 0; // cctv webcamId가 ""로 비어있는 경우, 탐지된 웹캠이 한 개일 때 기본적으로 탐지된 웹캠을 사용하도록 설정.
         return availableWebcams.some((webcam) => webcam.deviceId === webcamId);
     };
 

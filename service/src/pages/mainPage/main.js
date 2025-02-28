@@ -81,6 +81,7 @@ function Main() {
                             setShowAddModal={setShowAddModal}
                             setShowEditModal={setShowEditModal}
                             setShowDeleteModal={setShowDeleteModal}
+                            setShowLog={setShowLog}
                         />
                     </div>
                     {showLog ? (
