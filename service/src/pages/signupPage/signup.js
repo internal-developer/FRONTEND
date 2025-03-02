@@ -7,10 +7,10 @@ export default function SignUpPage() {
     const navigate = useNavigate();
 
     const handleKakaoLogin = () => {
-        const REST_API_KEY = "f768ba6915a8b6719ac46d7646324cdd";
-        const REDIRECT_URI = "http://3.36.174.53:8080/login/oauth2/code/kakao";
-        window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+        const BACKEND_OAUTH2_URL = "http://3.36.174.53:8080/oauth2/authorization/kakao";
+        window.location.href = BACKEND_OAUTH2_URL;
     };
+    
 
     return (
         <div className="SignUpPage">
