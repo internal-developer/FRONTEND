@@ -18,6 +18,8 @@ function Main() {
     const [selectedCCTV, setSelectedCCTV] = useState(null);
     const [multiView, setMultiView] = useState(true);
     const [roleName, setRoleName] = useState(""); // 역할 정보(roleName) 저장
+    const [userInfo, setUserInfo] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [showLog, setShowLog] = useState(false);
 
     // modal
@@ -26,21 +28,17 @@ function Main() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     useEffect(() => {
-        // < ==== 임시 -> jwt 토큰을 로컬 스토리지에 저장하는 코드 ==== >
-        const query = new URLSearchParams(window.location.search);
-        const accessToken = query.get("access_token");
-        const refreshToken = query.get("refresh_token");
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
-
         // 사용자 데이터 요청
         api.get("/cleanguard")
             .then((response) => {
+                setUserInfo(response.data);
                 setRoleName(response.data.role.roleName); // 역할 정보 저장
+                setLoading(false);
                 console.log("사용자 정보 가져오기 성공:", response.data);
             })
             .catch((error) => {
                 console.error("사용자 정보 가져오기 실패:", error);
+                setLoading(false);
             });
 
         // cctv 데이터 요청
@@ -51,6 +49,7 @@ function Main() {
             })
             .catch((error) => {
                 console.error("CCTV 데이터 가져오기 실패:", error);
+
             });
     }, [window.location.search]);
 
@@ -68,10 +67,14 @@ function Main() {
         }
     }, [roleName]);
 
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div className="main">
             <div className="main-container">
-                <Header />
+                <Header userInfo={userInfo} />
                 <div className="main-content">
                     <div className="sidemenu">
                         <CCTVSidemenu
