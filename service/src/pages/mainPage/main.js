@@ -49,7 +49,6 @@ function Main() {
             })
             .catch((error) => {
                 console.error("CCTV 데이터 가져오기 실패:", error);
-
             });
     }, [window.location.search]);
 
@@ -94,6 +93,7 @@ function Main() {
                             onShowLog={() => setShowLog(false)}
                             multiView={multiView}
                             dumpingData={dumpingEvent}
+                            roleName={roleName}
                         />
                     ) : (
                         <>

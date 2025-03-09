@@ -1,8 +1,7 @@
 import "./FeedbackModal.scss";
-import checkMark from "../../../../assets/images/check_mark.png";
 import { useEffect } from "react";
 
-export default function FeedbackModal(onClose) {
+export default function FeedbackModal({ onClose, text1, text2, imgSrc }) {
     useEffect(() => {
         // 3초 후에 자동으로 모달 닫기
         const timer = setTimeout(() => {
@@ -15,10 +14,10 @@ export default function FeedbackModal(onClose) {
 
     return (
         <div className="feedback-box">
-            <img src={checkMark} alt="이미지" />
+            <img src={imgSrc} alt="이미지" />
             <div className="feedback-box-span-box">
-                <span>정상적으로 처리되었습니다.</span>
-                <span>감사합니다 :)</span>
+                <span>{text1}</span>
+                <span>{text2}</span>
             </div>
         </div>
     );

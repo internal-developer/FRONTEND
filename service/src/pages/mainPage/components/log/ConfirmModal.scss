@@ -1,0 +1,68 @@
+@import "src/assets/styles/index.scss";
+
+.confirm-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.confirm-box {
+    width: 23%;
+    height: 23%;
+    background: white;
+    padding: 20px;
+    border-radius: 28px;
+    text-align: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-text {
+    width: auto;
+    height: auto;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+
+    span {
+        height: 20px;
+        font-size: 15px;
+        font-weight: 600;
+    }
+}
+
+.confirm-buttons {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    font-size: 20px;
+}
+
+.confirm-button {
+    width: 35%;
+    height: 25%;
+    background: $edit-hover;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cancel-button {
+    width: 35%;
+    height: 25%;
+    background: $delete-hover;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-weight: 600;
+    cursor: pointer;
+}
