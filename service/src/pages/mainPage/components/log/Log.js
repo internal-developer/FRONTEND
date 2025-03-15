@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import countryHouseIcon from "../../../../assets/images/country_house.png";
+import checkMark from "../../../../assets/images/check_mark.png";
+import trashCan from "../../../../assets/images/trash_can.png";
 import LogList from "./LogList";
 import FeedbackModal from "./FeedbackModal";
+import ConfirmModal from "./ConfirmModal";
 import api from "../../../../api/api";
 import "./Log.scss";
 
@@ -11,12 +14,26 @@ export default function Log({
     multiView,
     dumpingData,
     setSelectedCCTV,
+    roleName,
 }) {
     const [checkedItems, setCheckedItems] = useState([]);
     const [filteredImages, setFilteredImages] = useState([]);
     const cctvId = selectedCCTV ? selectedCCTV.cctvId : null;
     // const [dumpingEvent, setDumpingEvent] = useState([]);
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+    const [text1, setText1] = useState("");
+    const [text2, setText2] = useState("");
+    const [imgSrc, setImgSrc] = useState("");
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [sentSuccessIds, setSentSuccessIds] = useState(new Set());
+
+    // sentSuccessIds를 localStorage에서 불러오기
+    useEffect(() => {
+        const savedSuccessIds = localStorage.getItem("sentSuccessIds");
+        if (savedSuccessIds) {
+            setSentSuccessIds(new Set(JSON.parse(savedSuccessIds)));
+        }
+    }, []);
 
     useEffect(() => {
         // 멀티뷰일 경우, 모든 투기 데이터를 보여줌
@@ -35,23 +52,8 @@ export default function Log({
         }
     }, [multiView, dumpingData, cctvId]);
 
-    // useEffect(() => {
-    //     console.log(
-    //         "multiView: ",
-    //         multiView,
-    //         "\n",
-    //         "selectedCCTV: ",
-    //         selectedCCTV,
-    //         "\n",
-    //         "cctvId: ",
-    //         cctvId,
-    //         "\n",
-    //         "filteredImages: ",
-    //         filteredImages
-    //     );
-    // }, [filteredImages]);
-
-    const handleClassificationError = () => {
+    // 분류 오류 이벤트를 처리하는 함수
+    const handleClassificationError = async () => {
         if (checkedItems.length === 0) {
             alert("선택된 항목이 없습니다.");
             return;
@@ -60,49 +62,176 @@ export default function Log({
         // 체크되지 않은 이미지 목록
         const successItems = filteredImages
             .filter((item) => !checkedItems.includes(item.imageId))
-            .map((item) => item.imageId);
+            .map((item) => item.imageId)
+            .filter((id) => !sentSuccessIds.has(id)); // 이미 보낸 id는 제외
 
-        // 실패한 이미지 삭제 및 로그 저장
-        const deleteFailImages = api.delete("/cleanguard/image/fail", {
-            data: checkedItems,
-        });
+        console.log("Fail로 보내는 ID 목록:", checkedItems);
+        console.log("Success로 보내는 ID 목록:", successItems);
 
-        // 성공한 이미지 로그 저장
-        const saveSuccessImages = successItems.length
-            ? api.delete("/cleanguard/image/success", { data: successItems })
-            : Promise.resolve(); // 성공 이미지가 없으면 요청 안 보냄
-
-        Promise.all([deleteFailImages, saveSuccessImages])
-            .then(([failResponse, successResponse]) => {
-                console.log("분류 오류 처리 성공:", failResponse.data);
-                if (successItems.length) {
-                    console.log("성공 로그 저장 성공:", successResponse.data);
+        try {
+            // 실패한 이미지 삭제 요청
+            const deleteFailImages = await api.delete(
+                "/cleanguard/image/fail",
+                {
+                    params: { imageIds: checkedItems },
+                    paramsSerializer: (params) => {
+                        return Object.keys(params)
+                            .map((key) =>
+                                []
+                                    .concat(params[key])
+                                    .map(
+                                        (val) =>
+                                            `${key}=${encodeURIComponent(val)}`
+                                    )
+                                    .join("&")
+                            )
+                            .join("&");
+                    },
                 }
+            );
 
-                setShowFeedbackModal(true); // 성공 모달 표시
+            console.log("fail 삭제 응답:", deleteFailImages.data);
 
-                // 최신 데이터 다시 가져오기
-                api.get("/cleanguard/image/user")
-                    .then((response) => {
-                        setFilteredImages(response.data); // 리스트 업데이트
-                        setCheckedItems([]); // 선택된 항목 초기화
-                        console.log("목록 갱신 성공:", response.data);
-                    })
-                    .catch((error) => {
-                        console.error("목록 갱신 실패:", error);
+            // 성공한 이미지 post 요청
+
+            if (successItems.length) {
+                try {
+                    const successResponse = await api.post(
+                        "/cleanguard/image/success",
+                        null, // body를 비워두고 params로 데이터를 전달
+                        {
+                            params: { imageIds: successItems },
+                            paramsSerializer: (params) => {
+                                return Object.keys(params)
+                                    .map((key) =>
+                                        []
+                                            .concat(params[key])
+                                            .map(
+                                                (val) =>
+                                                    `${key}=${encodeURIComponent(
+                                                        val
+                                                    )}`
+                                            )
+                                            .join("&")
+                                    )
+                                    .join("&");
+                            },
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                        }
+                    );
+                    console.log("success 저장 응답:", successResponse.data);
+
+                    // sentSuccessIds를 업데이트하고 localStorage에 저장
+                    setSentSuccessIds((prev) => {
+                        const updatedSet = new Set([...prev, ...successItems]);
+                        localStorage.setItem(
+                            "sentSuccessIds",
+                            JSON.stringify([...updatedSet])
+                        );
+                        return updatedSet;
                     });
-            })
-            .catch((error) => {
-                console.error("분류 오류 처리 실패:", error);
-                alert("오류가 발생했습니다. 다시 시도해주세요.");
+                } catch (error) {
+                    console.error("Success 이미지 저장 실패:", error);
+                    alert(
+                        `Success 저장 실패: ${
+                            error.response?.data?.message || error.message
+                        }`
+                    );
+                }
+            }
+
+            setText1("정상적으로 처리되었습니다.");
+            setText2("감사합니다 :)");
+            setImgSrc(checkMark);
+            setShowFeedbackModal(true); // 성공 모달 표시
+
+            // 최신 데이터 다시 가져오기
+            if (roleName) {
+                const response = await api.get(`/cleanguard/image/${roleName}`);
+                setFilteredImages(response.data);
+                setCheckedItems([]); // 선택된 항목 초기화
+                console.log("목록 갱신 성공:", response.data);
+            }
+        } catch (error) {
+            console.error("분류 오류 처리 실패:", error);
+            alert("오류가 발생했습니다. 다시 시도해주세요.");
+        }
+    };
+
+    // 영구 삭제 이벤트를 처리하는 함수
+    const handlePermanentDelete = async () => {
+        if (checkedItems.length === 0) {
+            alert("선택된 항목이 없습니다.");
+            return;
+        }
+
+        try {
+            // 선택된 이미지 삭제 요청
+            const deleteResponse = await api.delete("/cleanguard/image/", {
+                params: { imageIds: checkedItems },
+                paramsSerializer: (params) => {
+                    return Object.keys(params)
+                        .map((key) =>
+                            []
+                                .concat(params[key])
+                                .map(
+                                    (val) => `${key}=${encodeURIComponent(val)}`
+                                )
+                                .join("&")
+                        )
+                        .join("&");
+                },
             });
+
+            console.log("영구 삭제 응답:", deleteResponse.data);
+
+            setText1("정상적으로 처리되었습니다.");
+            setText2("감사합니다 :)");
+            setImgSrc(trashCan);
+
+            setShowFeedbackModal(true);
+
+            // 목록 갱신
+            if (roleName) {
+                const response = await api.get(`/cleanguard/image/${roleName}`);
+                setFilteredImages(response.data);
+                setCheckedItems([]);
+                console.log("목록 갱신 성공:", response.data);
+            }
+        } catch (error) {
+            console.error("영구 삭제 실패:", error);
+            alert("오류가 발생했습니다. 다시 시도해주세요.");
+        }
+    };
+
+    const handleConfirmModal = () => {
+        setShowConfirmModal(true);
+    };
+
+    const handleConfirmDelete = () => {
+        setShowConfirmModal(false);
+        handlePermanentDelete();
     };
 
     return (
         <div className="viewer">
             {showFeedbackModal && (
-                <FeedbackModal onClose={() => setShowFeedbackModal(false)} />
+                <FeedbackModal
+                    onClose={() => setShowFeedbackModal(false)}
+                    text1={text1}
+                    text2={text2}
+                    imgSrc={imgSrc}
+                />
             )}
+            {showConfirmModal && (
+                <ConfirmModal
+                    onConfirm={handleConfirmDelete}
+                    onCancel={() => setShowConfirmModal(false)}
+                />
+            )}
+
             <div className="viewer-topbar">
                 <div className="viewer-title">
                     현재 CCTV:{" "}
@@ -127,6 +256,8 @@ export default function Log({
                     <button
                         className="viewer-button-group-action"
                         style={{ backgroundColor: "#AF0000" }}
+                        // onClick={handlePermanentDelete}
+                        onClick={handleConfirmModal}
                     >
                         영구 삭제
                     </button>
