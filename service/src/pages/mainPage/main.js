@@ -63,6 +63,15 @@ function Main() {
                 .catch((error) => {
                     console.error("Dumping 데이터 가져오기 실패:", error);
                 });
+
+            //log 데이터 요청
+            api.get(`/cleanguard/log/${roleName}`)
+                .then((response) => {
+                    console.log("log 데이터 가져오기 성공:", response.data);
+                })
+                .catch((error) => {
+                    console.error("log 데이터 가져오기 실패:", error);
+                });
         }
     }, [roleName]);
 

@@ -25,6 +25,15 @@ export default function Log({
     const [text2, setText2] = useState("");
     const [imgSrc, setImgSrc] = useState("");
     const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [sentSuccessIds, setSentSuccessIds] = useState(new Set());
+
+    // sentSuccessIds를 localStorage에서 불러오기
+    useEffect(() => {
+        const savedSuccessIds = localStorage.getItem("sentSuccessIds");
+        if (savedSuccessIds) {
+            setSentSuccessIds(new Set(JSON.parse(savedSuccessIds)));
+        }
+    }, []);
 
     useEffect(() => {
         // 멀티뷰일 경우, 모든 투기 데이터를 보여줌
@@ -43,7 +52,7 @@ export default function Log({
         }
     }, [multiView, dumpingData, cctvId]);
 
-    // 분류 오류 이벤트를 처리하는 함수수
+    // 분류 오류 이벤트를 처리하는 함수
     const handleClassificationError = async () => {
         if (checkedItems.length === 0) {
             alert("선택된 항목이 없습니다.");
@@ -53,7 +62,11 @@ export default function Log({
         // 체크되지 않은 이미지 목록
         const successItems = filteredImages
             .filter((item) => !checkedItems.includes(item.imageId))
-            .map((item) => item.imageId);
+            .map((item) => item.imageId)
+            .filter((id) => !sentSuccessIds.has(id)); // 이미 보낸 id는 제외
+
+        console.log("Fail로 보내는 ID 목록:", checkedItems);
+        console.log("Success로 보내는 ID 목록:", successItems);
 
         try {
             // 실패한 이미지 삭제 요청
@@ -80,10 +93,10 @@ export default function Log({
             console.log("fail 삭제 응답:", deleteFailImages.data);
 
             // 성공한 이미지 post 요청
-            let successResponse = null;
+
             if (successItems.length) {
                 try {
-                    successResponse = await api.post(
+                    const successResponse = await api.post(
                         "/cleanguard/image/success",
                         null, // body를 비워두고 params로 데이터를 전달
                         {
@@ -109,9 +122,18 @@ export default function Log({
                         }
                     );
                     console.log("success 저장 응답:", successResponse.data);
+
+                    // sentSuccessIds를 업데이트하고 localStorage에 저장
+                    setSentSuccessIds((prev) => {
+                        const updatedSet = new Set([...prev, ...successItems]);
+                        localStorage.setItem(
+                            "sentSuccessIds",
+                            JSON.stringify([...updatedSet])
+                        );
+                        return updatedSet;
+                    });
                 } catch (error) {
                     console.error("Success 이미지 저장 실패:", error);
-                    console.log("서버 응답:", error.response?.data);
                     alert(
                         `Success 저장 실패: ${
                             error.response?.data?.message || error.message
@@ -123,7 +145,6 @@ export default function Log({
             setText1("정상적으로 처리되었습니다.");
             setText2("감사합니다 :)");
             setImgSrc(checkMark);
-
             setShowFeedbackModal(true); // 성공 모달 표시
 
             // 최신 데이터 다시 가져오기
