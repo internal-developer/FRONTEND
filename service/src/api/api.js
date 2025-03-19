@@ -24,6 +24,7 @@ const scheduleRefresh = () => {
     // 이전 타이머가 있으면 제거
     if (refreshTimeoutId) {
         clearTimeout(refreshTimeoutId);
+        refreshTimeoutId = null;
     }
     const accessToken = localStorage.getItem("accessToken");
     if (!accessToken) return;
@@ -61,7 +62,7 @@ const refreshAccessToken = async () => {
             const refreshToken = localStorage.getItem("refreshToken");
             // refreshToken이 없으면 바로 로그아웃 처리
             if (!refreshToken) {
-                handleLogout();
+                await handleLogout();
                 console.log("유효한 refresh token이 없습니다.");
                 return;
             }
@@ -80,7 +81,7 @@ const refreshAccessToken = async () => {
         } catch (refreshError) {
             console.error("새 access Token 발급 실패:", refreshError);
             console.error("오류 세부 정보:", refreshError.response?.data);
-            handleLogout();
+            await handleLogout();
             reject(refreshError);
         } finally {
             refreshPromise = null;
@@ -142,7 +143,7 @@ const handleLogout = async () => {
         localStorage.removeItem("refreshToken");
         await api.get("/cleanguard/logout");
         console.log("로그아웃 완료");
-        window.location.href = "/signup";
+        //window.location.href = "/signup";
     } catch (error) {
         console.error("로그아웃 중 오류 발생:", error);
         // 로그아웃 요청 실패해도 클라이언트 측에서 강제 로그아웃 처리
@@ -152,6 +153,11 @@ const handleLogout = async () => {
 
 // 초기화 함수 ==> 앱 시작 시 호출
 const initAuth = () => {
+    if (refreshTimeoutId !== null) {
+        clearTimeout(refreshTimeoutId);
+        refreshTimeoutId = null;
+    }
+
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
         // 토큰이 있으면 자동 갱신 예약
