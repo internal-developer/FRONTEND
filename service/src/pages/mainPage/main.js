@@ -58,35 +58,56 @@ function Main() {
         if (roleName) {
             const accessToken = localStorage.getItem("accessToken");
             const sseUrl = `http://3.36.174.53:8080/cleanguard/image/sse/${roleName}`;
-            const eventSource = new EventSourcePolyfill(sseUrl, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
+            let eventSource;
+            let reconnCount = 0;
 
-            eventSource.onopen = () => {
-                console.log("SSE 연결 성공");
-            };
+            const connect = () => {
 
-            eventSource.onmessage = (event) => {
-                try {
-                    const newData = JSON.parse(event.data); // 서버로부터 이미지 배열 전체가 옴
-                    setDumpingEvent((prev) => {
-                        // 중복되지 않는 새 이미지만 필터링하여 업데이트
-                        const existImage = new Set(prev.map((item) => item.imageId));
-                        const newImage = newData.filter((item) => !existImage.has(item.imageId));
-                        return [...prev, ...newImage];
-                    });
-                    console.log("이미지 데이터 가져오기 성공(SSE) :", newData);
-                } catch (error) {
-                    console.error("SSE 데이터 파싱 오류:", error);
+                // 재연결 시도 횟수 제한 -> 무한 연결 시도 방지
+                if (reconnCount >= 3) {
+                    console.log("SSE 재연결 최대 시도 횟수 초과(3회)");
+                    return;
                 }
+
+                eventSource = new EventSourcePolyfill(sseUrl, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+
+                eventSource.onopen = () => {
+                    console.log("SSE 연결 성공");
+                    reconnCount = 0;
+                };
+
+                eventSource.onmessage = (event) => {
+                    try {
+                        const newData = JSON.parse(event.data); // 서버로부터 이미지 배열 전체가 옴
+                        setDumpingEvent((prev) => {
+                            // 중복되지 않는 새 이미지만 필터링하여 업데이트
+                            const existImage = new Set(prev.map((item) => item.imageId));
+                            const newImage = newData.filter((item) => !existImage.has(item.imageId));
+                            return [...prev, ...newImage];
+                        });
+                        console.log("이미지 데이터 가져오기 성공(SSE) :", newData);
+                    } catch (error) {
+                        console.error("SSE 데이터 파싱 오류:", error);
+                    }
+                };
+
+                eventSource.onerror = (error) => {
+                    console.error("SSE 연결 오류:", error);
+                    eventSource.close();
+                    reconnCount += 1;
+                    setTimeout(() => {
+                        console.log("SSE 재연결 시도");
+                        connect();
+                    }, 1000); // 1초 후 재연결 시도
+                };
             };
 
-            eventSource.onerror = (error) => {
-                console.error("SSE 연결 오류:", error);
-                eventSource.close(); 
-            };
+            // 초기 연결
+            connect();
 
             // 컴포넌트 언마운트 시 SSE 연결 종료
             return () => {
@@ -94,6 +115,7 @@ function Main() {
                 console.log("SSE 연결 종료");
             };
         }
+
     }, [roleName]);
 
 
