@@ -11,6 +11,7 @@ import AddModal from "./components/cctvSidemenu/AddModal";
 import EditModal from "./components/cctvSidemenu/EditModal";
 import DeleteModal from "./components/cctvSidemenu/DeleteModal";
 import api from "../../api/api"; // axios 인스턴스 호출
+import { EventSourcePolyfill } from 'event-source-polyfill';
 
 function Main() {
     const [dumpingEvent, setDumpingEvent] = useState([]);
@@ -53,17 +54,51 @@ function Main() {
     }, [window.location.search]);
 
     useEffect(() => {
-        // image 데이터 요청
+        // image 데이터 요청(SSE)
         if (roleName) {
-            api.get(`/cleanguard/image/${roleName}`)
-                .then((response) => {
-                    setDumpingEvent(response.data);
-                    console.log("Dumping 데이터 가져오기 성공:", response.data);
-                })
-                .catch((error) => {
-                    console.error("Dumping 데이터 가져오기 실패:", error);
-                });
+            const accessToken = localStorage.getItem("accessToken");
+            const sseUrl = `http://3.36.174.53:8080/cleanguard/image/sse/${roleName}`;
+            const eventSource = new EventSourcePolyfill(sseUrl, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
 
+            eventSource.onopen = () => {
+                console.log("SSE 연결 성공");
+            };
+
+            eventSource.onmessage = (event) => {
+                try {
+                    const newData = JSON.parse(event.data); // 서버로부터 이미지 배열 전체가 옴
+                    setDumpingEvent((prev) => {
+                        // 중복되지 않는 새 이미지만 필터링하여 업데이트
+                        const existImage = new Set(prev.map((item) => item.imageId));
+                        const newImage = newData.filter((item) => !existImage.has(item.imageId));
+                        return [...prev, ...newImage];
+                    });
+                    console.log("이미지 데이터 가져오기 성공(SSE) :", newData);
+                } catch (error) {
+                    console.error("SSE 데이터 파싱 오류:", error);
+                }
+            };
+
+            eventSource.onerror = (error) => {
+                console.error("SSE 연결 오류:", error);
+                eventSource.close(); 
+            };
+
+            // 컴포넌트 언마운트 시 SSE 연결 종료
+            return () => {
+                eventSource.close();
+                console.log("SSE 연결 종료");
+            };
+        }
+    }, [roleName]);
+
+
+    useEffect(() => {
+        if (roleName) {
             //log 데이터 요청
             api.get(`/cleanguard/log/${roleName}`)
                 .then((response) => {
