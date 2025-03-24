@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { RiArrowLeftWideFill, RiArrowRightWideFill } from "react-icons/ri";
 import { FiPlus, FiMinus, FiRefreshCw } from "react-icons/fi";
 import './ImageModal.scss';
@@ -75,16 +75,14 @@ function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage
     };
 
     // 마우스 휠로 확대 및 축소
-    const handleWheel = (e) => {
-        e.preventDefault();
+    const handleWheel = useCallback((e) => {
+        if (e.cancelable) e.preventDefault();
         const delta = e.deltaY > 0 ? -0.1 : 0.1;
-        const newScale = Math.min(Math.max(scale + delta, 1), 4); // 1배 ~ 3배 제한
-        if (newScale === 1) {
-            setPosition({ x: 0, y: 0 });  // 100% 시 중앙 복귀
-        }
+        const newScale = Math.min(Math.max(scale + delta, 1), 4);
         setScale(newScale);
         handleScaleToast(newScale);
-    };
+    }, [scale]);
+
 
     // 드래그 시작 (마우스 다운 시 즉시 이동 시작)
     const handleMouseDown = (e) => {
@@ -146,6 +144,19 @@ function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage
         }
         resetImageState();
     }, [selectedImage]);
+
+    useEffect(() => {
+        const container = containerRef.current;
+        if (container) {
+            container.addEventListener('wheel', handleWheel, { passive: false });
+        }
+        return () => {
+            if (container) {
+                container.removeEventListener('wheel', handleWheel, { passive: false });
+            }
+        };
+    }, [handleWheel]);
+
     return (
         <div className='image'>
             <div className='image-container'>
@@ -168,7 +179,7 @@ function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage
                         <div className={`image-container-body-arrow ${selectedImage === 0 ? 'disabled' : ''}`} onClick={handlePrev}><RiArrowLeftWideFill /></div>
                         <div
                             className='image-container-body-mainImage'
-                            onWheel={handleWheel}
+                            // onWheel={handleWheel}
                             onMouseDown={handleMouseDown}
                             onMouseMove={handleMouseMove}
                             onMouseUp={handleMouseUp}
