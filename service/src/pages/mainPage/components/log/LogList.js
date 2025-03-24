@@ -1,8 +1,9 @@
 // import logExample from "../../../../assets/images/logExample.png";
 import "./LogList.scss";
 import { useEffect } from "react";
+import { RiExpandDiagonalLine } from "react-icons/ri";
 
-export default function LogList({ logs, checkedItems, setCheckedItems }) {
+export default function LogList({ logs, checkedItems, setCheckedItems, handleImageModal }) {
     const handleCheckbox = (id) => {
         setCheckedItems((prev) =>
             prev.includes(id)
@@ -17,7 +18,7 @@ export default function LogList({ logs, checkedItems, setCheckedItems }) {
 
     return (
         <div className="log-list-container">
-            {logs.map((log) => (
+            {logs.map((log, index) => (
                 <div key={log.imageId} className="log-item">
                     <input
                         type="checkbox"
@@ -25,7 +26,16 @@ export default function LogList({ logs, checkedItems, setCheckedItems }) {
                         checked={checkedItems.includes(log.imageId)}
                         onChange={() => handleCheckbox(log.imageId)}
                     />
-                    <img className="log-image" src={log.path} alt="logImage" />
+                    <img
+                        className="log-image"
+                        src={log.path}
+                        alt="logImage"
+                        onClick={() => handleCheckbox(log.imageId)}
+                    />
+                    <RiExpandDiagonalLine
+                        className="log-fullscreen-icon"
+                        onClick={() => { handleImageModal(index) }}
+                    />
                     <div className="log-info">
                         <span>
                             날짜: {new Date(log.time).getFullYear()}-

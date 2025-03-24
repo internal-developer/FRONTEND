@@ -44,6 +44,7 @@
     width: 100%;
     height: 100%;
 }
+
 .log-checkbox {
     position: absolute;
     top: 5px;
@@ -74,10 +75,12 @@
         top: 0px;
     }
 }
+
 /* 로그 이미지 */
 .log-image {
     width: 100%;
     height: 75%;
+    cursor: pointer;
 }
 
 /* 로그 정보 */
@@ -87,4 +90,30 @@
     display: flex;
     flex-direction: column;
     font-size: 12px;
+}
+
+.log-fullscreen-icon {
+    z-index: 1;
+    cursor: pointer;
+    position: absolute;
+    bottom: 24%;
+    right: 2%;
+    width: 23px;
+    height: 23px;
+    color: white;
+    margin: 5px;
+    opacity: 0;
+    border-radius: 50%;
+    transition: opacity 0.1s ease-in-out;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.7);
+        transform: scale(1.1);
+    }
+}
+
+.log-item:hover .log-fullscreen-icon {
+    opacity: 1;
 }

@@ -5,8 +5,10 @@ import trashCan from "../../../../assets/images/trash_can.png";
 import LogList from "./LogList";
 import FeedbackModal from "./FeedbackModal";
 import ConfirmModal from "./ConfirmModal";
+import ImageModal from "./ImageModal";
 import api from "../../../../api/api";
 import "./Log.scss";
+
 
 export default function Log({
     selectedCCTV,
@@ -26,6 +28,8 @@ export default function Log({
     const [imgSrc, setImgSrc] = useState("");
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [sentSuccessIds, setSentSuccessIds] = useState(new Set());
+    const [showImageModal, setShowImageModal] = useState(false);
+    const [selectedImage, setSelectedImage] = useState("");
 
     // sentSuccessIds를 localStorage에서 불러오기
     useEffect(() => {
@@ -135,8 +139,7 @@ export default function Log({
                 } catch (error) {
                     console.error("Success 이미지 저장 실패:", error);
                     alert(
-                        `Success 저장 실패: ${
-                            error.response?.data?.message || error.message
+                        `Success 저장 실패: ${error.response?.data?.message || error.message
                         }`
                     );
                 }
@@ -215,6 +218,11 @@ export default function Log({
         handlePermanentDelete();
     };
 
+    const handleImageModal = (index) => {
+        setSelectedImage(index);
+        setShowImageModal(true);
+    };
+
     return (
         <div className="viewer">
             {showFeedbackModal && (
@@ -229,6 +237,14 @@ export default function Log({
                 <ConfirmModal
                     onConfirm={handleConfirmDelete}
                     onCancel={() => setShowConfirmModal(false)}
+                />
+            )}
+            {showImageModal && (
+                <ImageModal
+                    images={filteredImages}
+                    setShowImageModal={setShowImageModal}
+                    setSelectedImage={setSelectedImage}
+                    selectedImage={selectedImage}
                 />
             )}
 
@@ -267,6 +283,7 @@ export default function Log({
                 logs={filteredImages}
                 checkedItems={checkedItems}
                 setCheckedItems={setCheckedItems}
+                handleImageModal={handleImageModal}
             />
         </div>
     );
