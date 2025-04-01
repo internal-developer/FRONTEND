@@ -1,9 +1,15 @@
 @import "src/assets/styles/index.scss";
+@import "src/assets/styles/mixins.scss";
 
 .viewer {
     display: flex;
     height: 100%;
     flex-direction: column;
+
+    @include mobile {
+        grid-column: 1 / 4;
+        grid-row: 1 / 3;
+    }
 
     .multi-viewer-video-container {
         display: grid;
@@ -188,6 +194,11 @@
         border-radius: 10px;
         padding-bottom: 5px;
 
+        @include mobile {
+            width: 100%;
+            margin: 4% 0 0 0;
+        }
+
         &-button {
             position: relative;
             left: 32%;
@@ -202,6 +213,15 @@
             background-color: $primary-color;
             cursor: pointer;
             transition: background-color 0.3s ease;
+
+            @include mobile {
+                position: relative;
+                left: 25%;
+                width: 30%;
+                height: 25%;
+                font-size: 11px;
+            }
+
             &:hover {
                 background-color: $primary-hover-color;
             }
@@ -212,6 +232,11 @@
             max-height: 110px;
             max-width: 700px; // 슬라이더는 최대 700px까지만 늘어나게 제한
             margin: 0 auto;
+
+            @include mobile {
+                width: 80%;
+                height: 60%;
+            }
         }
 
         .slider-image-container {
@@ -242,6 +267,10 @@
                 align-items: flex-start;
                 max-width: 90%;
                 opacity: 1;
+
+                @include mobile {
+                    display: none;
+                }
             }
         }
 

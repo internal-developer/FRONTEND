@@ -13,15 +13,14 @@
         flex-direction: column;
         position: relative;
         overflow: hidden;
-
-        display: flex;
-
-        // 반응형 웹으로 수정해야함
         max-height: 90%;
         max-width: 90%;
-
         background-color: $container-primary;
         box-shadow: 0px 2px 16px 0px rgb(0 0 0 / 16%);
+
+        @include mobile {
+            max-height: 95%;
+        }
     }
 
     &-content {
@@ -32,12 +31,39 @@
         // height: calc(100% - 71px);
         height: calc(100% - 85px);
 
+        @include mobile {
+            height: 90%;
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2%;
+            justify-items: center;
+        }
+
+        .video-viewer {
+            height: 100%;
+
+            @include mobile {
+                width: 90%;
+                height: 100%;
+                margin: 5px;
+                grid-column: 1 / 4;
+                grid-row: 1 / 2;
+            }
+        }
+
         .sidemenu {
             text-align: center;
             width: auto;
             align-items: flex-start;
             display: flex;
             justify-content: center;
+
+            @include mobile {
+                height: 100%;
+                grid-column: 1 / 2;
+                grid-row: 2 / 3;
+            }
         }
 
         .graph {
@@ -45,10 +71,12 @@
             display: flex;
             justify-content: center;
             width: auto;
-        }
 
-        .video-viewer {
-            height: 100%;
+            @include mobile {
+                height: 100%;
+                grid-column: 2 / 4;
+                grid-row: 2 / 3;
+            }
         }
     }
 }

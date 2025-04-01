@@ -1,4 +1,4 @@
-@import 'src/assets/styles/index.scss';
+@import "src/assets/styles/index.scss";
 
 .Gmenu {
     display: flex;
@@ -11,6 +11,11 @@
     border-radius: 10px;
     margin: 20px;
     padding: 10px 20px;
+
+    @include mobile {
+        width: 90%;
+        margin: 5% 0;
+    }
 
     &-container {
         display: flex;
@@ -35,5 +40,4 @@
             align-items: center;
         }
     }
-
 }
