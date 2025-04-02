@@ -17,6 +17,13 @@
         margin: 5% 0;
     }
 
+    @include tablet {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
+        margin: 0px;
+    }
+
     &-container {
         display: flex;
         flex-direction: column;
@@ -27,6 +34,10 @@
             font-size: 13px;
             height: auto;
             padding-bottom: 5px;
+
+            @include tablet {
+                font-size: 16px;
+            }
         }
 
         .Gmenu-graph {
@@ -38,6 +49,11 @@
             background: white;
             display: flex;
             align-items: center;
+
+            @include tablet {
+                width: 270px;
+                height: 160px;
+            }
         }
     }
 }

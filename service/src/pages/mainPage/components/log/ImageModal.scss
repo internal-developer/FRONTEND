@@ -27,6 +27,10 @@
             flex-direction: column;
         }
 
+        @include tablet {
+            flex-direction: column;
+        }
+
         &-body {
             width: 100%;
             flex: 1;
@@ -43,6 +47,10 @@
 
                     @include mobile {
                         height: 40%;
+                    }
+
+                    @include tablet {
+                        height: 65%;
                     }
                 }
             }
@@ -129,6 +137,11 @@
                     position: relative;
                     right: 50px;
                 }
+
+                @include tablet {
+                    position: relative;
+                    right: 7%;
+                }
             }
 
             &-close {
@@ -159,6 +172,11 @@
                 width: 90%;
                 overflow-x: auto;
             }
+
+            @include tablet {
+                width: 90%;
+                overflow-x: auto;
+            }
         }
 
         &-footer {
@@ -168,6 +186,10 @@
             padding: 16px;
 
             @include mobile {
+                flex-direction: row;
+            }
+
+            @include tablet {
                 flex-direction: row;
             }
         }
@@ -192,6 +214,11 @@
             @include mobile {
                 width: 120px;
                 height: 80px;
+            }
+
+            @include tablet {
+                width: 160px;
+                height: 120px;
             }
 
             &-info {
