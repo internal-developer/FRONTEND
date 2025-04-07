@@ -27,6 +27,10 @@
             flex-direction: column;
         }
 
+        @include tabletToMobile {
+            flex-direction: column;
+        }
+
         @include tablet {
             flex-direction: column;
         }
@@ -47,6 +51,10 @@
 
                     @include mobile {
                         height: 40%;
+                    }
+
+                    @include tabletToMobile {
+                        height: 55%;
                     }
 
                     @include tablet {
@@ -138,6 +146,11 @@
                     right: 50px;
                 }
 
+                @include tabletToMobile {
+                    position: relative;
+                    right: 7%;
+                }
+
                 @include tablet {
                     position: relative;
                     right: 7%;
@@ -173,6 +186,11 @@
                 overflow-x: auto;
             }
 
+            @include tabletToMobile {
+                width: 90%;
+                overflow-x: auto;
+            }
+
             @include tablet {
                 width: 90%;
                 overflow-x: auto;
@@ -186,6 +204,10 @@
             padding: 16px;
 
             @include mobile {
+                flex-direction: row;
+            }
+
+            @include tabletToMobile {
                 flex-direction: row;
             }
 
@@ -214,6 +236,11 @@
             @include mobile {
                 width: 120px;
                 height: 80px;
+            }
+
+            @include tabletToMobile {
+                width: 140px;
+                height: 100px;
             }
 
             @include tablet {

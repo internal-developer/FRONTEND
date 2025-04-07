@@ -18,9 +18,18 @@
         margin: 10% 0 0 2%;
     }
 
+    @include tabletToMobile {
+        width: 95%;
+        margin: 10px 0;
+    }
+
     @include tablet {
         width: 100%;
         margin: 30px 0px;
+    }
+
+    @include laptopToTablet {
+        margin: 30px 20px;
     }
 
     &-title {
@@ -77,6 +86,15 @@
             top: -100%;
             padding: 2px 3px;
             box-shadow: 0px 2px 16px 0px rgba(0, 0, 0, 0.2);
+
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+
+            &.visible {
+                opacity: 1;
+                pointer-events: auto;
+            }
 
             // 말풍선 꼬리
             &::after {

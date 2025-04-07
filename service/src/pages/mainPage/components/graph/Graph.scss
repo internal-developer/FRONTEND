@@ -17,6 +17,12 @@
         margin: 5% 0;
     }
 
+    @include tabletToMobile {
+        width: 95%;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
     @include tablet {
         width: 100%;
         flex-direction: row;
@@ -50,9 +56,19 @@
             display: flex;
             align-items: center;
 
+            @include tabletToMobile {
+                width: 200px;
+                height: 130px;
+            }
+
             @include tablet {
                 width: 270px;
                 height: 160px;
+            }
+
+            @include laptopToTablet {
+                width: 180px;
+                height: 110px;
             }
         }
     }

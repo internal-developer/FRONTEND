@@ -30,6 +30,14 @@
         padding: 5% 3%;
     }
 
+    @include tabletToMobile {
+        width: 100%;
+        height: 80%;
+        grid-template-columns: repeat(3, 1fr);
+        row-gap: 15%;
+        column-gap: 10px;
+    }
+
     @include tablet {
         width: 100%;
         height: 100%;
@@ -64,6 +72,10 @@
 
     @include mobile {
         height: 110px;
+    }
+
+    @include tabletToMobile {
+        height: 120px;
     }
 
     @include tablet {
@@ -130,11 +142,15 @@
     margin: 5px;
     opacity: 0;
     border-radius: 50%;
-    transition: opacity 0.1s ease-in-out;
+    transition: opacity 0.3s ease-in-out;
     background: rgba(0, 0, 0, 0.5);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 
     @include mobile {
+        opacity: 0.7;
+    }
+
+    @include tabletToMobile {
         opacity: 0.7;
     }
 

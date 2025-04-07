@@ -226,32 +226,34 @@ function VideoViewer({
                                     alt={`Capture ${item.imageId}`}
                                     className="slider-image"
                                 />
-
-                                {hoveredImageId === item.imageId && (
-                                    <div className="image-info">
-                                        <p>{item.cctv.location}</p>
-                                        <p>
-                                            {new Date(item.time).getFullYear()}-
-                                            {String(
-                                                new Date(item.time).getMonth() +
-                                                    1
-                                            ).padStart(2, "0")}
-                                            -
-                                            {String(
-                                                new Date(item.time).getDate()
-                                            ).padStart(2, "0")}
-                                        </p>
-                                        <p>
-                                            {String(
-                                                new Date(item.time).getHours()
-                                            ).padStart(2, "0")}
-                                            :
-                                            {String(
-                                                new Date(item.time).getMinutes()
-                                            ).padStart(2, "0")}
-                                        </p>
-                                    </div>
-                                )}
+                                <div
+                                    className={`image-info ${
+                                        hoveredImageId === item.imageId
+                                            ? "show"
+                                            : ""
+                                    }`}
+                                >
+                                    <p>{item.cctv.location}</p>
+                                    <p>
+                                        {new Date(item.time).getFullYear()}-
+                                        {String(
+                                            new Date(item.time).getMonth() + 1
+                                        ).padStart(2, "0")}
+                                        -
+                                        {String(
+                                            new Date(item.time).getDate()
+                                        ).padStart(2, "0")}
+                                    </p>
+                                    <p>
+                                        {String(
+                                            new Date(item.time).getHours()
+                                        ).padStart(2, "0")}
+                                        :
+                                        {String(
+                                            new Date(item.time).getMinutes()
+                                        ).padStart(2, "0")}
+                                    </p>
+                                </div>
                             </div>
                         ))}
                     </Slider>
@@ -313,30 +315,34 @@ function VideoViewer({
                                 alt={`Capture ${item.imageId}`}
                                 className="slider-image"
                             />
-                            {hoveredImageId === item.imageId && (
-                                <div className="image-info">
-                                    <p>{item.cctv.location}</p>
-                                    <p>
-                                        {new Date(item.time).getFullYear()}-
-                                        {String(
-                                            new Date(item.time).getMonth() + 1
-                                        ).padStart(2, "0")}
-                                        -
-                                        {String(
-                                            new Date(item.time).getDate()
-                                        ).padStart(2, "0")}
-                                    </p>
-                                    <p>
-                                        {String(
-                                            new Date(item.time).getHours()
-                                        ).padStart(2, "0")}
-                                        :
-                                        {String(
-                                            new Date(item.time).getMinutes()
-                                        ).padStart(2, "0")}
-                                    </p>
-                                </div>
-                            )}
+                            <div
+                                className={`image-info ${
+                                    hoveredImageId === item.imageId
+                                        ? "show"
+                                        : ""
+                                }`}
+                            >
+                                <p>{item.cctv.location}</p>
+                                <p>
+                                    {new Date(item.time).getFullYear()}-
+                                    {String(
+                                        new Date(item.time).getMonth() + 1
+                                    ).padStart(2, "0")}
+                                    -
+                                    {String(
+                                        new Date(item.time).getDate()
+                                    ).padStart(2, "0")}
+                                </p>
+                                <p>
+                                    {String(
+                                        new Date(item.time).getHours()
+                                    ).padStart(2, "0")}
+                                    :
+                                    {String(
+                                        new Date(item.time).getMinutes()
+                                    ).padStart(2, "0")}
+                                </p>
+                            </div>
                         </div>
                     ))}
                 </Slider>

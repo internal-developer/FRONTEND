@@ -59,6 +59,17 @@
         width: 190px;
         height: 110px;
 
+        opacity: 0;
+        transform: translateY(-10px);
+        pointer-events: none;
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+
+        &.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
         .bar {
             font-size: 12px;
             font-weight: bolder;

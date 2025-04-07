@@ -8,6 +8,10 @@
     display: flex;
     position: relative;
 
+    @include tabletToMobile {
+        width: 95%;
+    }
+
     @include tablet {
         width: 100%;
     }
