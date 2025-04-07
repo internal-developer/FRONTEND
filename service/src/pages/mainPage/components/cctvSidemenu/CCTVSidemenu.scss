@@ -1,4 +1,5 @@
-@import 'src/assets/styles/index.scss';
+@import "src/assets/styles/index.scss";
+@import "src/assets/styles/mixins.scss";
 
 .menu {
     display: flex;
@@ -12,15 +13,38 @@
     border-radius: 10px;
     margin: 30px 40px;
 
+    @include mobile {
+        width: 90%;
+        margin: 10% 0 0 2%;
+    }
+
+    @include tabletToMobile {
+        width: 95%;
+        margin: 10px 0;
+    }
+
+    @include tablet {
+        width: 100%;
+        margin: 30px 0px;
+    }
+
+    @include laptopToTablet {
+        margin: 30px 20px;
+    }
+
     &-title {
         font-size: 20px;
         padding: 5px;
         font-weight: bolder;
-        font-family: 'Poppins', sans-serif;
+        font-family: "Poppins", sans-serif;
     }
 
     &-subtitle {
         font-size: 15px;
+
+        @include mobile {
+            font-size: 13px;
+        }
     }
 
     &-cctvList {
@@ -34,6 +58,14 @@
             cursor: pointer;
             padding-bottom: 4px;
             position: relative;
+
+            @include mobile {
+                font-size: 11px;
+            }
+
+            @include tablet {
+                font-size: 13px;
+            }
 
             &:hover {
                 text-decoration: underline;
@@ -53,7 +85,16 @@
             left: 95%;
             top: -100%;
             padding: 2px 3px;
-            box-shadow: 0px 2px 16px 0px rgba(0, 0, 0, 0.20);
+            box-shadow: 0px 2px 16px 0px rgba(0, 0, 0, 0.2);
+
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+
+            &.visible {
+                opacity: 1;
+                pointer-events: auto;
+            }
 
             // 말풍선 꼬리
             &::after {

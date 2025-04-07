@@ -1,4 +1,4 @@
-@import 'src/assets/styles/index.scss';
+@import "src/assets/styles/index.scss";
 
 .image {
     position: fixed;
@@ -23,6 +23,18 @@
         border-radius: 12px;
         box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 
+        @include mobile {
+            flex-direction: column;
+        }
+
+        @include tabletToMobile {
+            flex-direction: column;
+        }
+
+        @include tablet {
+            flex-direction: column;
+        }
+
         &-body {
             width: 100%;
             flex: 1;
@@ -36,6 +48,18 @@
 
                 img {
                     user-select: none;
+
+                    @include mobile {
+                        height: 40%;
+                    }
+
+                    @include tabletToMobile {
+                        height: 55%;
+                    }
+
+                    @include tablet {
+                        height: 65%;
+                    }
                 }
             }
 
@@ -74,7 +98,7 @@
             padding: 0 16px;
             border-bottom: 1px solid #e6e5e5;
 
-            &>div {
+            & > div {
                 height: auto;
                 width: auto;
             }
@@ -93,6 +117,11 @@
                 background: #e6e5e5ae;
                 padding: 4px 10px;
                 border-radius: 10px;
+
+                @include mobile {
+                    position: relative;
+                    top: 50px;
+                }
             }
 
             &-time {
@@ -100,12 +129,32 @@
                 font-size: 12px;
                 color: #393939;
                 //margin-top: 4px;
+
+                @include mobile {
+                    position: relative;
+                    top: 50px;
+                }
             }
 
             &-title {
                 font-size: 15px;
                 font-weight: bold;
                 transform: translateX(-50%);
+
+                @include mobile {
+                    position: relative;
+                    right: 50px;
+                }
+
+                @include tabletToMobile {
+                    position: relative;
+                    right: 7%;
+                }
+
+                @include tablet {
+                    position: relative;
+                    right: 7%;
+                }
             }
 
             &-close {
@@ -124,8 +173,6 @@
             }
         }
 
-
-
         &-footer-wrapper {
             width: 17%;
             overflow-y: auto;
@@ -133,6 +180,21 @@
             border-bottom-right-radius: 12px;
             margin: 10px;
             height: auto;
+
+            @include mobile {
+                width: 90%;
+                overflow-x: auto;
+            }
+
+            @include tabletToMobile {
+                width: 90%;
+                overflow-x: auto;
+            }
+
+            @include tablet {
+                width: 90%;
+                overflow-x: auto;
+            }
         }
 
         &-footer {
@@ -140,6 +202,18 @@
             flex-direction: column;
             gap: 10px;
             padding: 16px;
+
+            @include mobile {
+                flex-direction: row;
+            }
+
+            @include tabletToMobile {
+                flex-direction: row;
+            }
+
+            @include tablet {
+                flex-direction: row;
+            }
         }
 
         .preview-image-container {
@@ -159,6 +233,21 @@
             border-radius: 7px;
             transition: all 0.3s ease;
 
+            @include mobile {
+                width: 120px;
+                height: 80px;
+            }
+
+            @include tabletToMobile {
+                width: 140px;
+                height: 100px;
+            }
+
+            @include tablet {
+                width: 160px;
+                height: 120px;
+            }
+
             &-info {
                 position: absolute;
                 width: auto;
@@ -172,7 +261,6 @@
                 margin-left: 4px;
                 margin-bottom: 4px;
             }
-
         }
 
         .preview-image.selected {

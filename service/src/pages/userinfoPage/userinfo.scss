@@ -2,18 +2,35 @@
 @import "../mainPage/main.scss";
 
 .userinfo-main-container {
-    // 반응형 웹으로 수정해야함
     max-height: 75%;
     max-width: 25%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
     position: relative;
-    overflow: hidden;
+    // overflow: hidden;
+    overflow: auto;
     background-color: $container-primary;
     box-shadow: 0px 2px 16px 0px rgb(0 0 0 / 16%);
+
+    // 모바일
+    @include mobile {
+        max-width: 75%;
+        max-height: 70%;
+    }
+    // 모바일에서 태블릿
+    @include tabletToMobile {
+        max-width: 65%;
+    }
+    // 태블릿
+    @include tablet {
+        max-width: 50%;
+    }
+    // 태블릿에서 노트북
+    @include laptopToTablet {
+        max-width: 40%;
+    }
 }
 
 .userinfo-form {

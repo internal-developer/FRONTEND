@@ -40,26 +40,26 @@ function CCTVSidemenu({
                             onMouseLeave={handleMouseLeave}
                         >
                             {cctv.cctvName} ({cctv.location})
-                            {hoveredCCTV === cctv && showPopup === true && (
-                                <div className="popup">
-                                    <div onClick={() => setShowAddModal(true)}>
-                                        추가
-                                    </div>
-                                    <div onClick={() => setShowEditModal(true)}>
-                                        수정
-                                    </div>
-                                    <div
-                                        onClick={() => setShowDeleteModal(true)}
-                                    >
-                                        삭제
-                                    </div>
-                                    {/* 상세페이지로 이동했을 경우에만, '상세 기록' 옵션 추가되도록
-                                        ==> 상세페이지 생성 이후 기능 구현 예정*/}
-                                    <div onClick={() => setShowLog(true)}>
-                                        상세 기록
-                                    </div>
+                            <div
+                                className={`popup ${
+                                    hoveredCCTV === cctv && showPopup
+                                        ? "visible"
+                                        : ""
+                                }`}
+                            >
+                                <div onClick={() => setShowAddModal(true)}>
+                                    추가
                                 </div>
-                            )}
+                                <div onClick={() => setShowEditModal(true)}>
+                                    수정
+                                </div>
+                                <div onClick={() => setShowDeleteModal(true)}>
+                                    삭제
+                                </div>
+                                <div onClick={() => setShowLog(true)}>
+                                    상세 기록
+                                </div>
+                            </div>
                         </li>
                     ))}
                 </ul>

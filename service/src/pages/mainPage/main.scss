@@ -13,15 +13,28 @@
         flex-direction: column;
         position: relative;
         overflow: hidden;
-
-        display: flex;
-
-        // 반응형 웹으로 수정해야함
         max-height: 90%;
         max-width: 90%;
-
         background-color: $container-primary;
         box-shadow: 0px 2px 16px 0px rgb(0 0 0 / 16%);
+        overflow-x: auto;
+        overflow-y: auto;
+
+        @include mobile {
+            max-height: 95%;
+        }
+
+        @include tabletToMobile {
+            padding: 0px 3%;
+        }
+
+        @include tablet {
+            padding: 0px 3%;
+        }
+
+        @include laptopToTablet {
+            padding: 0px 1%;
+        }
     }
 
     &-content {
@@ -32,12 +45,86 @@
         // height: calc(100% - 71px);
         height: calc(100% - 85px);
 
+        @include mobile {
+            height: 90%;
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2%;
+            justify-items: center;
+        }
+
+        @include tabletToMobile {
+            height: 90%;
+            display: grid;
+            grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+            grid-template-columns: 0.7fr 1fr 1fr;
+            gap: 2%;
+            justify-items: center;
+        }
+
+        @include tablet {
+            height: 90%;
+            display: grid;
+            grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+            grid-template-columns: 0.7fr 1fr 1fr;
+            gap: 2%;
+            justify-items: center;
+        }
+
+        .video-viewer {
+            height: 100%;
+
+            @include mobile {
+                width: 90%;
+                height: 100%;
+                margin: 5px;
+                grid-column: 1 / 4;
+                grid-row: 1 / 2;
+            }
+
+            @include tabletToMobile {
+                width: 95%;
+                height: 100%;
+                grid-column: 2 / 5;
+                grid-row: 1 / 4;
+            }
+
+            @include tablet {
+                width: 95%;
+                height: 100%;
+                grid-column: 2 / 5;
+                grid-row: 1 / 4;
+            }
+
+            @include laptopToTablet {
+                width: 50%;
+                height: 95%;
+            }
+        }
+
         .sidemenu {
             text-align: center;
             width: auto;
             align-items: flex-start;
             display: flex;
             justify-content: center;
+
+            @include mobile {
+                height: 100%;
+                grid-column: 1 / 2;
+                grid-row: 2 / 3;
+            }
+
+            @include tabletToMobile {
+                grid-column: 1 / 2;
+                grid-row: 1 / 2;
+            }
+
+            @include tablet {
+                grid-column: 1 / 2;
+                grid-row: 1 / 2;
+            }
         }
 
         .graph {
@@ -45,10 +132,26 @@
             display: flex;
             justify-content: center;
             width: auto;
-        }
 
-        .video-viewer {
-            height: 100%;
+            @include mobile {
+                height: 100%;
+                grid-column: 2 / 4;
+                grid-row: 2 / 3;
+            }
+
+            @include tabletToMobile {
+                width: 99%;
+                grid-column: 1 / 4;
+                grid-row: 4 / 6;
+                margin-left: 2%;
+            }
+
+            @include tablet {
+                width: 99%;
+                grid-column: 1 / 4;
+                grid-row: 4 / 6;
+                margin-left: 2%;
+            }
         }
     }
 }
