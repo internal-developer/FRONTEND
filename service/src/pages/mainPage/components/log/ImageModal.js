@@ -37,6 +37,11 @@ function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage
         return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
     };
 
+    const isVideo = (path) => {
+        if (!path) return false;
+        return path.toLowerCase().endsWith('mp4');
+    };
+
     /* ==== 이미지 확대 및 축소 함수 시작 ====*/
 
     // 이미지 확대 및 축소 시 비율 토스트 표시
@@ -187,15 +192,29 @@ function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage
                             // onMouseEnter={() => setShowControls(true)}
                             style={{ cursor: isDragging ? 'grabbing' : scale > 1 ? 'grab' : 'default' }}
                         >
-                            <img
-                                ref={imageRef}
-                                src={images[selectedImage].path}
-                                style={{
-                                    transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
-                                    transition: isDragging ? 'none' : 'transform 0.2s ease',
-                                }}
-                                draggable="false"
-                            />
+                            {isVideo(images[selectedImage].path) ? (
+                                <video
+                                    ref={imageRef}
+                                    src={images[selectedImage].path}
+                                    autoPlay
+                                    muted
+                                    controls
+                                    style={{
+                                        transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
+                                        transition: isDragging ? 'none' : 'transform 0.2s ease',
+                                    }}
+                                    // draggable="false"
+                                />) : (
+                                <img
+                                    ref={imageRef}
+                                    src={images[selectedImage].path}
+                                    style={{
+                                        transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
+                                        transition: isDragging ? 'none' : 'transform 0.2s ease',
+                                    }}
+                                    draggable="false"
+                                />)}
+
 
                             {showScaleToast && (
                                 <div className="scale-toast">

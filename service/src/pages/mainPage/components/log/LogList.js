@@ -16,6 +16,13 @@ export default function LogList({ logs, checkedItems, setCheckedItems, handleIma
         console.log("checkedItems 업데이트됨:", checkedItems);
     }, [checkedItems]);
 
+    // jpg인지 mp4인지 구분하는 함수
+    const isVideo = (path) => {
+        // console.log("path:",path);
+        if (!path) return false;
+        return path.toLowerCase().endsWith('mp4');
+    };
+
     return (
         <div className="log-list-container">
             {logs.map((log, index) => (
@@ -26,12 +33,27 @@ export default function LogList({ logs, checkedItems, setCheckedItems, handleIma
                         checked={checkedItems.includes(log.imageId)}
                         onChange={() => handleCheckbox(log.imageId)}
                     />
-                    <img
-                        className="log-image"
-                        src={log.path}
-                        alt="logImage"
-                        onClick={() => handleCheckbox(log.imageId)}
-                    />
+                    {isVideo(log.path) ? (
+                        <video
+                            className="log-image"
+                            src={log.path}
+                            // onClick={() => handleCheckbox(log.imageId)}
+                            // autoPlay
+                            // muted
+                            // loop
+                            controls
+                            width="640"
+                            height="360"
+                        />
+                    ) : (
+                        <img
+                            className="log-image"
+                            src={log.path}
+                            alt="logImage"
+                            onClick={() => handleCheckbox(log.imageId)}
+                        />
+                    )}
+
                     <RiExpandDiagonalLine
                         className="log-fullscreen-icon"
                         onClick={() => { handleImageModal(index) }}
