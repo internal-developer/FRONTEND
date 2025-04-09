@@ -1,9 +1,10 @@
-// import logExample from "../../../../assets/images/logExample.png";
 import "./LogList.scss";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { RiExpandDiagonalLine } from "react-icons/ri";
 
 export default function LogList({ logs, checkedItems, setCheckedItems, handleImageModal }) {
+    const [videoError, setVideoError] = useState({});
+
     const handleCheckbox = (id) => {
         setCheckedItems((prev) =>
             prev.includes(id)
@@ -18,9 +19,12 @@ export default function LogList({ logs, checkedItems, setCheckedItems, handleIma
 
     // jpg인지 mp4인지 구분하는 함수
     const isVideo = (path) => {
-        // console.log("path:",path);
         if (!path) return false;
         return path.toLowerCase().endsWith('mp4');
+    };
+
+    const handleVideoError = (id) => {
+        setVideoError((prev) => ({ ...prev, [id]: true }));
     };
 
     return (
@@ -34,30 +38,47 @@ export default function LogList({ logs, checkedItems, setCheckedItems, handleIma
                         onChange={() => handleCheckbox(log.imageId)}
                     />
                     {isVideo(log.path) ? (
-                        <video
-                            className="log-image"
-                            src={log.path}
-                            // onClick={() => handleCheckbox(log.imageId)}
-                            // autoPlay
-                            // muted
-                            // loop
-                            controls
-                            width="640"
-                            height="360"
-                        />
+                        <div className="log-video-container">
+                            {videoError[log.imageId] ? (
+                                <div
+                                    className="log-video-error"
+                                    onClick={() => handleCheckbox(log.imageId)}
+                                >
+                                    영상을 재생할 수 없습니다
+                                </div>
+                            ) : (
+                                <>
+                                    <video
+                                        src={log.path}
+                                        muted
+                                        preload="metadata"
+                                        playsInline
+                                        onClick={() => handleCheckbox(log.imageId)}
+                                        onError={() => handleVideoError(log.imageId)}
+                                    />
+                                    <div
+                                        className="custom-play-button"
+                                        onClick={() => handleImageModal(index)}
+                                    >
+                                        ▶
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     ) : (
-                        <img
-                            className="log-image"
-                            src={log.path}
-                            alt="logImage"
-                            onClick={() => handleCheckbox(log.imageId)}
-                        />
+                        <>
+                            <img
+                                className="log-image"
+                                src={log.path}
+                                alt="logImage"
+                                onClick={() => handleCheckbox(log.imageId)}
+                            />
+                            <RiExpandDiagonalLine
+                                className="log-fullscreen-icon"
+                                onClick={() => { handleImageModal(index) }}
+                            />
+                        </>
                     )}
-
-                    <RiExpandDiagonalLine
-                        className="log-fullscreen-icon"
-                        onClick={() => { handleImageModal(index) }}
-                    />
                     <div className="log-info">
                         <span>
                             날짜: {new Date(log.time).getFullYear()}-

@@ -16,7 +16,7 @@ function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage
     const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 });
     const [showScaleToast, setShowScaleToast] = useState(false);
     // const [showControls, setShowControls] = useState(false); // 이미지 확대, 축소 버튼 표시 여부
-
+    const [videoError, setVideoError] = useState({});
 
     // 다음, 이전 이미지로 이동 함수
     const handleNext = () => {
@@ -40,6 +40,10 @@ function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage
     const isVideo = (path) => {
         if (!path) return false;
         return path.toLowerCase().endsWith('mp4');
+    };
+
+    const handleVideoError = (id) => {
+        setVideoError((prev) => ({ ...prev, [id]: true }));
     };
 
     /* ==== 이미지 확대 및 축소 함수 시작 ====*/
@@ -203,7 +207,7 @@ function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage
                                         transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
                                         transition: isDragging ? 'none' : 'transform 0.2s ease',
                                     }}
-                                    // draggable="false"
+                                // draggable="false"
                                 />) : (
                                 <img
                                     ref={imageRef}
@@ -237,20 +241,37 @@ function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage
                     <div className='image-container-footer'>
                         {images.map((image, index) => (
                             <div key={image.imageId} className="preview-image-container">
-                                <img
-                                    src={image.path}
-                                    alt={`이미지 미리보기: 인덱스 ${index}`}
-                                    className={`preview-image ${index === selectedImage ? "selected" : ""}`}
-                                    onClick={() => setSelectedImage(index)}
-                                    ref={(el) => (previewRef.current[index] = el)}
-                                />
+                                {isVideo(image.path) ? (
+                                    videoError[image.path] ? (
+                                        <div
+                                            className={`preview-image-error ${index === selectedImage ? "selected" : ""}`}
+                                            onClick={() => setSelectedImage(index)}
+                                            ref={(el) => (previewRef.current[index] = el)}
+                                        >
+                                            영상을 재생할 수 없습니다
+                                        </div>
+                                    ) : (
+                                        <video
+                                            src={image.path}
+                                            muted
+                                            playsInline
+                                            preload="metadata"
+                                            className={`preview-image ${index === selectedImage ? "selected" : ""}`}
+                                            onClick={() => setSelectedImage(index)}
+                                            onError={() => handleVideoError(image.path)}
+                                            ref={(el) => (previewRef.current[index] = el)}
+                                        />)
+                                ) : (
+                                    <img
+                                        src={image.path}
+                                        alt={`이미지 미리보기: 인덱스 ${index}`}
+                                        className={`preview-image ${index === selectedImage ? "selected" : ""}`}
+                                        onClick={() => setSelectedImage(index)}
+                                        ref={(el) => (previewRef.current[index] = el)}
+                                    />)}
                                 <div className='preview-image-info'>{formatDateTime(image.time)}</div>
                             </div>
-
-
-
                         ))}
-
                     </div>
                 </div>
             </div>
