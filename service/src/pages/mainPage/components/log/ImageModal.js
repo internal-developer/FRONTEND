@@ -2,9 +2,11 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { RiArrowLeftWideFill, RiArrowRightWideFill } from "react-icons/ri";
 import { FiPlus, FiMinus, FiRefreshCw } from "react-icons/fi";
 import './ImageModal.scss';
+import { useVideoHandler } from '../../../../hooks/useVideoHandler';
 
 function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage }) {
     const previewRef = useRef([]);
+    const { videoError, isVideo, handleVideoError } = useVideoHandler();
 
     // 이미지 확대 및 축소 상태
     const imageRef = useRef(null);
@@ -16,7 +18,6 @@ function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage
     const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 });
     const [showScaleToast, setShowScaleToast] = useState(false);
     // const [showControls, setShowControls] = useState(false); // 이미지 확대, 축소 버튼 표시 여부
-    const [videoError, setVideoError] = useState({});
 
     // 다음, 이전 이미지로 이동 함수
     const handleNext = () => {
@@ -35,15 +36,6 @@ function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage
     const formatDateTime = (isoString) => {
         const date = new Date(isoString);
         return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
-    };
-
-    const isVideo = (path) => {
-        if (!path) return false;
-        return path.toLowerCase().endsWith('mp4');
-    };
-
-    const handleVideoError = (id) => {
-        setVideoError((prev) => ({ ...prev, [id]: true }));
     };
 
     /* ==== 이미지 확대 및 축소 함수 시작 ====*/

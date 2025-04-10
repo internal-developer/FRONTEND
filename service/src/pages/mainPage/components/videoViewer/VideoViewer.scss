@@ -303,6 +303,21 @@
                 padding: 5% 0 0 5%;
             }
 
+            .slider-error {
+                position: absolute;
+                top: 8%;
+                left: 5%;
+                width: 95%;
+                height: 88%;
+                color: #ffffff;
+                background-color: #2e2e2e;
+                text-align: center;
+                font-size: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
             .image-info {
                 position: absolute;
                 bottom: 5%;

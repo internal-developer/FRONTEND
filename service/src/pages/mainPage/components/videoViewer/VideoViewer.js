@@ -4,6 +4,7 @@ import { IoIosSettings } from "react-icons/io";
 import { RiFullscreenFill } from "react-icons/ri";
 import Slider from "react-slick";
 import "./VideoViewer.scss";
+import { useVideoHandler } from "../../../../hooks/useVideoHandler";
 
 function VideoViewer({
     cctvList,
@@ -18,6 +19,7 @@ function VideoViewer({
     const [showDropdown, setShowDropdown] = useState(false);
     const [shownCctv, setShownCctv] = useState({}); // 멀티뷰에서 보여질 cctv
     const [availableWebcams, setAvailableWebcams] = useState([]); // 연결 가능한 웹캠들
+    const { videoError, isVideo, handleVideoError } = useVideoHandler();
 
     const cctvId = selectedCCTV ? selectedCCTV.cctvId : null;
 
@@ -107,6 +109,68 @@ function VideoViewer({
         if (!webcamId) return availableWebcams.length > 0; // cctv webcamId가 ""로 비어있는 경우, 탐지된 웹캠이 한 개일 때 기본적으로 탐지된 웹캠을 사용하도록 설정.
         return availableWebcams.some((webcam) => webcam.deviceId === webcamId);
     };
+
+    // 슬라이더 공통 컴포넌트 (멀티뷰/단일뷰 공통)
+    const renderSlider = (item) => (
+        <div
+            key={item.imageId}
+            onMouseEnter={() =>
+                handleMouseEnter(item.imageId)
+            }
+            onMouseLeave={handleMouseLeave}
+            className="slider-image-container"
+        >
+            {isVideo(item.path) ? (
+                videoError[item.imageId] ? (
+                    <div className="slider-error">
+                        영상을 재생할 수 없습니다
+                    </div>
+                ) : (
+                    <video
+                        src={item.path}
+                        muted
+                        preload="metadata"
+                        playsInline
+                        className="slider-image"
+                        onError={() => handleVideoError(item.imageId)}
+                    />
+                )
+            ) : (
+                <img
+                    src={item.path}
+                    alt={`Capture ${item.imageId}`}
+                    className="slider-image"
+                />
+            )}
+            <div
+                className={`image-info ${hoveredImageId === item.imageId
+                    ? "show"
+                    : ""
+                    }`}
+            >
+                <p>{item.cctv.location}</p>
+                <p>
+                    {new Date(item.time).getFullYear()}-
+                    {String(
+                        new Date(item.time).getMonth() + 1
+                    ).padStart(2, "0")}
+                    -
+                    {String(
+                        new Date(item.time).getDate()
+                    ).padStart(2, "0")}
+                </p>
+                <p>
+                    {String(
+                        new Date(item.time).getHours()
+                    ).padStart(2, "0")}
+                    :
+                    {String(
+                        new Date(item.time).getMinutes()
+                    ).padStart(2, "0")}
+                </p>
+            </div>
+        </div>
+    );
 
     // 멀티뷰 상태일 때 UI
     if (multiView) {
@@ -212,50 +276,7 @@ function VideoViewer({
                         {...sliderSettings}
                         key={(multiView ? dumpingData : filteredImages).length}
                     >
-                        {filteredImages.map((item) => (
-                            <div
-                                key={item.imageId}
-                                onMouseEnter={() =>
-                                    handleMouseEnter(item.imageId)
-                                }
-                                onMouseLeave={handleMouseLeave}
-                                className="slider-image-container"
-                            >
-                                <img
-                                    src={item.path}
-                                    alt={`Capture ${item.imageId}`}
-                                    className="slider-image"
-                                />
-                                <div
-                                    className={`image-info ${
-                                        hoveredImageId === item.imageId
-                                            ? "show"
-                                            : ""
-                                    }`}
-                                >
-                                    <p>{item.cctv.location}</p>
-                                    <p>
-                                        {new Date(item.time).getFullYear()}-
-                                        {String(
-                                            new Date(item.time).getMonth() + 1
-                                        ).padStart(2, "0")}
-                                        -
-                                        {String(
-                                            new Date(item.time).getDate()
-                                        ).padStart(2, "0")}
-                                    </p>
-                                    <p>
-                                        {String(
-                                            new Date(item.time).getHours()
-                                        ).padStart(2, "0")}
-                                        :
-                                        {String(
-                                            new Date(item.time).getMinutes()
-                                        ).padStart(2, "0")}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
+                        {filteredImages.map((item) => renderSlider(item))}
                     </Slider>
                     <button
                         className="viewer-capture-button"
@@ -303,48 +324,7 @@ function VideoViewer({
                     {...sliderSettings}
                     key={(multiView ? dumpingData : filteredImages).length}
                 >
-                    {filteredImages.map((item) => (
-                        <div
-                            key={item.imageId}
-                            onMouseEnter={() => handleMouseEnter(item.imageId)}
-                            onMouseLeave={handleMouseLeave}
-                            className="slider-image-container"
-                        >
-                            <img
-                                src={item.path}
-                                alt={`Capture ${item.imageId}`}
-                                className="slider-image"
-                            />
-                            <div
-                                className={`image-info ${
-                                    hoveredImageId === item.imageId
-                                        ? "show"
-                                        : ""
-                                }`}
-                            >
-                                <p>{item.cctv.location}</p>
-                                <p>
-                                    {new Date(item.time).getFullYear()}-
-                                    {String(
-                                        new Date(item.time).getMonth() + 1
-                                    ).padStart(2, "0")}
-                                    -
-                                    {String(
-                                        new Date(item.time).getDate()
-                                    ).padStart(2, "0")}
-                                </p>
-                                <p>
-                                    {String(
-                                        new Date(item.time).getHours()
-                                    ).padStart(2, "0")}
-                                    :
-                                    {String(
-                                        new Date(item.time).getMinutes()
-                                    ).padStart(2, "0")}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
+                    {filteredImages.map((item) => renderSlider(item))}
                 </Slider>
                 <button className="viewer-capture-button" onClick={onShowLog}>
                     상세기록 보러가기

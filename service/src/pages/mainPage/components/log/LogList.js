@@ -1,9 +1,10 @@
 import "./LogList.scss";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { RiExpandDiagonalLine } from "react-icons/ri";
+import { useVideoHandler } from "../../../../hooks/useVideoHandler";
 
 export default function LogList({ logs, checkedItems, setCheckedItems, handleImageModal }) {
-    const [videoError, setVideoError] = useState({});
+    const { videoError, isVideo, handleVideoError } = useVideoHandler();
 
     const handleCheckbox = (id) => {
         setCheckedItems((prev) =>
@@ -16,16 +17,6 @@ export default function LogList({ logs, checkedItems, setCheckedItems, handleIma
     useEffect(() => {
         console.log("checkedItems 업데이트됨:", checkedItems);
     }, [checkedItems]);
-
-    // jpg인지 mp4인지 구분하는 함수
-    const isVideo = (path) => {
-        if (!path) return false;
-        return path.toLowerCase().endsWith('mp4');
-    };
-
-    const handleVideoError = (id) => {
-        setVideoError((prev) => ({ ...prev, [id]: true }));
-    };
 
     return (
         <div className="log-list-container">
