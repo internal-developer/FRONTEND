@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Webcam from "react-webcam";
 import { IoIosSettings } from "react-icons/io";
 import { RiFullscreenFill } from "react-icons/ri";
@@ -20,6 +20,7 @@ function VideoViewer({
     const [shownCctv, setShownCctv] = useState({}); // 멀티뷰에서 보여질 cctv
     const [availableWebcams, setAvailableWebcams] = useState([]); // 연결 가능한 웹캠들
     const { videoError, isVideo, handleVideoError } = useVideoHandler();
+    const dropdownRef = useRef(null);
 
     const cctvId = selectedCCTV ? selectedCCTV.cctvId : null;
 
@@ -65,6 +66,32 @@ function VideoViewer({
         }
     }, [multiView, dumpingData, cctvId]);
 
+    // 외부 클릭 감지 로직 추가
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target) &&
+                !event.target.closest(".filter-icon")
+            ) {
+                setShowDropdown(false);
+            }
+        };
+        if (showDropdown) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [showDropdown]);
+
+    // multiView 변경 시 드롭다운 닫기
+    useEffect(() => {
+        if (!multiView) {
+            setShowDropdown(false);
+        }
+    }, [multiView]);
+
     // useEffect(() => {
     //     console.log(
     //         "multiView: ",
@@ -88,6 +115,8 @@ function VideoViewer({
         slidesToShow: 4,
         slidesToScroll: 1,
         arrows: true,
+        draggable: true,
+        swipeToSlide: true, // 드래그 거리에 따라 슬라이드 넘어가도록
     };
 
     const handleMouseEnter = (id) => setHoveredImageId(id);
@@ -195,7 +224,7 @@ function VideoViewer({
                         onClick={() => setShowDropdown(!showDropdown)}
                     />
                     {showDropdown && (
-                        <div className="multi-dropdown">
+                        <div className="multi-dropdown" ref={dropdownRef}>
                             {cctvList.map((cctv) => (
                                 <div
                                     key={cctv.cctvId}
@@ -250,7 +279,7 @@ function VideoViewer({
                                             }}
                                         />
                                     ) : (
-                                        <p>웹캠 연결 오류</p>
+                                        <div className="viewer-video-error">카메라 연결 오류</div>
                                     )}
                                     <div
                                         className="multi-viewer-title"
@@ -313,7 +342,7 @@ function VideoViewer({
                         }}
                     />
                 ) : (
-                    <p>웹캠 연결 오류</p>
+                    <div className="viewer-video-error">카메라 연결 오류</div>
                 )}
             </div>
             <div className="viewer-count">
