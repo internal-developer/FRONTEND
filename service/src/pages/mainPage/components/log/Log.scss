@@ -9,16 +9,26 @@
     position: relative;
 
     @include tabletToMobile {
-        width: 95%;
+        width: 100%;
     }
 
     @include tablet {
         width: 100%;
     }
+
+    @include mobile{
+        width: 80%;
+        height: 5%
+    }
 }
 .viewer-title {
     width: auto;
     margin-right: 10px;
+
+    @include tabletToMobile {
+        margin-top: 4px;
+        font-size: 13px;
+    }
 
     @include mobile {
         margin: 0 4% 0 4%;
@@ -41,6 +51,14 @@
     @include mobile {
         position: absolute;
         left: 4%;
+        top: -70%;
+        width: 65px;
+        height: 23px;
+        font-size: 13px;
+    }
+
+    @include tabletToMobile {
+        position: absolute;
         top: -70%;
         width: 65px;
         height: 23px;

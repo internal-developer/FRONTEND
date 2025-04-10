@@ -1,9 +1,11 @@
-// import logExample from "../../../../assets/images/logExample.png";
 import "./LogList.scss";
 import { useEffect } from "react";
 import { RiExpandDiagonalLine } from "react-icons/ri";
+import { useVideoHandler } from "../../../../hooks/useVideoHandler";
 
 export default function LogList({ logs, checkedItems, setCheckedItems, handleImageModal }) {
+    const { videoError, isVideo, handleVideoError } = useVideoHandler();
+
     const handleCheckbox = (id) => {
         setCheckedItems((prev) =>
             prev.includes(id)
@@ -26,16 +28,48 @@ export default function LogList({ logs, checkedItems, setCheckedItems, handleIma
                         checked={checkedItems.includes(log.imageId)}
                         onChange={() => handleCheckbox(log.imageId)}
                     />
-                    <img
-                        className="log-image"
-                        src={log.path}
-                        alt="logImage"
-                        onClick={() => handleCheckbox(log.imageId)}
-                    />
-                    <RiExpandDiagonalLine
-                        className="log-fullscreen-icon"
-                        onClick={() => { handleImageModal(index) }}
-                    />
+                    {isVideo(log.path) ? (
+                        <div className="log-video-container">
+                            {videoError[log.imageId] ? (
+                                <div
+                                    className="log-video-error"
+                                    onClick={() => handleCheckbox(log.imageId)}
+                                >
+                                    영상을 재생할 수 없습니다
+                                </div>
+                            ) : (
+                                <>
+                                    <video
+                                        src={log.path}
+                                        muted
+                                        preload="metadata"
+                                        playsInline
+                                        onClick={() => handleCheckbox(log.imageId)}
+                                        onError={() => handleVideoError(log.imageId)}
+                                    />
+                                    <div
+                                        className="custom-play-button"
+                                        onClick={() => handleImageModal(index)}
+                                    >
+                                        ▶
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    ) : (
+                        <>
+                            <img
+                                className="log-image"
+                                src={log.path}
+                                alt="logImage"
+                                onClick={() => handleCheckbox(log.imageId)}
+                            />
+                            <RiExpandDiagonalLine
+                                className="log-fullscreen-icon"
+                                onClick={() => { handleImageModal(index) }}
+                            />
+                        </>
+                    )}
                     <div className="log-info">
                         <span>
                             날짜: {new Date(log.time).getFullYear()}-

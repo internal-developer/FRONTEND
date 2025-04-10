@@ -48,16 +48,65 @@
     }
 
     &-cctvList {
-        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 15px 3px;
+        width: fit-content;
 
-        ul {
-            list-style-type: none;
+        &-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+
+            p {
+                font-size: 14px;
+                color: gray;
+                margin-bottom: 10px;
+
+                @include mobile {
+                    font-size: 11px;
+                }
+
+                @include tablet {
+                    font-size: 12px;
+                }
+            }
+
+            &-add-btn {
+                padding: 6px 0px;
+                font-size: 14px;
+                border-radius: 8px;
+                border: none;
+                background-color: $primary-color;
+                color: white;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+
+                @include mobile {
+                    font-size: 10px;
+                    padding: 7px 0px;
+                }
+
+                @include tablet {
+                    font-size: 11px;
+                    padding: 7px 0;
+                }
+
+                &:hover {
+                    background-color: $primary-hover-color;
+                }
+            }
         }
 
-        li {
-            cursor: pointer;
-            padding-bottom: 4px;
+        &-li {
+            display: inline-block;
+            width: fit-content;
             position: relative;
+            cursor: pointer;
+            padding: 0px 14px 3px 14px;
 
             @include mobile {
                 font-size: 11px;
@@ -82,8 +131,9 @@
             border-radius: 5px;
             width: 64px;
             height: auto;
-            left: 95%;
-            top: -100%;
+            left: 100%;
+            top: 60%;
+            transform: translateY(-50%);
             padding: 2px 3px;
             box-shadow: 0px 2px 16px 0px rgba(0, 0, 0, 0.2);
 
@@ -127,6 +177,7 @@
                     background-color: $delete-hover;
                     color: white;
                 }
+
                 &:nth-child(4):hover {
                     background-color: $primary-hover-color;
                     color: white;

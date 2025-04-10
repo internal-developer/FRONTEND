@@ -2,9 +2,11 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { RiArrowLeftWideFill, RiArrowRightWideFill } from "react-icons/ri";
 import { FiPlus, FiMinus, FiRefreshCw } from "react-icons/fi";
 import './ImageModal.scss';
+import { useVideoHandler } from '../../../../hooks/useVideoHandler';
 
 function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage }) {
     const previewRef = useRef([]);
+    const { videoError, isVideo, handleVideoError } = useVideoHandler();
 
     // 이미지 확대 및 축소 상태
     const imageRef = useRef(null);
@@ -16,7 +18,6 @@ function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage
     const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 });
     const [showScaleToast, setShowScaleToast] = useState(false);
     // const [showControls, setShowControls] = useState(false); // 이미지 확대, 축소 버튼 표시 여부
-
 
     // 다음, 이전 이미지로 이동 함수
     const handleNext = () => {
@@ -187,15 +188,29 @@ function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage
                             // onMouseEnter={() => setShowControls(true)}
                             style={{ cursor: isDragging ? 'grabbing' : scale > 1 ? 'grab' : 'default' }}
                         >
-                            <img
-                                ref={imageRef}
-                                src={images[selectedImage].path}
-                                style={{
-                                    transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
-                                    transition: isDragging ? 'none' : 'transform 0.2s ease',
-                                }}
-                                draggable="false"
-                            />
+                            {isVideo(images[selectedImage].path) ? (
+                                <video
+                                    ref={imageRef}
+                                    src={images[selectedImage].path}
+                                    autoPlay
+                                    muted
+                                    controls
+                                    style={{
+                                        transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
+                                        transition: isDragging ? 'none' : 'transform 0.2s ease',
+                                    }}
+                                // draggable="false"
+                                />) : (
+                                <img
+                                    ref={imageRef}
+                                    src={images[selectedImage].path}
+                                    style={{
+                                        transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
+                                        transition: isDragging ? 'none' : 'transform 0.2s ease',
+                                    }}
+                                    draggable="false"
+                                />)}
+
 
                             {showScaleToast && (
                                 <div className="scale-toast">
@@ -218,20 +233,37 @@ function ImageModal({ images, setShowImageModal, setSelectedImage, selectedImage
                     <div className='image-container-footer'>
                         {images.map((image, index) => (
                             <div key={image.imageId} className="preview-image-container">
-                                <img
-                                    src={image.path}
-                                    alt={`이미지 미리보기: 인덱스 ${index}`}
-                                    className={`preview-image ${index === selectedImage ? "selected" : ""}`}
-                                    onClick={() => setSelectedImage(index)}
-                                    ref={(el) => (previewRef.current[index] = el)}
-                                />
+                                {isVideo(image.path) ? (
+                                    videoError[image.path] ? (
+                                        <div
+                                            className={`preview-image-error ${index === selectedImage ? "selected" : ""}`}
+                                            onClick={() => setSelectedImage(index)}
+                                            ref={(el) => (previewRef.current[index] = el)}
+                                        >
+                                            영상을 재생할 수 없습니다
+                                        </div>
+                                    ) : (
+                                        <video
+                                            src={image.path}
+                                            muted
+                                            playsInline
+                                            preload="metadata"
+                                            className={`preview-image ${index === selectedImage ? "selected" : ""}`}
+                                            onClick={() => setSelectedImage(index)}
+                                            onError={() => handleVideoError(image.path)}
+                                            ref={(el) => (previewRef.current[index] = el)}
+                                        />)
+                                ) : (
+                                    <img
+                                        src={image.path}
+                                        alt={`이미지 미리보기: 인덱스 ${index}`}
+                                        className={`preview-image ${index === selectedImage ? "selected" : ""}`}
+                                        onClick={() => setSelectedImage(index)}
+                                        ref={(el) => (previewRef.current[index] = el)}
+                                    />)}
                                 <div className='preview-image-info'>{formatDateTime(image.time)}</div>
                             </div>
-
-
-
                         ))}
-
                     </div>
                 </div>
             </div>
