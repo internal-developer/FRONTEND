@@ -5,6 +5,7 @@ import { RiFullscreenFill } from "react-icons/ri";
 import Slider from "react-slick";
 import "./VideoViewer.scss";
 import { useVideoHandler } from "../../../../hooks/useVideoHandler";
+import WebRTCViewer from "./WebRTCViewer";
 
 function VideoViewer({
     cctvList,
@@ -143,9 +144,7 @@ function VideoViewer({
     const renderSlider = (item) => (
         <div
             key={item.imageId}
-            onMouseEnter={() =>
-                handleMouseEnter(item.imageId)
-            }
+            onMouseEnter={() => handleMouseEnter(item.imageId)}
             onMouseLeave={handleMouseLeave}
             className="slider-image-container"
         >
@@ -172,30 +171,22 @@ function VideoViewer({
                 />
             )}
             <div
-                className={`image-info ${hoveredImageId === item.imageId
-                    ? "show"
-                    : ""
-                    }`}
+                className={`image-info ${
+                    hoveredImageId === item.imageId ? "show" : ""
+                }`}
             >
                 <p>{item.cctv.location}</p>
                 <p>
                     {new Date(item.time).getFullYear()}-
-                    {String(
-                        new Date(item.time).getMonth() + 1
-                    ).padStart(2, "0")}
-                    -
-                    {String(
-                        new Date(item.time).getDate()
-                    ).padStart(2, "0")}
+                    {String(new Date(item.time).getMonth() + 1).padStart(
+                        2,
+                        "0"
+                    )}
+                    -{String(new Date(item.time).getDate()).padStart(2, "0")}
                 </p>
                 <p>
-                    {String(
-                        new Date(item.time).getHours()
-                    ).padStart(2, "0")}
-                    :
-                    {String(
-                        new Date(item.time).getMinutes()
-                    ).padStart(2, "0")}
+                    {String(new Date(item.time).getHours()).padStart(2, "0")}:
+                    {String(new Date(item.time).getMinutes()).padStart(2, "0")}
                 </p>
             </div>
         </div>
@@ -258,7 +249,7 @@ function VideoViewer({
                     className="multi-viewer-video-container"
                     style={getGridStyle(countShownCctv())}
                 >
-                    {cctvList.map(
+                    {/* {cctvList.map(
                         (cctv) =>
                             shownCctv[cctv.cctvId] && (
                                 <div
@@ -279,7 +270,9 @@ function VideoViewer({
                                             }}
                                         />
                                     ) : (
-                                        <div className="viewer-video-error">카메라 연결 오류</div>
+                                        <div className="viewer-video-error">
+                                            카메라 연결 오류
+                                        </div>
                                     )}
                                     <div
                                         className="multi-viewer-title"
@@ -293,7 +286,34 @@ function VideoViewer({
                                     </div>
                                 </div>
                             )
-                    )}
+                    )} */}
+                    <WebRTCViewer
+                        channelName="cleanguard"
+                        region="ap-northeast-2"
+                        accessKeyId=""
+                        secretAccessKey=""
+                    />
+                    {/* {cctvList.map(
+                        (cctv) =>
+                            shownCctv[cctv.cctvId] && (
+                                <div
+                                    key={cctv.cctvId}
+                                    className="multi-viewer-video"
+                                >
+                                    <WebRTCViewer channelName={cctv.cctvId} />
+                                    <div
+                                        className="multi-viewer-title"
+                                        onClick={() => {
+                                            setMultiView(false);
+                                            setSelectedCCTV(cctv);
+                                        }}
+                                    >
+                                        {cctv.cctvName}
+                                        <RiFullscreenFill className="fullscreen-icon" />
+                                    </div>
+                                </div>
+                            )
+                    )} */}
                 </div>
 
                 {/* 슬라이더 코드 */}
@@ -325,8 +345,7 @@ function VideoViewer({
                 현재 CCTV:{" "}
                 {selectedCCTV ? selectedCCTV.cctvName : "선택되지 않음"}
             </div>
-            {/* <div className='viewer-video'><img src='https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png'/></div> */}
-            <div className="viewer-video">
+            {/* <div className="viewer-video">
                 {" "}
                 {webcamId && isWebcamAvailable(webcamId) ? (
                     <Webcam
@@ -344,6 +363,19 @@ function VideoViewer({
                 ) : (
                     <div className="viewer-video-error">카메라 연결 오류</div>
                 )}
+            </div> */}
+            <WebRTCViewer
+                channelName="cleanguard"
+                region="ap-northeast-2"
+                accessKeyId=""
+                secretAccessKey=""
+            />
+            {/* <div className="viewer-video">
+                {cctvId ? (
+                    <WebRTCViewer channelName={cctvId} />
+                ) : (
+                    <div className="viewer-video-error">채널 연결 오류</div>
+                )}
             </div>
             <div className="viewer-count">
                 금일 투기 적발 건수: {filteredImages.length}건
@@ -358,7 +390,7 @@ function VideoViewer({
                 <button className="viewer-capture-button" onClick={onShowLog}>
                     상세기록 보러가기
                 </button>
-            </div>
+            </div> */}
         </div>
     );
 }
