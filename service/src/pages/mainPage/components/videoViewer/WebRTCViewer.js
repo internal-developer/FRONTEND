@@ -11,8 +11,8 @@ export default function WebRTCViewer({
     sessionToken = null,
 }) {
     const videoRef = useRef(null);
-    let signalingClient = useRef(null);
-    let peerConnection = useRef(null);
+    const signalingClient = useRef(null);
+    const peerConnection = useRef(null);
 
     useEffect(() => {
         const startViewer = async () => {
@@ -49,22 +49,21 @@ export default function WebRTCViewer({
                 {}
             );
 
-            // 4) ICE 서버 설정
-            const kvsc = new AWS.KinesisVideoSignalingChannels({
-                endpoint: endpoints.HTTPS,
-            });
-            const iceResp = await kvsc
-                .getIceServerConfig({
-                    ChannelARN: channelARN,
-                    ClientId: ``,
-                })
-                .promise();
-            const iceServers = iceResp.IceServerList.map((s) => ({
+            // 4) ICE 서버 설정 (프록시 fetch 사용)
+            //    http://localhost:8080/api/ice?channelARN=...&clientId=...
+            const clientId = `viewer-${Date.now()}`;
+            const res = await fetch(
+                `http://localhost:8080/api/ice?channelARN=${encodeURIComponent(
+                    channelARN
+                )}&clientId=${clientId}`
+            );
+            const { IceServerList } = await res.json();
+            const iceServers = IceServerList.map((s) => ({
                 urls: s.Uris,
                 username: s.Username,
                 credential: s.Password,
             }));
-            // 기본 STUN
+            // 기본 STUN 서버도 추가
             iceServers.unshift({
                 urls: `stun:stun.kinesisvideo.${region}.amazonaws.com:443`,
             });
@@ -87,10 +86,10 @@ export default function WebRTCViewer({
                 role: Role.VIEWER,
                 region,
                 credentials: AWS.config.credentials,
+                clientId, // 전달한 클라이언트 ID
             });
 
             signalingClient.current.on("open", async () => {
-                // Offer 생성
                 const offer = await peerConnection.current.createOffer({
                     offerToReceiveAudio: true,
                     offerToReceiveVideo: true,
@@ -98,7 +97,6 @@ export default function WebRTCViewer({
                 await peerConnection.current.setLocalDescription(offer);
                 signalingClient.current.sendSdpOffer(offer);
             });
-
             signalingClient.current.on("sdpAnswer", ({ sdpAnswer }) => {
                 peerConnection.current.setRemoteDescription(sdpAnswer);
             });
@@ -112,7 +110,6 @@ export default function WebRTCViewer({
         startViewer().catch(console.error);
 
         return () => {
-            // Cleanup
             signalingClient.current?.close();
             peerConnection.current?.close();
         };
