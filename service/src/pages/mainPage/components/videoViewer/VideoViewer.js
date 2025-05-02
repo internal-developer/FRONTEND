@@ -5,6 +5,7 @@ import { RiFullscreenFill } from "react-icons/ri";
 import Slider from "react-slick";
 import "./VideoViewer.scss";
 import { useVideoHandler } from "../../../../hooks/useVideoHandler";
+import { KinesisWebRTC } from "./KinesisWebRTC";
 
 function VideoViewer({
     cctvList,
@@ -15,6 +16,7 @@ function VideoViewer({
     dumpingData,
     onShowLog,
 }) {
+    const videoRef = useRef(null);
     const [hoveredImageId, setHoveredImageId] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const [shownCctv, setShownCctv] = useState({}); // 멀티뷰에서 보여질 cctv
@@ -22,7 +24,14 @@ function VideoViewer({
     const { videoError, isVideo, handleVideoError } = useVideoHandler();
     const dropdownRef = useRef(null);
 
+
+    const [error, setError] = useState(null);
+
     const cctvId = selectedCCTV ? selectedCCTV.cctvId : null;
+
+    // 임시로 설정한 webrtc용 init 정보 -> 수정 요망
+    const [channelName, setChannelName] = useState("cleanguard");
+    const [region, setRegion] = useState("ap-northeast-2");
 
     useEffect(() => {
         // 웹캠 목록 가져오기
@@ -92,21 +101,35 @@ function VideoViewer({
         }
     }, [multiView]);
 
-    // useEffect(() => {
-    //     console.log(
-    //         "multiView: ",
-    //         multiView,
-    //         "\n",
-    //         "selectedCCTV: ",
-    //         selectedCCTV,
-    //         "\n",
-    //         "cctvId: ",
-    //         cctvId,
-    //         "\n",
-    //         "filteredImages: ",
-    //         filteredImages
-    //     );
-    // }, [filteredImages]);
+    // WebRTC 연결 -> 임시/단일뷰에서만
+    useEffect(() => {
+        if (!selectedCCTV || !channelName || multiView) return;
+
+        let cleanup = null;
+
+        const initWebRTC = async () => {
+            try {
+                // WebRTC 설정
+                cleanup = await KinesisWebRTC({
+                    channelName: channelName,
+                    region: region || "ap-northeast-2",
+                    videoRef,
+                    setError,
+                });
+            } catch (err) {
+                setError("초기화에 실패했습니다.");
+                console.error("WebRTC error:", err);
+            }
+        };
+
+        initWebRTC();
+
+        return () => {
+            if (cleanup) cleanup();
+        };
+    }, [selectedCCTV]);
+
+
 
     const sliderSettings = {
         dots: false,
@@ -325,10 +348,9 @@ function VideoViewer({
                 현재 CCTV:{" "}
                 {selectedCCTV ? selectedCCTV.cctvName : "선택되지 않음"}
             </div>
-            {/* <div className='viewer-video'><img src='https://www.sisanews.kr/news/photo/202408/109831_94595_3144.png'/></div> */}
             <div className="viewer-video">
                 {" "}
-                {webcamId && isWebcamAvailable(webcamId) ? (
+                {/* {webcamId && isWebcamAvailable(webcamId) ? (
                     <Webcam
                         style={{
                             objectFit: "fill",
@@ -341,6 +363,22 @@ function VideoViewer({
                             deviceId: webcamId,
                         }}
                     />
+                )  */}
+                {selectedCCTV && channelName ? (
+                    <>
+                        <video
+                            ref={videoRef}
+                            autoPlay
+                            playsInline
+                            muted
+                            style={{
+                                objectFit: "fill",
+                                width: "100%",
+                                height: "100%",
+                            }}
+                        />
+                        {error && <div className="viewer-video-error">{error}</div>}
+                    </>
                 ) : (
                     <div className="viewer-video-error">카메라 연결 오류</div>
                 )}

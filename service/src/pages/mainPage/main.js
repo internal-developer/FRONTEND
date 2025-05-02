@@ -89,7 +89,7 @@ function Main() {
                             const newImage = newData.filter((item) => !existImage.has(item.imageId));
                             return [...prev, ...newImage];
                         });
-                        console.log("이미지 데이터 가져오기 성공(SSE) :", newData);
+                        //console.log("이미지 데이터 가져오기 성공(SSE) :", newData);
                     } catch (error) {
                         console.error("SSE 데이터 파싱 오류:", error);
                     }
