@@ -94,6 +94,7 @@ export const KinesisWebRTC = async ({ channelName, region, credentials, videoRef
         //<------ PeerConnection 이벤트 리스너
         peerConnection.onicecandidate = (event) => {
             if (event.candidate) {
+                signalingClient.sendIceCandidate(event.candidate);
                 console.log('[ICE] Candidate:', event.candidate);
             } else {
                 console.log('[ICE] All candidates gathered');
@@ -102,6 +103,10 @@ export const KinesisWebRTC = async ({ channelName, region, credentials, videoRef
 
         peerConnection.oniceconnectionstatechange = () => {
             console.log('[ICE] State:', peerConnection.iceConnectionState);
+            if (peerConnection.iceConnectionState === 'failed') {
+                console.error('[ICE] Connection failed');
+                setError("ICE 연결 실패");
+            }
         };
 
         peerConnection.onsignalingstatechange = () => {
@@ -110,19 +115,50 @@ export const KinesisWebRTC = async ({ channelName, region, credentials, videoRef
 
         peerConnection.ontrack = (event) => {
             console.log('[Track] Received track:', event.track);
+            console.log('[Track] videoRef.current:', videoRef.current);
+            console.log('[Track] event.streams:', event.streams);
             if (!videoRef.current) {
                 console.error("Video element is not mounted!");
                 return;
             }
             if (event.streams && event.streams[0]) {
-                console.log('[Track] Attached stream to video element');
-                videoRef.current.srcObject = event.streams[0];
+                const stream = event.streams[0];
+                console.log('[Track] Stream active:', stream.active);
+                console.log('[Track] Stream tracks:', stream.getTracks());
+                videoRef.current.srcObject = stream;
+                videoRef.current.playsInline = true;
+                videoRef.current.muted = true;
+                videoRef.current.play().catch((err) => {
+                    console.error("Video play failed:", err);
+                    setError("비디오 재생 실패: " + err.message);
+                });
+                console.log('[Track] srcObject set:', videoRef.current.srcObject);
+                stream.getTracks().forEach(track => {
+                    console.log('[Track] Track details:', {
+                        kind: track.kind,
+                        id: track.id,
+                        enabled: track.enabled,
+                        readyState: track.readyState,
+                        muted: track.muted,
+                    });
+                    track.onunmute = () => console.log('[Track] Track unmuted');
+                    track.onmute = () => console.log('[Track] Track muted');
+                });
+            } else {
+                console.error('[Track] No streams received');
             }
         };
         // PeerConnection 이벤트 리스너----->
-
         signalingClient.on("open", async () => {
             try {
+                // // 로컬 스트림 획득
+                // const constraints = {
+                //     video: true,
+                //     audio: false,
+                // };
+                // const localStream = await navigator.mediaDevices.getUserMedia(constraints);
+                // localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+                
                 const offer = await peerConnection.createOffer({
                     offerToReceiveVideo: true,
                     offerToReceiveAudio: true,
@@ -144,6 +180,11 @@ export const KinesisWebRTC = async ({ channelName, region, credentials, videoRef
                 setError("SDP Answer 처리에 실패했습니다.");
                 console.error("SDP Answer error:", err);
             }
+        });
+
+        signalingClient.on("iceCandidate", (candidate) => {
+            console.log('[ICE] Received candidate:', candidate);
+            peerConnection.addIceCandidate(candidate);
         });
 
         signalingClient.on("error", (err) => {

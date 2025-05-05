@@ -129,7 +129,7 @@ function VideoViewer({
         };
     }, [selectedCCTV]);
 
-
+    
 
     const sliderSettings = {
         dots: false,
@@ -371,6 +371,7 @@ function VideoViewer({
                             autoPlay
                             playsInline
                             muted
+                            controls
                             style={{
                                 objectFit: "fill",
                                 width: "100%",
