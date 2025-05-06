@@ -11,7 +11,7 @@ const api = axios.create({
 });
 
 const streamApi = axios.create({
-    baseURL: "http://13.124.119.86:8081",
+    baseURL: "http://localhost:8081",
     timeout: 10000,
     headers: {
         "Content-Type": "application/json",
