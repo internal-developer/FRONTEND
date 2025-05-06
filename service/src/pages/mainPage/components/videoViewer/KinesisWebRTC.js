@@ -3,16 +3,13 @@ import AWS from "aws-sdk";
 
 // clientId 생성 함수 -> 랜덤 생성
 const getRandomClientId = () => {
-    return Math.random().toString(36).substring(2).toUpperCase();
+    return Math.random()
+        .toString(36)
+        .substring(2)
+        .toUpperCase();
 };
 
-export const KinesisWebRTC = async ({
-    channelName,
-    region,
-    credentials,
-    videoRef,
-    setError,
-}) => {
+export const KinesisWebRTC = async ({ channelName, region, credentials, videoRef, setError }) => {
     let signalingClient = null;
     let peerConnection = null;
 
@@ -21,7 +18,7 @@ export const KinesisWebRTC = async ({
         const credentials = {
             accessKeyId: "",
             secretAccessKey: "",
-            // sessionToken: "YOUR_AWS_SESSION_TOKEN",
+            // sessionToken: "YOUR_AWS_SESSION_TOKEN", 
         };
 
         // Kinesis Video 클라이언트 초기화
@@ -41,23 +38,17 @@ export const KinesisWebRTC = async ({
         const { ResourceEndpointList } = await kinesisVideoClient
             .getSignalingChannelEndpoint({
                 ChannelARN: channelARN,
-                SingleMasterChannelEndpointConfiguration: {
-                    Protocols: ["WSS", "HTTPS"],
-                    Role: "VIEWER",
-                },
+                SingleMasterChannelEndpointConfiguration: { Protocols: ["WSS", "HTTPS"], Role: "VIEWER" },
             })
             .promise();
 
-        const endpoints = ResourceEndpointList.reduce(
-            (acc, { Protocol, ResourceEndpoint }) => {
-                acc[Protocol] = ResourceEndpoint;
-                return acc;
-            },
-            {}
-        );
+        const endpoints = ResourceEndpointList.reduce((acc, { Protocol, ResourceEndpoint }) => {
+            acc[Protocol] = ResourceEndpoint;
+            return acc;
+        }, {});
 
         // ICE 서버 구성 (STUN + TURN)
-        console.log("Creating ICE server configuration...");
+        console.log('Creating ICE server configuration...');
         const signalingChannelsClient = new AWS.KinesisVideoSignalingChannels({
             region,
             endpoint: endpoints.HTTPS,
@@ -65,11 +56,11 @@ export const KinesisWebRTC = async ({
             correctClockSkew: true,
         });
 
-        console.log("Getting ICE server config...");
+        console.log('Getting ICE server config...');
         const { IceServerList } = await signalingChannelsClient
             .getIceServerConfig({ ChannelARN: channelARN })
             .promise();
-        console.log("ICE servers:", IceServerList); // 획득한 ICE 서버 목록 로깅
+        console.log('ICE servers:', IceServerList);  // 획득한 ICE 서버 목록 로깅
 
         const iceServers = [
             { urls: `stun:stun.kinesisvideo.${region}.amazonaws.com:443` },
@@ -79,7 +70,7 @@ export const KinesisWebRTC = async ({
                 credential: Password,
             })),
         ];
-        console.log("Final ICE Servers:", iceServers); // 최종 ICE 서버 구성 출력
+        console.log('Final ICE Servers:', iceServers);  // 최종 ICE 서버 구성 출력
 
         // SignalingClient 초기화
         console.log(`Creating signaling client...`);
@@ -93,15 +84,9 @@ export const KinesisWebRTC = async ({
             systemClockOffset: kinesisVideoClient.config.systemClockOffset,
         });
         // Signaling Client 이벤트 리스너
-        signalingClient.on("open", () =>
-            console.log("[Signaling] Connection opened!")
-        );
-        signalingClient.on("error", (err) =>
-            console.error("[Signaling] Error:", err)
-        );
-        signalingClient.on("close", () =>
-            console.log("[Signaling] Connection closed")
-        );
+        signalingClient.on('open', () => console.log('[Signaling] Connection opened!'));
+        signalingClient.on('error', (err) => console.error('[Signaling] Error:', err));
+        signalingClient.on('close', () => console.log('[Signaling] Connection closed'));
 
         // WebRTC 설정
         peerConnection = new RTCPeerConnection({ iceServers });
@@ -110,60 +95,67 @@ export const KinesisWebRTC = async ({
         peerConnection.onicecandidate = (event) => {
             if (event.candidate) {
                 signalingClient.sendIceCandidate(event.candidate);
-                console.log("[ICE] Candidate:", event.candidate);
+                console.log('[ICE] Candidate:', event.candidate);
             } else {
-                console.log("[ICE] All candidates gathered");
+                console.log('[ICE] All candidates gathered');
             }
         };
 
         peerConnection.oniceconnectionstatechange = () => {
-            console.log("[ICE] State:", peerConnection.iceConnectionState);
-            if (peerConnection.iceConnectionState === "failed") {
-                console.error("[ICE] Connection failed");
+            console.log('[ICE] State:', peerConnection.iceConnectionState);
+            if (peerConnection.iceConnectionState === 'failed') {
+                console.error('[ICE] Connection failed');
                 setError("ICE 연결 실패");
             }
         };
 
         peerConnection.onsignalingstatechange = () => {
-            console.log("[Signaling] State:", peerConnection.signalingState);
+            console.log('[Signaling] State:', peerConnection.signalingState);
         };
 
         peerConnection.ontrack = (event) => {
-            console.log("[Track] Received track:", event.track);
-            console.log("[Track] videoRef.current:", videoRef.current);
-            console.log("[Track] event.streams:", event.streams);
+            console.log('[Track] Received track:', event.track);
+            console.log('[Track] videoRef.current:', videoRef.current);
+            console.log('[Track] event.streams:', event.streams);
             if (!videoRef.current) {
                 console.error("Video element is not mounted!");
                 return;
             }
             if (event.streams && event.streams[0]) {
                 const stream = event.streams[0];
-                console.log("[Track] Stream active:", stream.active);
-                console.log("[Track] Stream tracks:", stream.getTracks());
+                console.log('[Track] Stream active:', stream.active);
+                console.log('[Track] Stream tracks:', stream.getTracks());
+                // 기존 스트림 정리
+                if (videoRef.current.srcObject) {
+                    videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+                    videoRef.current.srcObject = null;
+                }
+
                 videoRef.current.srcObject = stream;
                 videoRef.current.playsInline = true;
                 videoRef.current.muted = true;
-                videoRef.current.play().catch((err) => {
-                    console.error("Video play failed:", err);
-                    setError("비디오 재생 실패: " + err.message);
-                });
-                console.log(
-                    "[Track] srcObject set:",
-                    videoRef.current.srcObject
-                );
-                stream.getTracks().forEach((track) => {
-                    console.log("[Track] Track details:", {
+
+                // 비디오가 paused 상태일 때만 play() 호출
+                if (videoRef.current.paused) {
+                    videoRef.current.play().catch((err) => {
+                        console.error("Video play failed:", err);
+                        setError("비디오 재생 실패: " + err.message);
+                    });
+                }
+                console.log('[Track] srcObject set:', videoRef.current.srcObject);
+                stream.getTracks().forEach(track => {
+                    console.log('[Track] Track details:', {
                         kind: track.kind,
                         id: track.id,
                         enabled: track.enabled,
                         readyState: track.readyState,
                         muted: track.muted,
                     });
-                    track.onunmute = () => console.log("[Track] Track unmuted");
-                    track.onmute = () => console.log("[Track] Track muted");
+                    track.onunmute = () => console.log('[Track] Track unmuted');
+                    track.onmute = () => console.log('[Track] Track muted');
                 });
             } else {
-                console.error("[Track] No streams received");
+                console.error('[Track] No streams received');
             }
         };
         // PeerConnection 이벤트 리스너----->
@@ -181,10 +173,7 @@ export const KinesisWebRTC = async ({
                     offerToReceiveVideo: true,
                     offerToReceiveAudio: true,
                 });
-                console.log(
-                    "[SDP] Offer created:",
-                    offer.sdp.slice(0, 100) + "..."
-                ); // SDP 요약 출력
+                console.log('[SDP] Offer created:', offer.sdp.slice(0, 100) + '...');  // SDP 요약 출력
                 await peerConnection.setLocalDescription(offer);
                 signalingClient.sendSdpOffer(offer);
             } catch (err) {
@@ -194,14 +183,9 @@ export const KinesisWebRTC = async ({
         });
 
         signalingClient.on("sdpAnswer", async (answer) => {
-            console.log(
-                "[SDP] Received answer:",
-                answer.sdp.slice(0, 100) + "..."
-            );
+            console.log('[SDP] Received answer:', answer.sdp.slice(0, 100) + '...');
             try {
-                await peerConnection.setRemoteDescription(
-                    new RTCSessionDescription(answer)
-                );
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
             } catch (err) {
                 setError("SDP Answer 처리에 실패했습니다.");
                 console.error("SDP Answer error:", err);
@@ -209,7 +193,7 @@ export const KinesisWebRTC = async ({
         });
 
         signalingClient.on("iceCandidate", (candidate) => {
-            console.log("[ICE] Received candidate:", candidate);
+            console.log('[ICE] Received candidate:', candidate);
             peerConnection.addIceCandidate(candidate);
         });
 
@@ -235,8 +219,9 @@ export const KinesisWebRTC = async ({
             signalingClient.close();
             signalingClient = null;
         }
-        if (videoRef.current) {
-            videoRef.current.srcObject = null;
-        }
+        if (videoRef.current && videoRef.current.srcObject) {
+        videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+        videoRef.current.srcObject = null;
+    }
     };
 };

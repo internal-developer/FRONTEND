@@ -16,21 +16,16 @@ function VideoViewer({
     dumpingData,
     onShowLog,
 }) {
-    const videoRef = useRef(null);
     const [hoveredImageId, setHoveredImageId] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const [shownCctv, setShownCctv] = useState({}); // 멀티뷰에서 보여질 cctv
     // const [availableWebcams, setAvailableWebcams] = useState([]); // 연결 가능한 웹캠들
     const { videoError, isVideo, handleVideoError } = useVideoHandler();
     const dropdownRef = useRef(null);
-
-    const [error, setError] = useState(null);
+    const [error, setError] = useState({});
+    const videoRef = useRef({}); // CCTV별 videoRef 관리
 
     const cctvId = selectedCCTV ? selectedCCTV.cctvId : null;
-
-    // 임시로 설정한 webrtc용 init 정보 -> 수정 요망
-    const [channelName, setChannelName] = useState("cleanguard");
-    const [region, setRegion] = useState("ap-northeast-2");
 
     // useEffect(() => {
     //     // 웹캠 목록 가져오기
@@ -46,6 +41,14 @@ function VideoViewer({
     //             console.error("웹캠 목록을 가져오는 중 오류 발생:", error);
     //         });
     // }, []);
+
+    // CCTV별 videoRef 동적 생성
+    const getVideoRef = (cctvId) => {
+        if (!videoRef.current[cctvId]) {
+            videoRef.current[cctvId] = React.createRef();
+        }
+        return videoRef.current[cctvId];
+    };
 
     useEffect(() => {
         setShownCctv(
@@ -100,33 +103,63 @@ function VideoViewer({
         }
     }, [multiView]);
 
-    // WebRTC 연결 -> 임시/단일뷰에서만
+    // WebRTC 연결 관리
+    const cleanups = useRef({});
     useEffect(() => {
-        if (!selectedCCTV || !channelName || multiView) return;
+        // 멀티뷰일 때 각 CCTV별 WebRTC 연결
+        if (multiView) {
+            const initMultiWebRTC = async () => {
+                for (const cctv of cctvList) {
+                    if (shownCctv[cctv.cctvId] && cctv.stream) {
+                        try {
+                            cleanups.current[cctv.cctvId] = await KinesisWebRTC({
+                                channelName: cctv.stream,
+                                region: "ap-northeast-2",
+                                videoRef: getVideoRef(cctv.cctvId),
+                                setError: (err) =>
+                                    setError((prev) => ({ ...prev, [cctv.cctvId]: err })),
+                            });
+                        } catch (err) {
+                            setError((prev) => ({
+                                ...prev,
+                                [cctv.cctvId]: "초기화에 실패했습니다.",
+                            }));
+                            console.error(`WebRTC error for ${cctv.cctvName}:`, err);
+                        }
+                    }
+                }
+            };
+            initMultiWebRTC();
+        }
+        // 단일뷰일 때 WebRTC 연결
+        else if (selectedCCTV && selectedCCTV.stream) {
+            const initWebRTC = async () => {
+                try {
+                    cleanups.current[selectedCCTV.cctvId] = await KinesisWebRTC({
+                        channelName: selectedCCTV.stream,
+                        region: "ap-northeast-2",
+                        videoRef: getVideoRef(selectedCCTV.cctvId),
+                        setError: (err) =>
+                            setError((prev) => ({ ...prev, [selectedCCTV.cctvId]: err })),
+                    });
+                } catch (err) {
+                    setError((prev) => ({
+                        ...prev,
+                        [selectedCCTV.cctvId]: "초기화에 실패했습니다.",
+                    }));
+                    console.error(`WebRTC error for ${selectedCCTV.cctvName}:`, err);
+                }
+            };
+            initWebRTC();
+        }
 
-        let cleanup = null;
-
-        const initWebRTC = async () => {
-            try {
-                // WebRTC 설정
-                cleanup = await KinesisWebRTC({
-                    channelName: channelName,
-                    region: region || "ap-northeast-2",
-                    videoRef,
-                    setError,
-                });
-            } catch (err) {
-                setError("초기화에 실패했습니다.");
-                console.error("WebRTC error:", err);
-            }
-        };
-
-        initWebRTC();
-
+        // 클린업
         return () => {
-            if (cleanup) cleanup();
+            Object.values(cleanups.current).forEach((cleanup) => cleanup && cleanup());
+            cleanups.current = {};
         };
-    }, [selectedCCTV]);
+
+    }, [selectedCCTV, multiView, shownCctv, cctvList]);
 
     const sliderSettings = {
         dots: false,
@@ -190,9 +223,8 @@ function VideoViewer({
                 />
             )}
             <div
-                className={`image-info ${
-                    hoveredImageId === item.imageId ? "show" : ""
-                }`}
+                className={`image-info ${hoveredImageId === item.imageId ? "show" : ""
+                    }`}
             >
                 <p>{item.cctv.location}</p>
                 <p>
@@ -296,18 +328,17 @@ function VideoViewer({
                                     {cctv.stream ? (
                                         <>
                                             <video
-                                                ref={videoRef}
+                                                ref={getVideoRef(cctv.cctvId)}
                                                 autoPlay
                                                 playsInline
                                                 muted
-                                                controls
                                                 style={{
                                                     objectFit: "fill",
                                                     width: "100%",
                                                     height: "100%",
                                                 }}
                                             />
-                                            {error && (
+                                            {error[cctv.cctvId] && (
                                                 <div
                                                     className="viewer-video-error"
                                                     style={{
@@ -318,14 +349,14 @@ function VideoViewer({
                                                         fontSize: "15px",
                                                     }}
                                                 >
-                                                    {error}
+                                                    {error[cctv.cctvId]}
                                                 </div>
                                             )}
                                         </>
                                     ) : (
                                         <div
                                             className="viewer-video-error"
-                                            // style={{ height: "100%" }}
+                                        // style={{ height: "100%" }}
                                         >
                                             카메라 연결 오류
                                         </div>
@@ -338,7 +369,7 @@ function VideoViewer({
                                         }}
                                     >
                                         {cctv.cctvName}
-                                        {/* <RiFullscreenFill className="fullscreen-icon" /> */}
+                                        <RiFullscreenFill className="fullscreen-icon" />
                                     </div>
                                 </div>
                             )
@@ -393,7 +424,7 @@ function VideoViewer({
                 {selectedCCTV && selectedCCTV.stream ? (
                     <>
                         <video
-                            ref={videoRef}
+                            ref={getVideoRef(selectedCCTV.cctvId)}
                             autoPlay
                             playsInline
                             muted
@@ -404,7 +435,7 @@ function VideoViewer({
                                 height: "100%",
                             }}
                         />
-                        {error && (
+                        {error[selectedCCTV.cctvId] && (
                             <div
                                 className="viewer-video-error"
                                 style={{
@@ -414,7 +445,7 @@ function VideoViewer({
                                     fontSize: "15px",
                                 }}
                             >
-                                {error}
+                                {error[selectedCCTV.cctvId]}
                             </div>
                         )}
                     </>
