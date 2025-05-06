@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./Header.scss";
 import defaultProfileImage from "../../../../assets/images/default_profile_image.jpg";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../../../../api/api";
+import { api } from "../../../../api/api";
 
 function Header({ userInfo }) {
     const [isOpen, setIsOpen] = useState(false);

@@ -1,4 +1,4 @@
-import api from "../api/api";
+import { api } from "../api/api";
 
 // 카카오 로그인 (OAuth)
 export async function kakaoLogin(token) {

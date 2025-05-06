@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../api/api";
+import { api } from "../../api/api";
 import "./signup.scss";
 import kakaoLogo from "../../assets/images/loginbutton/kakao_logo.png";
 

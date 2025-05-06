@@ -10,7 +10,7 @@ import dumpingData from "../../data/dumpingData.json";
 import AddModal from "./components/cctvSidemenu/AddModal";
 import EditModal from "./components/cctvSidemenu/EditModal";
 import DeleteModal from "./components/cctvSidemenu/DeleteModal";
-import api from "../../api/api"; // axios 인스턴스 호출
+import { api } from "../../api/api"; // axios 인스턴스 호출
 import { EventSourcePolyfill } from 'event-source-polyfill';
 
 function Main() {

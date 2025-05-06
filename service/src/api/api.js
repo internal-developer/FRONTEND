@@ -10,6 +10,14 @@ const api = axios.create({
     },
 });
 
+const streamApi = axios.create({
+    baseURL: "http://13.124.119.86:8081",
+    timeout: 10000,
+    headers: {
+        "Content-Type": "application/json",
+    },
+});
+
 // 토큰 만료 여부 확인 함수
 const isTokenExpired = (token) => {
     const decoded = jwtDecode(token);
@@ -91,46 +99,55 @@ const refreshAccessToken = async () => {
 };
 
 // 요청 인터셉터 ==> 요청 헤더에 jwt access token 자동 추가
-api.interceptors.request.use(
-    async (config) => {
-        const accessToken = localStorage.getItem("accessToken");
-        if (accessToken && isTokenExpired(accessToken)) {
-            try {
-                const newAccessToken = await refreshAccessToken();
-                config.headers.Authorization = `Bearer ${newAccessToken}`;
-            } catch (error) {
-                console.error("토큰 갱신 실패:", error);
+const RequestInterceptor = (instance) => {
+    instance.interceptors.request.use(
+        async (config) => {
+            const accessToken = localStorage.getItem("accessToken");
+            if (accessToken && isTokenExpired(accessToken)) {
+                try {
+                    const newAccessToken = await refreshAccessToken();
+                    config.headers.Authorization = `Bearer ${newAccessToken}`;
+                } catch (error) {
+                    console.error("토큰 갱신 실패:", error);
+                }
+            } else if (accessToken) {
+                config.headers.Authorization = `Bearer ${accessToken}`;
             }
-        } else if (accessToken) {
-            config.headers.Authorization = `Bearer ${accessToken}`;
+            return config;
+        },
+        (error) => {
+            return Promise.reject(error);
         }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
+    );
+}
 
 // 응답 인터셉터 ==> access token 만료 시 refresh token으로 갱신
-api.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        const originalRequest = error?.config;
-        // 401 오류이고 재시도하지 않은 경우에만 처리
-        if (error.response && error.response.status === 401 && !originalRequest?._retry) {
-            originalRequest._retry = true; // 재시도 방지 플래그 추가
-            try {
-                const newAccessToken = await refreshAccessToken();
-                // 원래 요청 헤더를 새로 발급받은 access token으로 업데이트
-                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-                return api(originalRequest);
-            } catch (refreshError) {
-                return Promise.reject(refreshError);
+const ResponseInterceptor = (instance) => {
+    instance.interceptors.response.use(
+        (response) => response,
+        async (error) => {
+            const originalRequest = error?.config;
+            // 401 오류이고 재시도하지 않은 경우에만 처리
+            if (error.response && error.response.status === 401 && !originalRequest?._retry) {
+                originalRequest._retry = true; // 재시도 방지 플래그 추가
+                try {
+                    const newAccessToken = await refreshAccessToken();
+                    // 원래 요청 헤더를 새로 발급받은 access token으로 업데이트
+                    originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                    return instance(originalRequest);
+                } catch (refreshError) {
+                    return Promise.reject(refreshError);
+                }
             }
+            return Promise.reject(error);
         }
-        return Promise.reject(error);
-    }
-);
+    );
+}
+
+RequestInterceptor(api);
+ResponseInterceptor(api);
+RequestInterceptor(streamApi);
+ResponseInterceptor(streamApi);
 
 const handleLogout = async () => {
     try {
@@ -178,5 +195,5 @@ const initAuth = () => {
 
 initAuth();
 
-export default api;
+export { api, streamApi };
 

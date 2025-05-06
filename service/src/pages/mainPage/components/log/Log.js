@@ -6,7 +6,7 @@ import LogList from "./LogList";
 import FeedbackModal from "./FeedbackModal";
 import ConfirmModal from "./ConfirmModal";
 import ImageModal from "./ImageModal";
-import api from "../../../../api/api";
+import { api } from "../../../../api/api";
 import "./Log.scss";
 
 

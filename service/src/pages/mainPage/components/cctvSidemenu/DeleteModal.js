@@ -1,6 +1,6 @@
 import React from 'react';
 import './Modal.scss';
-import api from "../../../../api/api";
+import { api } from "../../../../api/api";
 
 function DeleteModal({ setShowDeleteModal, selectedCCTV, setCctvList, setMultiView }) {
     const cctvId = selectedCCTV.cctvId;
