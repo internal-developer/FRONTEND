@@ -20,10 +20,9 @@ function VideoViewer({
     const [hoveredImageId, setHoveredImageId] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const [shownCctv, setShownCctv] = useState({}); // 멀티뷰에서 보여질 cctv
-    const [availableWebcams, setAvailableWebcams] = useState([]); // 연결 가능한 웹캠들
+    // const [availableWebcams, setAvailableWebcams] = useState([]); // 연결 가능한 웹캠들
     const { videoError, isVideo, handleVideoError } = useVideoHandler();
     const dropdownRef = useRef(null);
-
 
     const [error, setError] = useState(null);
 
@@ -33,20 +32,20 @@ function VideoViewer({
     const [channelName, setChannelName] = useState("cleanguard");
     const [region, setRegion] = useState("ap-northeast-2");
 
-    useEffect(() => {
-        // 웹캠 목록 가져오기
-        navigator.mediaDevices
-            .enumerateDevices()
-            .then((devices) => {
-                const videoDevices = devices.filter(
-                    (device) => device.kind === "videoinput"
-                );
-                setAvailableWebcams(videoDevices);
-            })
-            .catch((error) => {
-                console.error("웹캠 목록을 가져오는 중 오류 발생:", error);
-            });
-    }, []);
+    // useEffect(() => {
+    //     // 웹캠 목록 가져오기
+    //     navigator.mediaDevices
+    //         .enumerateDevices()
+    //         .then((devices) => {
+    //             const videoDevices = devices.filter(
+    //                 (device) => device.kind === "videoinput"
+    //             );
+    //             setAvailableWebcams(videoDevices);
+    //         })
+    //         .catch((error) => {
+    //             console.error("웹캠 목록을 가져오는 중 오류 발생:", error);
+    //         });
+    // }, []);
 
     useEffect(() => {
         setShownCctv(
@@ -129,8 +128,6 @@ function VideoViewer({
         };
     }, [selectedCCTV]);
 
-    
-
     const sliderSettings = {
         dots: false,
         infinite: false,
@@ -155,20 +152,18 @@ function VideoViewer({
     };
 
     const currentCctv = cctvList.find((cctv) => cctv.cctvId === cctvId);
-    const webcamId = currentCctv ? currentCctv.webcamId : "";
+    // const webcamId = currentCctv ? currentCctv.webcamId : "";
     // 웹캠과 cctvList의의 webcamId가 일치하는지 확인
-    const isWebcamAvailable = (webcamId) => {
-        if (!webcamId) return availableWebcams.length > 0; // cctv webcamId가 ""로 비어있는 경우, 탐지된 웹캠이 한 개일 때 기본적으로 탐지된 웹캠을 사용하도록 설정.
-        return availableWebcams.some((webcam) => webcam.deviceId === webcamId);
-    };
+    // const isWebcamAvailable = (webcamId) => {
+    //     if (!webcamId) return availableWebcams.length > 0; // cctv webcamId가 ""로 비어있는 경우, 탐지된 웹캠이 한 개일 때 기본적으로 탐지된 웹캠을 사용하도록 설정.
+    //     return availableWebcams.some((webcam) => webcam.deviceId === webcamId);
+    // };
 
     // 슬라이더 공통 컴포넌트 (멀티뷰/단일뷰 공통)
     const renderSlider = (item) => (
         <div
             key={item.imageId}
-            onMouseEnter={() =>
-                handleMouseEnter(item.imageId)
-            }
+            onMouseEnter={() => handleMouseEnter(item.imageId)}
             onMouseLeave={handleMouseLeave}
             className="slider-image-container"
         >
@@ -195,30 +190,22 @@ function VideoViewer({
                 />
             )}
             <div
-                className={`image-info ${hoveredImageId === item.imageId
-                    ? "show"
-                    : ""
-                    }`}
+                className={`image-info ${
+                    hoveredImageId === item.imageId ? "show" : ""
+                }`}
             >
                 <p>{item.cctv.location}</p>
                 <p>
                     {new Date(item.time).getFullYear()}-
-                    {String(
-                        new Date(item.time).getMonth() + 1
-                    ).padStart(2, "0")}
-                    -
-                    {String(
-                        new Date(item.time).getDate()
-                    ).padStart(2, "0")}
+                    {String(new Date(item.time).getMonth() + 1).padStart(
+                        2,
+                        "0"
+                    )}
+                    -{String(new Date(item.time).getDate()).padStart(2, "0")}
                 </p>
                 <p>
-                    {String(
-                        new Date(item.time).getHours()
-                    ).padStart(2, "0")}
-                    :
-                    {String(
-                        new Date(item.time).getMinutes()
-                    ).padStart(2, "0")}
+                    {String(new Date(item.time).getHours()).padStart(2, "0")}:
+                    {String(new Date(item.time).getMinutes()).padStart(2, "0")}
                 </p>
             </div>
         </div>
@@ -288,7 +275,7 @@ function VideoViewer({
                                     key={cctv.cctvId}
                                     className="multi-viewer-video"
                                 >
-                                    {isWebcamAvailable(cctv.webcamId) ? (
+                                    {/* {isWebcamAvailable(cctv.webcamId) ? (
                                         <Webcam
                                             audio={false}
                                             style={{
@@ -302,7 +289,46 @@ function VideoViewer({
                                             }}
                                         />
                                     ) : (
-                                        <div className="viewer-video-error">카메라 연결 오류</div>
+                                        <div className="viewer-video-error">
+                                            카메라 연결 오류
+                                        </div>
+                                    )} */}
+                                    {cctv.stream ? (
+                                        <>
+                                            <video
+                                                ref={videoRef}
+                                                autoPlay
+                                                playsInline
+                                                muted
+                                                controls
+                                                style={{
+                                                    objectFit: "fill",
+                                                    width: "100%",
+                                                    height: "100%",
+                                                }}
+                                            />
+                                            {error && (
+                                                <div
+                                                    className="viewer-video-error"
+                                                    style={{
+                                                        height: "4%",
+                                                        backgroundColor:
+                                                            "#ffffff",
+                                                        color: "#1D1D1D",
+                                                        fontSize: "15px",
+                                                    }}
+                                                >
+                                                    {error}
+                                                </div>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <div
+                                            className="viewer-video-error"
+                                            // style={{ height: "100%" }}
+                                        >
+                                            카메라 연결 오류
+                                        </div>
                                     )}
                                     <div
                                         className="multi-viewer-title"
@@ -312,7 +338,7 @@ function VideoViewer({
                                         }}
                                     >
                                         {cctv.cctvName}
-                                        <RiFullscreenFill className="fullscreen-icon" />
+                                        {/* <RiFullscreenFill className="fullscreen-icon" /> */}
                                     </div>
                                 </div>
                             )
@@ -364,7 +390,7 @@ function VideoViewer({
                         }}
                     />
                 )  */}
-                {selectedCCTV && channelName ? (
+                {selectedCCTV && selectedCCTV.stream ? (
                     <>
                         <video
                             ref={videoRef}
@@ -378,7 +404,19 @@ function VideoViewer({
                                 height: "100%",
                             }}
                         />
-                        {error && <div className="viewer-video-error">{error}</div>}
+                        {error && (
+                            <div
+                                className="viewer-video-error"
+                                style={{
+                                    height: "4%",
+                                    backgroundColor: "#ffffff",
+                                    color: "#1D1D1D",
+                                    fontSize: "15px",
+                                }}
+                            >
+                                {error}
+                            </div>
+                        )}
                     </>
                 ) : (
                     <div className="viewer-video-error">카메라 연결 오류</div>
