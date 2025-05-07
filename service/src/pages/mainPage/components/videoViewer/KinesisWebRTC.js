@@ -12,6 +12,8 @@ const getRandomClientId = () => {
 export const KinesisWebRTC = async ({ channelName, region, credentials, videoRef, setError }) => {
     let signalingClient = null;
     let peerConnection = null;
+    let currentStreamId = null;
+    let isPlaying = false;
 
     try {
         // 키 하드 코딩함. Git 업로드 시 삭제하고 올릴 것
@@ -91,6 +93,26 @@ export const KinesisWebRTC = async ({ channelName, region, credentials, videoRef
         // WebRTC 설정
         peerConnection = new RTCPeerConnection({ iceServers });
 
+        // onloadedmetadata 핸들러 단일 등록
+        if (videoRef.current) {
+            videoRef.current.onloadedmetadata = () => {
+                console.log('[Video] Metadata loaded at:', new Date().toISOString());
+                if (!isPlaying && videoRef.current.paused) {
+                    isPlaying = true;
+                    videoRef.current.play()
+                        .then(() => {
+                            console.log('[Video] Play started at:', new Date().toISOString());
+                            isPlaying = false;
+                        })
+                        .catch((err) => {
+                            console.error("Video play failed:", err);
+                            setError("비디오 재생 실패: " + err.message);
+                            isPlaying = false;
+                        });
+                }
+            };
+        }
+
         //<------ PeerConnection 이벤트 리스너
         peerConnection.onicecandidate = (event) => {
             if (event.candidate) {
@@ -117,14 +139,22 @@ export const KinesisWebRTC = async ({ channelName, region, credentials, videoRef
             console.log('[Track] Received track:', event.track);
             console.log('[Track] videoRef.current:', videoRef.current);
             console.log('[Track] event.streams:', event.streams);
+
             if (!videoRef.current) {
                 console.error("Video element is not mounted!");
                 return;
             }
             if (event.streams && event.streams[0]) {
                 const stream = event.streams[0];
+                if (currentStreamId === stream.id) {
+                    console.log('[Track] Duplicate stream, ignoring:', stream.id);
+                    return;
+                }
+                currentStreamId = stream.id;
+
                 console.log('[Track] Stream active:', stream.active);
                 console.log('[Track] Stream tracks:', stream.getTracks());
+
                 // 기존 스트림 정리
                 if (videoRef.current.srcObject) {
                     videoRef.current.srcObject.getTracks().forEach(track => track.stop());
@@ -135,13 +165,6 @@ export const KinesisWebRTC = async ({ channelName, region, credentials, videoRef
                 videoRef.current.playsInline = true;
                 videoRef.current.muted = true;
 
-                // 비디오가 paused 상태일 때만 play() 호출
-                if (videoRef.current.paused) {
-                    videoRef.current.play().catch((err) => {
-                        console.error("Video play failed:", err);
-                        setError("비디오 재생 실패: " + err.message);
-                    });
-                }
                 console.log('[Track] srcObject set:', videoRef.current.srcObject);
                 stream.getTracks().forEach(track => {
                     console.log('[Track] Track details:', {
@@ -220,8 +243,8 @@ export const KinesisWebRTC = async ({ channelName, region, credentials, videoRef
             signalingClient = null;
         }
         if (videoRef.current && videoRef.current.srcObject) {
-        videoRef.current.srcObject.getTracks().forEach(track => track.stop());
-        videoRef.current.srcObject = null;
-    }
+            videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+            videoRef.current.srcObject = null;
+        }
     };
 };

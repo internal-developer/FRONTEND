@@ -109,6 +109,10 @@ function VideoViewer({
         // 멀티뷰일 때 각 CCTV별 WebRTC 연결
         if (multiView) {
             const initMultiWebRTC = async () => {
+                // 기존 cleanup 실행
+                Object.values(cleanups.current).forEach((cleanup) => cleanup && cleanup());
+                cleanups.current = {};
+                
                 for (const cctv of cctvList) {
                     if (shownCctv[cctv.cctvId] && cctv.stream) {
                         try {
@@ -134,6 +138,9 @@ function VideoViewer({
         // 단일뷰일 때 WebRTC 연결
         else if (selectedCCTV && selectedCCTV.stream) {
             const initWebRTC = async () => {
+                // 기존 cleanup 실행
+                Object.values(cleanups.current).forEach((cleanup) => cleanup && cleanup());
+                cleanups.current = {};
                 try {
                     cleanups.current[selectedCCTV.cctvId] = await KinesisWebRTC({
                         channelName: selectedCCTV.stream,
