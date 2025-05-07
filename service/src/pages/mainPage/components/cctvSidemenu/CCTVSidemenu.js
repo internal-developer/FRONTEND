@@ -39,7 +39,7 @@ function CCTVSidemenu({
                     <>
                         {cctvList.map((cctv) => (
                             <div className="menu-cctvList-li"
-                                key={cctv.cctvId}
+                                key={cctv.stream}
                                 onClick={() => {
                                     onCCTVSelect(cctv);
                                     setMultiView(false);

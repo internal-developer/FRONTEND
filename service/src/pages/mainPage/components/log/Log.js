@@ -20,7 +20,7 @@ export default function Log({
 }) {
     const [checkedItems, setCheckedItems] = useState([]);
     const [filteredImages, setFilteredImages] = useState([]);
-    const cctvId = selectedCCTV ? selectedCCTV.cctvId : null;
+    const stream = selectedCCTV ? selectedCCTV.stream : null;
     // const [dumpingEvent, setDumpingEvent] = useState([]);
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const [text1, setText1] = useState("");
@@ -46,15 +46,15 @@ export default function Log({
             setSelectedCCTV(null);
         }
         // 단일뷰일 경우, 선택된 CCTV의 투기 데이터만 보여줌
-        else if (cctvId !== null) {
-            // cctvId가 null이 아닐 때만 필터링 실행
+        else if (stream !== null) {
+            // stream가 null이 아닐 때만 필터링 실행
             setFilteredImages(
-                dumpingData.filter((item) => item.cctv.cctvId === cctvId)
+                dumpingData.filter((item) => item.cctv.stream === stream)
             );
         } else {
             setFilteredImages([]); // 선택된 CCTV가 없으면 빈 배열
         }
-    }, [multiView, dumpingData, cctvId]);
+    }, [multiView, dumpingData, stream]);
 
     // 분류 오류 이벤트를 처리하는 함수
     const handleClassificationError = async () => {
