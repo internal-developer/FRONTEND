@@ -97,6 +97,10 @@ export const KinesisWebRTC = async ({ channelName, region, credentials, videoRef
         if (videoRef.current) {
             videoRef.current.onloadedmetadata = () => {
                 console.log('[Video] Metadata loaded at:', new Date().toISOString());
+                if (!videoRef.current) {
+                    console.warn('[Video] videoRef.current is null, skipping play');
+                    return;
+                }
                 if (!isPlaying && videoRef.current.paused) {
                     isPlaying = true;
                     videoRef.current.play()
