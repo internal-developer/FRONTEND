@@ -25,7 +25,7 @@ function VideoViewer({
     const [error, setError] = useState({});
     const videoRef = useRef({}); // CCTV별 videoRef 관리
 
-    const cctvId = selectedCCTV ? selectedCCTV.cctvId : null;
+    const stream = selectedCCTV ? selectedCCTV.stream : null;
 
     // useEffect(() => {
     //     // 웹캠 목록 가져오기
@@ -43,17 +43,17 @@ function VideoViewer({
     // }, []);
 
     // CCTV별 videoRef 동적 생성
-    const getVideoRef = (cctvId) => {
-        if (!videoRef.current[cctvId]) {
-            videoRef.current[cctvId] = React.createRef();
+    const getVideoRef = (stream) => {
+        if (!videoRef.current[stream]) {
+            videoRef.current[stream] = React.createRef();
         }
-        return videoRef.current[cctvId];
+        return videoRef.current[stream];
     };
 
     useEffect(() => {
         setShownCctv(
             cctvList.reduce((tmp, cctv) => {
-                tmp[cctv.cctvId] = true; // 멀티뷰 디폴트 값 -> 모든 cctv true
+                tmp[cctv.stream] = true; // 멀티뷰 디폴트 값 -> 모든 cctv true
                 return tmp;
             }, {})
         );
@@ -67,15 +67,15 @@ function VideoViewer({
             setSelectedCCTV(null);
         }
         // 단일뷰일 경우, 선택된 CCTV의 투기 데이터만 보여줌
-        else if (cctvId !== null) {
-            // cctvId가 null이 아닐 때만 필터링 실행
+        else if (stream !== null) {
+            // stream가 null이 아닐 때만 필터링 실행
             setFilteredImages(
-                dumpingData.filter((item) => item.cctv.cctvId === cctvId)
+                dumpingData.filter((item) => item.cctv.stream === stream)
             );
         } else {
             setFilteredImages([]); // 선택된 CCTV가 없으면 빈 배열
         }
-    }, [multiView, dumpingData, cctvId]);
+    }, [multiView, dumpingData, stream]);
 
     // 외부 클릭 감지 로직 추가
     useEffect(() => {
@@ -114,19 +114,19 @@ function VideoViewer({
                 cleanups.current = {};
                 
                 for (const cctv of cctvList) {
-                    if (shownCctv[cctv.cctvId] && cctv.stream) {
+                    if (shownCctv[cctv.stream] && cctv.stream) {
                         try {
-                            cleanups.current[cctv.cctvId] = await KinesisWebRTC({
+                            cleanups.current[cctv.stream] = await KinesisWebRTC({
                                 channelName: cctv.stream,
                                 region: "ap-northeast-2",
-                                videoRef: getVideoRef(cctv.cctvId),
+                                videoRef: getVideoRef(cctv.stream),
                                 setError: (err) =>
-                                    setError((prev) => ({ ...prev, [cctv.cctvId]: err })),
+                                    setError((prev) => ({ ...prev, [cctv.stream]: err })),
                             });
                         } catch (err) {
                             setError((prev) => ({
                                 ...prev,
-                                [cctv.cctvId]: "초기화에 실패했습니다.",
+                                [cctv.stream]: "초기화에 실패했습니다.",
                             }));
                             console.error(`WebRTC error for ${cctv.cctvName}:`, err);
                         }
@@ -142,17 +142,17 @@ function VideoViewer({
                 Object.values(cleanups.current).forEach((cleanup) => cleanup && cleanup());
                 cleanups.current = {};
                 try {
-                    cleanups.current[selectedCCTV.cctvId] = await KinesisWebRTC({
+                    cleanups.current[selectedCCTV.stream] = await KinesisWebRTC({
                         channelName: selectedCCTV.stream,
                         region: "ap-northeast-2",
-                        videoRef: getVideoRef(selectedCCTV.cctvId),
+                        videoRef: getVideoRef(selectedCCTV.stream),
                         setError: (err) =>
-                            setError((prev) => ({ ...prev, [selectedCCTV.cctvId]: err })),
+                            setError((prev) => ({ ...prev, [selectedCCTV.stream]: err })),
                     });
                 } catch (err) {
                     setError((prev) => ({
                         ...prev,
-                        [selectedCCTV.cctvId]: "초기화에 실패했습니다.",
+                        [selectedCCTV.stream]: "초기화에 실패했습니다.",
                     }));
                     console.error(`WebRTC error for ${selectedCCTV.cctvName}:`, err);
                 }
@@ -191,7 +191,7 @@ function VideoViewer({
         return cnt;
     };
 
-    const currentCctv = cctvList.find((cctv) => cctv.cctvId === cctvId);
+    const currentCctv = cctvList.find((cctv) => cctv.stream === stream);
     // const webcamId = currentCctv ? currentCctv.webcamId : "";
     // 웹캠과 cctvList의의 webcamId가 일치하는지 확인
     // const isWebcamAvailable = (webcamId) => {
@@ -276,25 +276,25 @@ function VideoViewer({
                         <div className="multi-dropdown" ref={dropdownRef}>
                             {cctvList.map((cctv) => (
                                 <div
-                                    key={cctv.cctvId}
+                                    key={cctv.stream}
                                     className="multi-dropdown-toggle"
                                 >
                                     <input
                                         type="checkbox"
                                         className="multi-dropdown-toggle-switch"
-                                        id={cctv.cctvId}
-                                        checked={shownCctv[cctv.cctvId]}
+                                        id={cctv.stream}
+                                        checked={shownCctv[cctv.stream]}
                                         onChange={() =>
                                             setShownCctv((prev) => ({
                                                 ...prev,
-                                                [cctv.cctvId]:
-                                                    !prev[cctv.cctvId],
+                                                [cctv.stream]:
+                                                    !prev[cctv.stream],
                                             }))
                                         }
                                     />
                                     <div
                                         className="multi-dropdown-toggle-label"
-                                        htmlFor={cctv.cctvId}
+                                        htmlFor={cctv.stream}
                                     >
                                         {cctv.cctvName}{" "}
                                     </div>
@@ -309,9 +309,9 @@ function VideoViewer({
                 >
                     {cctvList.map(
                         (cctv) =>
-                            shownCctv[cctv.cctvId] && (
+                            shownCctv[cctv.stream] && (
                                 <div
-                                    key={cctv.cctvId}
+                                    key={cctv.stream}
                                     className="multi-viewer-video"
                                 >
                                     {/* {isWebcamAvailable(cctv.webcamId) ? (
@@ -335,7 +335,7 @@ function VideoViewer({
                                     {cctv.stream ? (
                                         <>
                                             <video
-                                                ref={getVideoRef(cctv.cctvId)}
+                                                ref={getVideoRef(cctv.stream)}
                                                 autoPlay
                                                 playsInline
                                                 muted
@@ -345,7 +345,7 @@ function VideoViewer({
                                                     height: "100%",
                                                 }}
                                             />
-                                            {error[cctv.cctvId] && (
+                                            {error[cctv.stream] && (
                                                 <div
                                                     className="viewer-video-error"
                                                     style={{
@@ -356,7 +356,7 @@ function VideoViewer({
                                                         fontSize: "15px",
                                                     }}
                                                 >
-                                                    {error[cctv.cctvId]}
+                                                    {error[cctv.stream]}
                                                 </div>
                                             )}
                                         </>
@@ -431,7 +431,7 @@ function VideoViewer({
                 {selectedCCTV && selectedCCTV.stream ? (
                     <>
                         <video
-                            ref={getVideoRef(selectedCCTV.cctvId)}
+                            ref={getVideoRef(selectedCCTV.stream)}
                             autoPlay
                             playsInline
                             muted
@@ -442,7 +442,7 @@ function VideoViewer({
                                 height: "100%",
                             }}
                         />
-                        {error[selectedCCTV.cctvId] && (
+                        {error[selectedCCTV.stream] && (
                             <div
                                 className="viewer-video-error"
                                 style={{
@@ -452,7 +452,7 @@ function VideoViewer({
                                     fontSize: "15px",
                                 }}
                             >
-                                {error[selectedCCTV.cctvId]}
+                                {error[selectedCCTV.stream]}
                             </div>
                         )}
                     </>

@@ -3,7 +3,7 @@
         "imageId": 1,
         "name": "frame12",
         "cctv": {
-            "cctvId": 1,
+            "stream": 1,
             "location": "송도0",
             "cctvDate": 20250122
         },
@@ -14,7 +14,7 @@
         "imageId": 2,
         "name": "frame12",
         "cctv": {
-            "cctvId": 2,
+            "stream": 2,
             "location": "서울",
             "cctvDate": 20250122
         },
@@ -25,7 +25,7 @@
         "imageId": 3,
         "name": "frame12",
         "cctv": {
-            "cctvId": 3,
+            "stream": 3,
             "location": "송도1",
             "cctvDate": 20250122
         },
@@ -36,7 +36,7 @@
         "imageId": 4,
         "name": "frame12",
         "cctv": {
-            "cctvId": 4,
+            "stream": 4,
             "location": "송도2",
             "cctvDate": 20250122
         },
@@ -47,7 +47,7 @@
         "imageId": 5,
         "name": "frame12",
         "cctv": {
-            "cctvId": 5,
+            "stream": 5,
             "location": "송도3",
             "cctvDate": 20250122
         },
@@ -58,7 +58,7 @@
         "imageId": 6,
         "name": "frame12",
         "cctv": {
-            "cctvId": 6,
+            "stream": 6,
             "location": "송도4",
             "cctvDate": 20250122
         },
@@ -69,7 +69,7 @@
         "imageId": 7,
         "name": "frame12",
         "cctv": {
-            "cctvId": 7,
+            "stream": 7,
             "location": "송도5",
             "cctvDate": 20250122
         },
@@ -80,7 +80,7 @@
         "imageId": 8,
         "name": "frame12",
         "cctv": {
-            "cctvId": 8,
+            "stream": 8,
             "location": "송도6",
             "cctvDate": 20250122
         },
@@ -91,7 +91,7 @@
         "imageId": 9,
         "name": "frame12",
         "cctv": {
-            "cctvId": 8,
+            "stream": 8,
             "location": "송도6",
             "cctvDate": 20250122
         },
@@ -102,7 +102,7 @@
         "imageId": 10,
         "name": "frame12",
         "cctv": {
-            "cctvId": 8,
+            "stream": 8,
             "location": "송도6",
             "cctvDate": 20250122
         },
@@ -113,7 +113,7 @@
         "imageId": 11,
         "name": "frame12",
         "cctv": {
-            "cctvId": 8,
+            "stream": 8,
             "location": "송도6",
             "cctvDate": 20250122
         },

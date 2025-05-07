@@ -38,17 +38,17 @@ function EditModal({ setShowEditModal, selectedCCTV, setSelectedCCTV, setCctvLis
         //     });
     }, [selectedCCTV]);
 
-    const cctvId = selectedCCTV.cctvId;
+    const stream = selectedCCTV.stream;
 
     const editCCTV = () => {
         const updateCCTV = { cctvName: name, location, cctvDate: date /*webcamId: webcam === "UNAVAILABLE" ? selectedCCTV.webcamId : webcam */};
-        api.patch(`/cleanguard/cctv/${cctvId}`, updateCCTV)
+        api.patch(`/cleanguard/cctv/${stream}`, updateCCTV)
             .then((response) => {
                 console.log("수정된 CCTV:", response.data);
                 // CCTV 리스트에서 수정된 CCTV만 업데이트
                 setCctvList(prevList =>
                     prevList.map(cctv =>
-                        cctv.cctvId === cctvId ? { ...cctv, ...response.data } : cctv
+                        cctv.stream === stream ? { ...cctv, ...response.data } : cctv
                     ));
                 setSelectedCCTV(response.data);
                 setShowEditModal(false);
