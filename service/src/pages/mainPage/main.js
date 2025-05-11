@@ -205,6 +205,8 @@ function Main() {
                 <AddModal
                     setShowAddModal={setShowAddModal}
                     setCctvList={setCctvList}
+                    roleId={roleId}
+                    userInfo={userInfo}
                 />
             )}
             {showEditModal && (

@@ -5,7 +5,7 @@ import { api } from "../../api/api";
 import { IoIosArrowBack } from "react-icons/io";
 
 export default function UserInfoPage() {
-    const [step, setStep] = useState(2); // step 1: 역할 선택, step 2: CCTV 선택
+    const [step, setStep] = useState(1); // step 1: 역할 선택, step 2: CCTV 선택
     const [cctvList, setCctvList] = useState([]);
     const [editMode, setEditMode] = useState(false);
     const [currentRoleId, setCurrentRoleId] = useState(null);
@@ -30,17 +30,25 @@ export default function UserInfoPage() {
             .catch((error) => {
                 console.error("사용자 정보 가져오기 실패(userinfo.js):", error);
             });
+    }, [navigate]);
 
+    useEffect(() => {
         // cctv 데이터 요청
-        api.get("/cleanguard/cctv/")
+        if (!currentRoleId || !selectedRole) return;
+
+        const cctvPromise = selectedRole == "admin"
+            ? api.get("/cleanguard/cctv/")
+            : api.get(`/cleanguard/cctv/${currentRoleId}`);
+
+        cctvPromise
             .then((response) => {
                 setCctvList(response.data);
                 console.log("CCTV 데이터 가져오기 성공(userinfo.js):", response.data);
-            })
-            .catch((error) => {
+            }).catch((error) => {
                 console.error("CCTV 데이터 가져오기 실패(userinfo.js):", error);
             });
-    }, []);
+
+    }, [currentRoleId, selectedRole]);
 
     // 역할 생성/수정 처리 함수
     const handleRoleSubmit = async (e) => {
@@ -53,9 +61,9 @@ export default function UserInfoPage() {
         try {
             const roleDTO = {
                 roleName: selectedRole,
-                stream: [],
+                stream: selectedCCTV,
             };
-            
+
             if (editMode) {
                 // 역할 수정
                 roleDTO.roleId = currentRoleId; // 수정 모드에서 roleId 포함하기 (추가 모드에서는 roldId 포함x)
@@ -72,8 +80,10 @@ export default function UserInfoPage() {
             // 역할 추가/수정 성공 후 사용자 정보 다시 가져오기
             const userInfoRes = await api.get("/cleanguard");
             console.log("역할 추가 후 업데이트된 사용자 정보:", userInfoRes.data);
-
-            alert(editMode ? "역할이 성공적으로 수정되었습니다." : "역할이 성공적으로 추가되었습니다.");
+            const updatedRole = userInfoRes.data.role;
+            setSelectedRole(updatedRole.roleName);
+            setSelectedCCTV(updatedRole.stream || []);
+            //alert(editMode ? "역할이 성공적으로 수정되었습니다." : "역할이 성공적으로 추가되었습니다.");
             setStep(2);
         } catch (error) {
             console.error(editMode ? "역할 수정 실패:" : "역할 추가 실패:", error);
@@ -89,14 +99,6 @@ export default function UserInfoPage() {
             setStep(1);
             return;
         }
-        if (cctvList.length === 0) {
-            alert("현재 추가할 CCTV가 없습니다. 관리자 모드에서 CCTV를 연결하세요.");
-            return;
-        }
-        if (selectedCCTV.length === 0) {
-            alert("추가할 CCTV를 1개 이상 선택하세요.");
-            return;
-        }
 
         try {
             const roleDTO = {
@@ -107,7 +109,7 @@ export default function UserInfoPage() {
             await api.post(`/cleanguard/role/${currentRoleId}`, roleDTO);
             console.log("추가/수정된 stream :", roleDTO);
             alert("CCTV가 성공적으로 추가되었습니다.");
-            setTimeout(() => navigate("/main"), 2000);
+            setTimeout(() => navigate("/main"), 1000);
         } catch (error) {
             console.error("stream 추가 실패:", error);
             alert("CCTV 추가 중 오류가 발생했습니다. 다시 시도하세요.");
@@ -177,8 +179,8 @@ export default function UserInfoPage() {
                             관리할 CCTV를 선택해주세요.
                             <div className="userinfo-cctv-container">
                                 {cctvList.length === 0 ? (
-                                    <div className="userinfo-message">
-                                        현재 추가할 CCTV가 없습니다. 연결된 CCTV가 존재하지 않습니다.
+                                    <div className="userinfo-message2">
+                                        아직 등록된 CCTV가 없습니다. <br /> 시작하기를 눌러 메인 화면으로 이동하세요.
                                     </div>
                                 ) : (
                                     cctvList.map((cctv) => (

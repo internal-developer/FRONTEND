@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./Modal.scss";
 import { api, streamApi } from "../../../../api/api";
 
-function AddModal({ setShowAddModal, setCctvList }) {
+function AddModal({ setShowAddModal, setCctvList, roleId, userInfo }) {
     const [name, setName] = useState("");
     const [location, setLocation] = useState("");
     const [date, setDate] = useState("");
@@ -92,6 +92,17 @@ function AddModal({ setShowAddModal, setCctvList }) {
 
             const streamResponse = await streamApi.post("/api/stream/start", streamRequest);
             console.log("스트림 시작 :", streamResponse.data);
+
+            if (roleId) {
+                const currentStream = userInfo.role.stream || [];
+                const roleDTO = {
+                    roleId: roleId,
+                    roleName: userInfo.role.roleName,
+                    stream: [...currentStream, streamName],
+                };
+                const roleResponse = await api.post(`/cleanguard/role/${roleId}`, roleDTO);
+                console.log("역할에 스트림 추가:", roleResponse);
+            }
 
             // cctv 리스트에 새 cctv 추가
             setCctvList((prevList) => [...prevList, cctvResponse.data]);
