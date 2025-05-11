@@ -12,16 +12,18 @@ import EditModal from "./components/cctvSidemenu/EditModal";
 import DeleteModal from "./components/cctvSidemenu/DeleteModal";
 import { api } from "../../api/api"; // axios 인스턴스 호출
 import { EventSourcePolyfill } from 'event-source-polyfill';
+import { useNavigate } from "react-router-dom";
 
 function Main() {
     const [dumpingEvent, setDumpingEvent] = useState([]);
     const [cctvList, setCctvList] = useState([]);
     const [selectedCCTV, setSelectedCCTV] = useState(null);
     const [multiView, setMultiView] = useState(true);
-    const [roleName, setRoleName] = useState(""); // 역할 정보(roleName) 저장
+    const [roleId, setRoleId] = useState(null); // 역할 아이디(roleId) 저장
     const [userInfo, setUserInfo] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showLog, setShowLog] = useState(false);
+    const navigate = useNavigate();
 
     // modal
     const [showAddModal, setShowAddModal] = useState(false);
@@ -33,7 +35,12 @@ function Main() {
         api.get("/cleanguard")
             .then((response) => {
                 setUserInfo(response.data);
-                setRoleName(response.data.role.roleName); // 역할 정보 저장
+                setRoleId(response.data.role.roleId); // 역할 정보 저장
+
+                // roleId가 1일 때 userinfo 페이지로 리다이렉트
+                if (response.data.role.roleId == 1) {
+                    navigate("/userinfo");
+                }
                 setLoading(false);
                 console.log("사용자 정보 가져오기 성공:", response.data);
             })
@@ -41,23 +48,36 @@ function Main() {
                 console.error("사용자 정보 가져오기 실패:", error);
                 setLoading(false);
             });
+    }, [navigate]);
 
+    useEffect(() => {
         // cctv 데이터 요청
-        api.get("/cleanguard/cctv/")
-            .then((response) => {
-                setCctvList(response.data);
-                console.log("CCTV 데이터 가져오기 성공:", response.data);
-            })
-            .catch((error) => {
-                console.error("CCTV 데이터 가져오기 실패:", error);
-            });
-    }, [window.location.search]);
+        if (roleId) {
+            api.get(`/cleanguard/cctv/${roleId}`)
+                .then((response) => {
+                    setCctvList(response.data);
+                    console.log("CCTV 데이터 가져오기 성공:", response.data);
+                })
+                .catch((error) => {
+                    console.error("CCTV 데이터 가져오기 실패:", error);
+                });
+
+            // (전체 cctv 데이터 요청 -> 삭제 예정)    
+            api.get(`/cleanguard/cctv/`)
+                .then((response) => {
+                    console.log("전체 CCTV 데이터 가져오기 성공:", response.data);
+                })
+                .catch((error) => {
+                    console.error("전체 CCTV 데이터 가져오기 실패:", error);
+                });
+        }
+    }, [roleId]);
 
     useEffect(() => {
         // image 데이터 요청(SSE)
-        if (roleName) {
+        if (roleId) {
             const accessToken = localStorage.getItem("accessToken");
-            const sseUrl = `http://3.36.174.53:8080/cleanguard/image/sse/${roleName}`;
+            const sseUrl = `http://3.36.174.53:8080/cleanguard/image/sse/${roleId}`;
             let eventSource;
             let reconnCount = 0;
 
@@ -116,13 +136,13 @@ function Main() {
             };
         }
 
-    }, [roleName]);
+    }, [roleId]);
 
 
     useEffect(() => {
-        if (roleName) {
+        if (roleId) {
             //log 데이터 요청
-            api.get(`/cleanguard/log/${roleName}`)
+            api.get(`/cleanguard/log/${roleId}`)
                 .then((response) => {
                     console.log("log 데이터 가져오기 성공:", response.data);
                 })
@@ -130,7 +150,7 @@ function Main() {
                     console.error("log 데이터 가져오기 실패:", error);
                 });
         }
-    }, [roleName]);
+    }, [roleId]);
 
     if (loading) {
         return <div>Loading...</div>;
@@ -159,7 +179,7 @@ function Main() {
                             onShowLog={() => setShowLog(false)}
                             multiView={multiView}
                             dumpingData={dumpingEvent}
-                            roleName={roleName}
+                            roleId={roleId}
                         />
                     ) : (
                         <>

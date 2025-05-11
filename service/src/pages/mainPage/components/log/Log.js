@@ -16,7 +16,7 @@ export default function Log({
     multiView,
     dumpingData,
     setSelectedCCTV,
-    roleName,
+    roleId,
 }) {
     const [checkedItems, setCheckedItems] = useState([]);
     const [filteredImages, setFilteredImages] = useState([]);
@@ -151,8 +151,8 @@ export default function Log({
             setShowFeedbackModal(true); // 성공 모달 표시
 
             // 최신 데이터 다시 가져오기
-            if (roleName) {
-                const response = await api.get(`/cleanguard/image/${roleName}`);
+            if (roleId) {
+                const response = await api.get(`/cleanguard/image/${roleId}`);
                 setFilteredImages(response.data);
                 setCheckedItems([]); // 선택된 항목 초기화
                 console.log("목록 갱신 성공:", response.data);
@@ -197,8 +197,8 @@ export default function Log({
             setShowFeedbackModal(true);
 
             // 목록 갱신
-            if (roleName) {
-                const response = await api.get(`/cleanguard/image/${roleName}`);
+            if (roleId) {
+                const response = await api.get(`/cleanguard/image/${roleId}`);
                 setFilteredImages(response.data);
                 setCheckedItems([]);
                 console.log("목록 갱신 성공:", response.data);

@@ -146,8 +146,8 @@ const ResponseInterceptor = (instance) => {
 
 RequestInterceptor(api);
 ResponseInterceptor(api);
-RequestInterceptor(streamApi);
-ResponseInterceptor(streamApi);
+// RequestInterceptor(streamApi);
+// ResponseInterceptor(streamApi);
 
 const handleLogout = async () => {
     try {
