@@ -207,7 +207,7 @@ export default function UserInfoPage() {
                             <button
                                 className="userinfo-button"
                                 type="submit"
-                                disabled={cctvList.length === 0 || !currentRoleId}
+                                //disabled={cctvList.length === 0 || !currentRoleId}
                             >
                                 시작하기
                             </button>

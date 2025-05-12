@@ -101,11 +101,12 @@ function AddModal({ setShowAddModal, setCctvList, roleId, userInfo }) {
                     stream: [...currentStream, streamName],
                 };
                 const roleResponse = await api.post(`/cleanguard/role/${roleId}`, roleDTO);
-                console.log("역할에 스트림 추가:", roleResponse);
+                console.log("역할에 스트림 추가:", roleResponse.data);
             }
 
             // cctv 리스트에 새 cctv 추가
-            setCctvList((prevList) => [...prevList, cctvResponse.data]);
+            const cctvListResponse = await api.get(`/cleanguard/cctv/${roleId}`);
+            setCctvList(cctvListResponse.data);
             setShowAddModal(false);
             alert("CCTV가 성공적으로 추가되었습니다.");
             console.log(newCCTV);
