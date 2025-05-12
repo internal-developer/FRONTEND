@@ -11,6 +11,7 @@ export default function UserInfoPage() {
     const [currentRoleId, setCurrentRoleId] = useState(null);
     const [selectedRole, setSelectedRole] = useState("");
     const [selectedCCTV, setSelectedCCTV] = useState([]);
+    const [initialCCTV, setInitialCCTV] = useState([]); // 초기 CCTV 상태 저장
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -25,6 +26,7 @@ export default function UserInfoPage() {
                     setEditMode(true);
                     setSelectedRole(role.roleName);
                     setSelectedCCTV(role.stream || []);
+                    setInitialCCTV(role.stream || []);
                 }
             })
             .catch((error) => {
@@ -83,6 +85,7 @@ export default function UserInfoPage() {
             const updatedRole = userInfoRes.data.role;
             setSelectedRole(updatedRole.roleName);
             setSelectedCCTV(updatedRole.stream || []);
+            setInitialCCTV(updatedRole.stream || []);
             //alert(editMode ? "역할이 성공적으로 수정되었습니다." : "역할이 성공적으로 추가되었습니다.");
             setStep(2);
         } catch (error) {
@@ -109,6 +112,7 @@ export default function UserInfoPage() {
             await api.post(`/cleanguard/role/${currentRoleId}`, roleDTO);
             console.log("추가/수정된 stream :", roleDTO);
             alert("CCTV가 성공적으로 추가되었습니다.");
+            setInitialCCTV(selectedCCTV); // 제출 후 초기 상태 업데이트
             setTimeout(() => navigate("/main"), 1000);
         } catch (error) {
             console.error("stream 추가 실패:", error);
@@ -116,7 +120,7 @@ export default function UserInfoPage() {
         }
     };
 
-    // CCTV 체크박스 핸들러
+    // CCTV 체크박스 개별 선택 핸들러
     const handleCCTVSelect = (streamName) => {
         setSelectedCCTV((prev) =>
             prev.includes(streamName)
@@ -124,6 +128,25 @@ export default function UserInfoPage() {
                 : [...prev, streamName]
         );
     };
+
+    // CCTV 체크박스 전체 선택/해제 핸들러
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            setSelectedCCTV(cctvList.map((cctv) => cctv.stream));
+        } else {
+            setSelectedCCTV([]);
+        }
+    };
+
+    // 뒤로 가기 시 초기 CCTV 상태로 복원
+    const handleGoBack = () => {
+        setSelectedCCTV(initialCCTV);
+        setStep(1);
+    };
+
+    useEffect(() => {
+        console.log("checkedItems 업데이트됨:", selectedCCTV);
+    }, [selectedCCTV]);
 
     return (
         <div className="main">
@@ -174,7 +197,7 @@ export default function UserInfoPage() {
                 ) : (
                     // step 2: CCTV 선택
                     <form className="userinfo-form" onSubmit={handleStreamSubmit}>
-                        <label className="userinfo-label">
+                        <div className="userinfo-label">
                             <div className="userinfo-title"> CCTV 추가</div>
                             관리할 CCTV를 선택해주세요.
                             <div className="userinfo-cctv-container">
@@ -183,23 +206,53 @@ export default function UserInfoPage() {
                                         아직 등록된 CCTV가 없습니다. <br /> 시작하기를 눌러 메인 화면으로 이동하세요.
                                     </div>
                                 ) : (
-                                    cctvList.map((cctv) => (
-                                        <label key={cctv.stream} className="userinfo-checkbox">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedCCTV.includes(cctv.stream)}
-                                                onChange={() => handleCCTVSelect(cctv.stream)}
-                                            />
-                                            {cctv.cctvName}
-                                        </label>
-                                    ))
+                                    <div className="userinfo-cctv-table">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedCCTV.length === cctvList.length && cctvList.length > 0}
+                                                            onChange={handleSelectAll}
+                                                        />
+                                                    </th>
+                                                    <th>CCTV 이름</th>
+                                                    <th>위치</th>
+                                                    <th>설치 날짜</th>
+                                                    <th>스트림 이름</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {cctvList.map((cctv) => (
+                                                    <tr
+                                                        key={cctv.stream}
+                                                        onClick={() => handleCCTVSelect(cctv.stream)}
+                                                    >
+                                                        <td>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedCCTV.includes(cctv.stream)}
+                                                                onClick={(e) => e.stopPropagation()}
+                                                                onChange={() => handleCCTVSelect(cctv.stream)}
+                                                            />
+                                                        </td>
+                                                        <td>{cctv.cctvName}</td>
+                                                        <td>{cctv.location}</td>
+                                                        <td>{cctv.cctvDate}</td>
+                                                        <td>{cctv.stream}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 )}
                             </div>
-                        </label>
+                        </div>
                         <div className="userinfo-form-container">
                             <div
                                 className="userinfo-button-retry"
-                                onClick={() => setStep(1)}
+                                onClick={handleGoBack}
                             >
                                 <IoIosArrowBack className="userinfo-retry-icon" />
                                 역할 다시 선택하기
@@ -207,7 +260,7 @@ export default function UserInfoPage() {
                             <button
                                 className="userinfo-button"
                                 type="submit"
-                                //disabled={cctvList.length === 0 || !currentRoleId}
+                            //disabled={cctvList.length === 0 || !currentRoleId}
                             >
                                 시작하기
                             </button>
