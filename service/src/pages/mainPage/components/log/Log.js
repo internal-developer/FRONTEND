@@ -148,7 +148,7 @@ export default function Log({
             setText1("정상적으로 처리되었습니다.");
             setText2("감사합니다 :)");
             setImgSrc(checkMark);
-            setShowFeedbackToast(true); // 성공 모달 표시
+            setShowFeedbackToast(true); // 성공 feedback 표시
 
             // 최신 데이터 다시 가져오기
             if (roleId) {

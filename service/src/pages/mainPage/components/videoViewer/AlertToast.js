@@ -8,7 +8,7 @@ export default function AlertToast({
     imgSrc,
 }) {
     useEffect(() => {
-        // 3초 후에 자동으로 모달 닫기
+        // 3초 후에 자동으로 닫기
         const timer = setTimeout(() => {
             onClose();
         }, 3000);

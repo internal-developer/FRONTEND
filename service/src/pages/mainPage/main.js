@@ -27,8 +27,9 @@ function Main() {
     const [showLog, setShowLog] = useState(false);
     const navigate = useNavigate();
     const [showAlertToast, setShowAlertToast] = useState(false);
-    const [alertCCTVName, setAlertCCTVName] = useState(""); // alertModal에 cctvName 전달하기 위해 저장
-    const [alertCCTVLocation, setAlertCCTVLocation] = useState(""); // alertModal에 cctvLocation 전달하기 위해 저장
+    const [alertCCTVName, setAlertCCTVName] = useState(""); // alert에 cctvName 전달하기 위해 저장
+    const [alertCCTVLocation, setAlertCCTVLocation] = useState(""); // alert에 cctvLocation 전달하기 위해 저장
+    const [initialLoad, setInitialLoad] = useState(true); // 최초 렌더링때는 AlertToast 띄우지 않도록 제어 변수 추가
 
     // modal
     const [showAddModal, setShowAddModal] = useState(false);
@@ -118,18 +119,31 @@ function Main() {
                             const newImage = newData.filter(
                                 (item) => !existImage.has(item.imageId)
                             );
-                            // cctv.cctvName값이 존재하면 alert 모달에 전달하기 위해 저장
+                            // console.log("newImage", newImage);
+                            // console.log(
+                            //     "조건 통과 여부",
+                            //     newImage.length > 0 &&
+                            //         newImage[0]?.cctv?.cctvName &&
+                            //         newImage[0]?.cctv?.location
+                            // );
+
+                            // cctvName, location값이 존재하면 alert에 전달하기 위해 저장
                             if (
+                                !initialLoad &&
                                 newImage.length > 0 &&
                                 newImage[0].cctv?.cctvName &&
                                 newImage[0].cctv?.location
                             ) {
                                 setAlertCCTVName(newImage[0].cctv.cctvName);
                                 setAlertCCTVLocation(newImage[0].cctv.location);
-                                setShowAlertToast(true); // 새 이벤트가 생기면 모달 띄우기
+                                setShowAlertToast(true); // 새 이벤트가 생기면 alert 띄우기
                             }
                             return [...prev, ...newImage];
                         });
+                        // 최초 로딩 이후 초기 상태 변경
+                        if (initialLoad) {
+                            setInitialLoad(false);
+                        }
                         // console.log(
                         //     "이미지 데이터 가져오기 성공(SSE) :",
                         //     newData
