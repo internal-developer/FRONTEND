@@ -1,0 +1,77 @@
+@import "src/assets/styles/index.scss";
+@import "src/assets/styles/mixins.scss";
+
+.alert-box {
+    width: 30%;
+    height: 7%;
+    z-index: 1000;
+    position: fixed;
+    top: 1.5%;
+    left: 35%;
+    background-color: #fff;
+    border: 1.5px solid $primary-color;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    // box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.2);
+    padding: 5px 15px;
+    gap: 10px;
+
+    @include tabletToMobile {
+        font-size: 11px;
+        width: 40%;
+        left: 30%;
+    }
+
+    @include tablet {
+        font-size: 12px;
+        width: 35%;
+    }
+
+    @include mobile {
+        width: 50%;
+        height: 5%;
+        left: 25%;
+    }
+
+    img {
+        width: 20px;
+        height: 20px;
+
+        @include mobile {
+            width: 15px;
+            height: 15px;
+        }
+    }
+
+    &-span-box {
+        // width: 200px;
+        height: 60px;
+        display: flex;
+        flex-direction: column;
+        padding-top: 0.8%;
+        padding-left: 2%;
+        margin-top: 8%;
+        margin-left: 2%;
+
+        span {
+            height: 20px;
+            font-size: 14px;
+            font-family: "Poppins", sans-serif;
+            font-weight: 700;
+
+            @include tabletToMobile {
+                font-size: 11px;
+            }
+
+            @include tablet {
+                font-size: 12px;
+            }
+
+            @include mobile {
+                font-size: 10px;
+                padding-top: 2%;
+            }
+        }
+    }
+}

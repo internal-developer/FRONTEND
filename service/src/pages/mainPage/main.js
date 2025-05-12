@@ -6,13 +6,15 @@ import VideoViewer from "./components/videoViewer/VideoViewer";
 import Graph from "./components/graph/Graph";
 import Log from "./components/log/Log";
 //import cctvData from '../../data/cctvData.json'
-import dumpingData from "../../data/dumpingData.json";
+// import dumpingData from "../../data/dumpingData.json";
 import AddModal from "./components/cctvSidemenu/AddModal";
 import EditModal from "./components/cctvSidemenu/EditModal";
 import DeleteModal from "./components/cctvSidemenu/DeleteModal";
+import AlertToast from "./components/videoViewer/AlertToast";
 import { api } from "../../api/api"; // axios 인스턴스 호출
-import { EventSourcePolyfill } from 'event-source-polyfill';
+import { EventSourcePolyfill } from "event-source-polyfill";
 import { useNavigate } from "react-router-dom";
+import alertMark from "../../assets/images/alert_mark.png";
 
 function Main() {
     const [dumpingEvent, setDumpingEvent] = useState([]);
@@ -24,6 +26,9 @@ function Main() {
     const [loading, setLoading] = useState(true);
     const [showLog, setShowLog] = useState(false);
     const navigate = useNavigate();
+    const [showAlertToast, setShowAlertToast] = useState(false);
+    const [alertCCTVName, setAlertCCTVName] = useState(""); // alertModal에 cctvName 전달하기 위해 저장
+    const [alertCCTVLocation, setAlertCCTVLocation] = useState(""); // alertModal에 cctvLocation 전달하기 위해 저장
 
     // modal
     const [showAddModal, setShowAddModal] = useState(false);
@@ -62,10 +67,13 @@ function Main() {
                     console.error("CCTV 데이터 가져오기 실패:", error);
                 });
 
-            // (전체 cctv 데이터 요청 -> 삭제 예정)    
+            // (전체 cctv 데이터 요청 -> 삭제 예정)
             api.get(`/cleanguard/cctv/`)
                 .then((response) => {
-                    console.log("전체 CCTV 데이터 가져오기 성공:", response.data);
+                    console.log(
+                        "전체 CCTV 데이터 가져오기 성공:",
+                        response.data
+                    );
                 })
                 .catch((error) => {
                     console.error("전체 CCTV 데이터 가져오기 실패:", error);
@@ -82,7 +90,6 @@ function Main() {
             let reconnCount = 0;
 
             const connect = () => {
-
                 // 재연결 시도 횟수 제한 -> 무한 연결 시도 방지
                 if (reconnCount >= 3) {
                     console.log("SSE 재연결 최대 시도 횟수 초과(3회)");
@@ -105,11 +112,28 @@ function Main() {
                         const newData = JSON.parse(event.data); // 서버로부터 이미지 배열 전체가 옴
                         setDumpingEvent((prev) => {
                             // 중복되지 않는 새 이미지만 필터링하여 업데이트
-                            const existImage = new Set(prev.map((item) => item.imageId));
-                            const newImage = newData.filter((item) => !existImage.has(item.imageId));
+                            const existImage = new Set(
+                                prev.map((item) => item.imageId)
+                            );
+                            const newImage = newData.filter(
+                                (item) => !existImage.has(item.imageId)
+                            );
+                            // cctv.cctvName값이 존재하면 alert 모달에 전달하기 위해 저장
+                            if (
+                                newImage.length > 0 &&
+                                newImage[0].cctv?.cctvName &&
+                                newImage[0].cctv?.location
+                            ) {
+                                setAlertCCTVName(newImage[0].cctv.cctvName);
+                                setAlertCCTVLocation(newImage[0].cctv.location);
+                                setShowAlertToast(true); // 새 이벤트가 생기면 모달 띄우기
+                            }
                             return [...prev, ...newImage];
                         });
-                        //console.log("이미지 데이터 가져오기 성공(SSE) :", newData);
+                        // console.log(
+                        //     "이미지 데이터 가져오기 성공(SSE) :",
+                        //     newData
+                        // );
                     } catch (error) {
                         console.error("SSE 데이터 파싱 오류:", error);
                     }
@@ -135,9 +159,7 @@ function Main() {
                 console.log("SSE 연결 종료");
             };
         }
-
     }, [roleId]);
-
 
     useEffect(() => {
         if (roleId) {
@@ -160,6 +182,15 @@ function Main() {
         <div className="main">
             <div className="main-container">
                 <Header userInfo={userInfo} />
+                {showAlertToast && (
+                    <AlertToast
+                        onClose={() => setShowAlertToast(false)}
+                        cctvName={alertCCTVName}
+                        cctvLocation={alertCCTVLocation}
+                        imgSrc={alertMark}
+                    />
+                )}
+
                 <div className="main-content">
                     <div className="sidemenu">
                         <CCTVSidemenu

@@ -3,12 +3,11 @@ import countryHouseIcon from "../../../../assets/images/country_house.png";
 import checkMark from "../../../../assets/images/check_mark.png";
 import trashCan from "../../../../assets/images/trash_can.png";
 import LogList from "./LogList";
-import FeedbackModal from "./FeedbackModal";
+import FeedbackToast from "./FeedbackToast";
 import ConfirmModal from "./ConfirmModal";
 import ImageModal from "./ImageModal";
 import { api } from "../../../../api/api";
 import "./Log.scss";
-
 
 export default function Log({
     selectedCCTV,
@@ -22,7 +21,7 @@ export default function Log({
     const [filteredImages, setFilteredImages] = useState([]);
     const stream = selectedCCTV ? selectedCCTV.stream : null;
     // const [dumpingEvent, setDumpingEvent] = useState([]);
-    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+    const [showFeedbackToast, setShowFeedbackToast] = useState(false);
     const [text1, setText1] = useState("");
     const [text2, setText2] = useState("");
     const [imgSrc, setImgSrc] = useState("");
@@ -139,7 +138,8 @@ export default function Log({
                 } catch (error) {
                     console.error("Success 이미지 저장 실패:", error);
                     alert(
-                        `Success 저장 실패: ${error.response?.data?.message || error.message
+                        `Success 저장 실패: ${
+                            error.response?.data?.message || error.message
                         }`
                     );
                 }
@@ -148,7 +148,7 @@ export default function Log({
             setText1("정상적으로 처리되었습니다.");
             setText2("감사합니다 :)");
             setImgSrc(checkMark);
-            setShowFeedbackModal(true); // 성공 모달 표시
+            setShowFeedbackToast(true); // 성공 모달 표시
 
             // 최신 데이터 다시 가져오기
             if (roleId) {
@@ -194,7 +194,7 @@ export default function Log({
             setText2("감사합니다 :)");
             setImgSrc(trashCan);
 
-            setShowFeedbackModal(true);
+            setShowFeedbackToast(true);
 
             // 목록 갱신
             if (roleId) {
@@ -225,9 +225,9 @@ export default function Log({
 
     return (
         <div className="viewer">
-            {showFeedbackModal && (
-                <FeedbackModal
-                    onClose={() => setShowFeedbackModal(false)}
+            {showFeedbackToast && (
+                <FeedbackToast
+                    onClose={() => setShowFeedbackToast(false)}
                     text1={text1}
                     text2={text2}
                     imgSrc={imgSrc}

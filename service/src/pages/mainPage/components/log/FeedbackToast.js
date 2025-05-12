@@ -1,9 +1,9 @@
-import "./FeedbackModal.scss";
+import "./FeedbackToast.scss";
 import { useEffect } from "react";
 
-export default function FeedbackModal({ onClose, text1, text2, imgSrc }) {
+export default function FeedbackToast({ onClose, text1, text2, imgSrc }) {
     useEffect(() => {
-        // 3초 후에 자동으로 모달 닫기
+        // 3초 후에 자동으로 토스트창 닫기
         const timer = setTimeout(() => {
             onClose();
         }, 3000);
