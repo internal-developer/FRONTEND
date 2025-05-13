@@ -154,7 +154,7 @@ export default function UserInfoPage() {
                 {step === 1 ? (
                     // step 1: 역할 선택
                     <form className="userinfo-form" onSubmit={handleRoleSubmit}>
-                        <label className="userinfo-label" >
+                        <div className="userinfo-label" >
                             <div className="userinfo-title">{editMode ? "역할 수정" : "역할 설정"}</div>
                             역할을 선택해주세요.
                             {/* <label className="userinfo-label">
@@ -183,7 +183,7 @@ export default function UserInfoPage() {
                                 {/* <option value="manager">매니저</option> */}
                                 <option value="user">일반 사용자</option>
                             </select>
-                        </label>
+                        </div>
                         <div className="userinfo-form-container">
                             <div className="userinfo-message">
                                 역할 설정 후 CCTV를 추가할 수 있습니다.
@@ -196,59 +196,60 @@ export default function UserInfoPage() {
                     </form>
                 ) : (
                     // step 2: CCTV 선택
-                    <form className="userinfo-form" onSubmit={handleStreamSubmit}>
-                        <div className="userinfo-label">
-                            <div className="userinfo-title"> CCTV 추가</div>
+                    <form className="userinfo-form-step2" onSubmit={handleStreamSubmit}>
+                        <div className="userinfo-label-step2">
+                            <div className="userinfo-title-step2"> CCTV 추가</div>
                             관리할 CCTV를 선택해주세요.
-                            <div className="userinfo-cctv-container">
-                                {cctvList.length === 0 ? (
-                                    <div className="userinfo-message2">
-                                        아직 등록된 CCTV가 없습니다. <br /> 시작하기를 눌러 메인 화면으로 이동하세요.
-                                    </div>
-                                ) : (
-                                    <div className="userinfo-cctv-table">
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>
+                        </div>
+                        <div className="userinfo-cctv-container">
+                            {cctvList.length === 0 ? (
+                                <div className="userinfo-message2">
+                                    아직 등록된 CCTV가 없습니다. <br /> 시작하기를 눌러 메인 화면으로 이동하세요.
+                                </div>
+                            ) : (
+                                <div className="userinfo-cctv-table">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedCCTV.length === cctvList.length && cctvList.length > 0}
+                                                        onChange={handleSelectAll}
+                                                    />
+                                                </th>
+                                                <th>CCTV 이름</th>
+                                                <th>위치</th>
+                                                <th>설치 날짜</th>
+                                                <th>스트림 이름</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {cctvList.map((cctv) => (
+                                                <tr
+                                                    key={cctv.stream}
+                                                    onClick={() => handleCCTVSelect(cctv.stream)}
+                                                >
+                                                    <td>
                                                         <input
                                                             type="checkbox"
-                                                            checked={selectedCCTV.length === cctvList.length && cctvList.length > 0}
-                                                            onChange={handleSelectAll}
+                                                            checked={selectedCCTV.includes(cctv.stream)}
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            onChange={() => handleCCTVSelect(cctv.stream)}
                                                         />
-                                                    </th>
-                                                    <th>CCTV 이름</th>
-                                                    <th>위치</th>
-                                                    <th>설치 날짜</th>
-                                                    <th>스트림 이름</th>
+                                                    </td>
+                                                    <td>{cctv.cctvName}</td>
+                                                    <td>{cctv.location}</td>
+                                                    <td>{cctv.cctvDate}</td>
+                                                    <td>{cctv.stream}</td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
-                                                {cctvList.map((cctv) => (
-                                                    <tr
-                                                        key={cctv.stream}
-                                                        onClick={() => handleCCTVSelect(cctv.stream)}
-                                                    >
-                                                        <td>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedCCTV.includes(cctv.stream)}
-                                                                onClick={(e) => e.stopPropagation()}
-                                                                onChange={() => handleCCTVSelect(cctv.stream)}
-                                                            />
-                                                        </td>
-                                                        <td>{cctv.cctvName}</td>
-                                                        <td>{cctv.location}</td>
-                                                        <td>{cctv.cctvDate}</td>
-                                                        <td>{cctv.stream}</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                )}
-                            </div>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
                         </div>
+
                         <div className="userinfo-form-container">
                             <div
                                 className="userinfo-button-retry"

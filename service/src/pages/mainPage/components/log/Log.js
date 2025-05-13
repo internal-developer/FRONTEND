@@ -263,15 +263,13 @@ export default function Log({
                 </button>
                 <div className="viewer-button-group">
                     <button
-                        className="viewer-button-group-action"
-                        style={{ backgroundColor: "#A0A0A0" }}
+                        className="viewer-button-group-action-error"
                         onClick={handleClassificationError}
                     >
                         분류 오류
                     </button>
                     <button
-                        className="viewer-button-group-action"
-                        style={{ backgroundColor: "#AF0000" }}
+                        className="viewer-button-group-action-delete"
                         // onClick={handlePermanentDelete}
                         onClick={handleConfirmModal}
                     >

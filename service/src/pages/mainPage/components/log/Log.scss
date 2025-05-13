@@ -87,7 +87,7 @@
         left: 66%;
     }
 }
-.viewer-button-group-action {
+.viewer-button-group-action-error{
     width: 68px;
     height: 26px;
     border-radius: 3px;
@@ -99,4 +99,25 @@
     letter-spacing: -0.5px;
     padding-right: 1px;
     cursor: pointer;
+    background: #A0A0A0;
+    &:hover{
+         background-color: darken(#A0A0A0, 10%);
+    }
+}
+.viewer-button-group-action-delete{
+    width: 68px;
+    height: 26px;
+    border-radius: 3px;
+    border: none;
+    font-family: "Poppins", sans-serif;
+    color: #fff;
+    font-size: 13.5px;
+    font-weight: bolder;
+    letter-spacing: -0.5px;
+    padding-right: 1px;
+    cursor: pointer;
+    background: #AF0000;
+    &:hover{
+         background-color: darken(#AF0000, 10%);
+    }
 }
