@@ -136,7 +136,7 @@ export const KinesisWebRTC = async ({ channelName, region, credentials, videoRef
             peerConnection.onicecandidate = (event) => {
                 if (event.candidate) {
                     signalingClient.sendIceCandidate(event.candidate);
-                    console.log('[ICE] Candidate:', event.candidate);
+                    //console.log('[ICE] Candidate:', event.candidate);
                 } else {
                     console.log('[ICE] All candidates gathered');
                 }

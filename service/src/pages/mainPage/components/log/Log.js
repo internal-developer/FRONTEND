@@ -16,6 +16,7 @@ export default function Log({
     dumpingData,
     setSelectedCCTV,
     roleId,
+    setDumpingEvent,
 }) {
     const [checkedItems, setCheckedItems] = useState([]);
     const [filteredImages, setFilteredImages] = useState([]);
@@ -96,54 +97,48 @@ export default function Log({
             console.log("fail 삭제 응답:", deleteFailImages.data);
 
             // 성공한 이미지 post 요청
-
             if (successItems.length) {
-                try {
-                    const successResponse = await api.post(
-                        "/cleanguard/image/success",
-                        null, // body를 비워두고 params로 데이터를 전달
-                        {
-                            params: { imageIds: successItems },
-                            paramsSerializer: (params) => {
-                                return Object.keys(params)
-                                    .map((key) =>
-                                        []
-                                            .concat(params[key])
-                                            .map(
-                                                (val) =>
-                                                    `${key}=${encodeURIComponent(
-                                                        val
-                                                    )}`
-                                            )
-                                            .join("&")
-                                    )
-                                    .join("&");
-                            },
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                        }
-                    );
-                    console.log("success 저장 응답:", successResponse.data);
+                const successResponse = await api.post(
+                    "/cleanguard/image/success",
+                    null, // body를 비워두고 params로 데이터를 전달
+                    {
+                        params: { imageIds: successItems },
+                        paramsSerializer: (params) => {
+                            return Object.keys(params)
+                                .map((key) =>
+                                    []
+                                        .concat(params[key])
+                                        .map(
+                                            (val) =>
+                                                `${key}=${encodeURIComponent(
+                                                    val
+                                                )}`
+                                        )
+                                        .join("&")
+                                )
+                                .join("&");
+                        },
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+                console.log("success 저장 응답:", successResponse.data);
 
-                    // sentSuccessIds를 업데이트하고 localStorage에 저장
-                    setSentSuccessIds((prev) => {
-                        const updatedSet = new Set([...prev, ...successItems]);
-                        localStorage.setItem(
-                            "sentSuccessIds",
-                            JSON.stringify([...updatedSet])
-                        );
-                        return updatedSet;
-                    });
-                } catch (error) {
-                    console.error("Success 이미지 저장 실패:", error);
-                    alert(
-                        `Success 저장 실패: ${
-                            error.response?.data?.message || error.message
-                        }`
+                // sentSuccessIds를 업데이트하고 localStorage에 저장
+                setSentSuccessIds((prev) => {
+                    const updatedSet = new Set([...prev, ...successItems]);
+                    localStorage.setItem(
+                        "sentSuccessIds",
+                        JSON.stringify([...updatedSet])
                     );
-                }
+                    return updatedSet;
+                });
             }
+            // dumpingEvent 업데이트
+            setDumpingEvent((prev) =>
+                prev.filter((item) => !checkedItems.includes(item.imageId))
+            );
 
             setText1("정상적으로 처리되었습니다.");
             setText2("감사합니다 :)");
@@ -189,6 +184,11 @@ export default function Log({
             });
 
             console.log("영구 삭제 응답:", deleteResponse.data);
+
+            // dumpingEvent 업데이트
+            setDumpingEvent((prev) =>
+                prev.filter((item) => !checkedItems.includes(item.imageId))
+            );
 
             setText1("정상적으로 처리되었습니다.");
             setText2("감사합니다 :)");

@@ -78,16 +78,16 @@ function Main() {
                 });
 
             // (전체 cctv 데이터 요청 -> 삭제 예정)
-            api.get(`/cleanguard/cctv/`)
-                .then((response) => {
-                    console.log(
-                        "전체 CCTV 데이터 가져오기 성공:",
-                        response.data
-                    );
-                })
-                .catch((error) => {
-                    console.error("전체 CCTV 데이터 가져오기 실패:", error);
-                });
+            // api.get(`/cleanguard/cctv/`)
+            //     .then((response) => {
+            //         console.log(
+            //             "전체 CCTV 데이터 가져오기 성공:",
+            //             response.data
+            //         );
+            //     })
+            //     .catch((error) => {
+            //         console.error("전체 CCTV 데이터 가져오기 실패:", error);
+            //     });
         }
     }, [roleId]);
 
@@ -235,6 +235,7 @@ function Main() {
                             multiView={multiView}
                             dumpingData={dumpingEvent}
                             roleId={roleId}
+                            setDumpingEvent={setDumpingEvent}
                         />
                     ) : (
                         <>
