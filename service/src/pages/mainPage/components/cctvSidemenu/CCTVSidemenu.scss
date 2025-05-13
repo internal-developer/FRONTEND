@@ -182,6 +182,10 @@
                     background-color: $primary-hover-color;
                     color: white;
                 }
+                &:nth-child(5):hover {
+                    background-color: rgba(250, 152, 5, 0.887);
+                    color: white;
+                }
             }
         }
     }

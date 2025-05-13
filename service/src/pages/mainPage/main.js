@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./main.scss";
 import Header from "./components/header/Header";
 import CCTVSidemenu from "./components/cctvSidemenu/CCTVSidemenu";
@@ -30,11 +30,20 @@ function Main() {
     const [alertCCTVName, setAlertCCTVName] = useState(""); // alert에 cctvName 전달하기 위해 저장
     const [alertCCTVLocation, setAlertCCTVLocation] = useState(""); // alert에 cctvLocation 전달하기 위해 저장
     const [initialLoad, setInitialLoad] = useState(true); // 최초 렌더링때는 AlertToast 띄우지 않도록 제어 변수 추가
+    const webRTCInstances = useRef({});
 
     // modal
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    // 재접속 핸들러
+    const handleRestartStream = async (stream) => {
+        const instance = webRTCInstances.current[stream];
+        if (instance && instance.reconnect) {
+            await instance.reconnect();
+        }
+    };
 
     useEffect(() => {
         // 사용자 데이터 요청
@@ -215,6 +224,7 @@ function Main() {
                             setShowEditModal={setShowEditModal}
                             setShowDeleteModal={setShowDeleteModal}
                             setShowLog={setShowLog}
+                            handleRestartStream={handleRestartStream}
                         />
                     </div>
                     {showLog ? (
@@ -237,6 +247,7 @@ function Main() {
                                     setMultiView={setMultiView}
                                     dumpingData={dumpingEvent}
                                     onShowLog={() => setShowLog(true)}
+                                    webRTCInstances={webRTCInstances}
                                 />
                             </div>
                             <div className="graph">

@@ -6,6 +6,7 @@ import Slider from "react-slick";
 import "./VideoViewer.scss";
 import { useVideoHandler } from "../../../../hooks/useVideoHandler";
 import { KinesisWebRTC } from "./KinesisWebRTC";
+import { streamApi } from "../../../../api/api";
 
 function VideoViewer({
     cctvList,
@@ -15,6 +16,7 @@ function VideoViewer({
     setMultiView,
     dumpingData,
     onShowLog,
+    webRTCInstances,
 }) {
     const [hoveredImageId, setHoveredImageId] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -24,6 +26,7 @@ function VideoViewer({
     const dropdownRef = useRef(null);
     const [error, setError] = useState({});
     const videoRef = useRef({}); // CCTV별 videoRef 관리
+    const [restarting, setRestarting] = useState({});
 
     const stream = selectedCCTV ? selectedCCTV.stream : null;
 
@@ -112,17 +115,19 @@ function VideoViewer({
                 // 기존 cleanup 실행
                 Object.values(cleanups.current).forEach((cleanup) => cleanup && cleanup());
                 cleanups.current = {};
-                
+
                 for (const cctv of cctvList) {
                     if (shownCctv[cctv.stream] && cctv.stream) {
                         try {
-                            cleanups.current[cctv.stream] = await KinesisWebRTC({
+                            const instance = await KinesisWebRTC({
                                 channelName: cctv.stream,
                                 region: "ap-northeast-2",
                                 videoRef: getVideoRef(cctv.stream),
                                 setError: (err) =>
                                     setError((prev) => ({ ...prev, [cctv.stream]: err })),
                             });
+                            webRTCInstances.current[cctv.stream] = instance;
+                            cleanups.current[cctv.stream] = instance.cleanup;
                         } catch (err) {
                             setError((prev) => ({
                                 ...prev,
@@ -142,13 +147,15 @@ function VideoViewer({
                 Object.values(cleanups.current).forEach((cleanup) => cleanup && cleanup());
                 cleanups.current = {};
                 try {
-                    cleanups.current[selectedCCTV.stream] = await KinesisWebRTC({
+                    const instance = await KinesisWebRTC({
                         channelName: selectedCCTV.stream,
                         region: "ap-northeast-2",
                         videoRef: getVideoRef(selectedCCTV.stream),
                         setError: (err) =>
                             setError((prev) => ({ ...prev, [selectedCCTV.stream]: err })),
                     });
+                    webRTCInstances.current[selectedCCTV.stream] = instance;
+                    cleanups.current[selectedCCTV.stream] = instance.cleanup;
                 } catch (err) {
                     setError((prev) => ({
                         ...prev,
@@ -166,7 +173,38 @@ function VideoViewer({
             cleanups.current = {};
         };
 
-    }, [selectedCCTV, multiView, shownCctv, cctvList]);
+    }, [selectedCCTV, multiView, shownCctv, cctvList, webRTCInstances]);
+
+    // 재접속 핸들러
+    const handleRestartStream = async (stream) => {
+        try {
+            setRestarting((prev) => ({ ...prev, [stream]: true }));
+            setError((prev) => ({ ...prev, [stream]: null }));
+
+            const streamRequestDTO = {
+                streamName: stream,
+                cameraId: cctvList.find((cctv) => cctv.stream === stream)?.id,
+                cameraPassword: cctvList.find((cctv) => cctv.stream === stream)?.passwd,
+                cameraIp: cctvList.find((cctv) => cctv.stream === stream)?.ip ,
+            };
+
+            const response = await streamApi.post("/api/stream/restart", streamRequestDTO);
+            console.log(`${stream} 스트림 재접속:`, response.data);
+
+            const instance = webRTCInstances.current[stream];
+            if (instance && instance.reconnect) {
+                await instance.reconnect();
+            }
+        } catch (err) {
+            setError((prev) => ({
+                ...prev,
+                [stream]: `스트림 재시작 실패: ${err.message}`,
+            }));
+            console.error(`${stream} 스트림 재접속 실패:`, err);
+        } finally {
+            setRestarting((prev) => ({ ...prev, [stream]: false }));
+        }
+    };
 
     const sliderSettings = {
         dots: false,
@@ -408,10 +446,19 @@ function VideoViewer({
     // 사이드 메뉴에서 CCTV 이름을 클릭했을 때 UI -> 단일뷰 상태
     return (
         <div className="viewer">
-            <div className="viewer-title">
-                현재 CCTV:{" "}
-                {selectedCCTV ? selectedCCTV.cctvName : "선택되지 않음"}
+            <div className="viewer-title-container">
+                <div className="viewer-title">
+                    현재 CCTV:{" "} {selectedCCTV ? selectedCCTV.cctvName : "선택되지 않음"}
+                </div>
+                <div
+                    className="viewer-retry-btn"
+                    onClick={() => handleRestartStream(selectedCCTV.stream)}
+                    disabled={restarting[selectedCCTV.stream]}
+                >
+                    {restarting[selectedCCTV.stream] ? "재접속 중..." : "재접속"}
+                </div>
             </div>
+
             <div className="viewer-video">
                 {" "}
                 {/* {webcamId && isWebcamAvailable(webcamId) ? (
