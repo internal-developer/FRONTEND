@@ -28,6 +28,29 @@ function VideoViewer({
     const videoRef = useRef({}); // CCTV별 videoRef 관리
     const [restarting, setRestarting] = useState({});
 
+    const [showErr, setShowErr] = useState({});
+
+    useEffect(() => {
+        const timers = {};
+
+        Object.keys(error).forEach((stream) => {
+            if (error[stream]) {
+                setShowErr((prev) => ({ ...prev, [stream]: true }));
+
+                // 5초 후에 에러 메시지 숨김
+                timers[stream] = setTimeout(() => {
+                    setShowErr((prev) => ({ ...prev, [stream]: false }));
+                }, 5000);
+            }
+        });
+
+        return () => {
+            Object.values(timers).forEach((timer) => clearTimeout(timer));
+        };
+    }, [error]);
+
+
+
     const stream = selectedCCTV ? selectedCCTV.stream : null;
 
     // useEffect(() => {
@@ -185,7 +208,7 @@ function VideoViewer({
                 streamName: stream,
                 cameraId: cctvList.find((cctv) => cctv.stream === stream)?.id,
                 cameraPassword: cctvList.find((cctv) => cctv.stream === stream)?.passwd,
-                cameraIp: cctvList.find((cctv) => cctv.stream === stream)?.ip ,
+                cameraIp: cctvList.find((cctv) => cctv.stream === stream)?.ip,
             };
 
             const response = await streamApi.post("/api/stream/restart", streamRequestDTO);
@@ -383,7 +406,7 @@ function VideoViewer({
                                                     height: "100%",
                                                 }}
                                             />
-                                            {error[cctv.stream] && (
+                                            {error[cctv.stream] && showErr[cctv.stream] && (
                                                 <div
                                                     className="viewer-video-error"
                                                     style={{
@@ -489,7 +512,7 @@ function VideoViewer({
                                 height: "100%",
                             }}
                         />
-                        {error[selectedCCTV.stream] && (
+                        {error[selectedCCTV.stream] && showErr[selectedCCTV.stream] && (
                             <div
                                 className="viewer-video-error"
                                 style={{
