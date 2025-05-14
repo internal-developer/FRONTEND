@@ -99,12 +99,12 @@ function Main() {
             let eventSource;
             let reconnCount = 0;
 
-            if (sessionStorage.getItem("initialLoad") === null) {
-                sessionStorage.setItem("initialLoad", "true");
-            }
+            // 새로고침 감지를 위해 sessionStorage에 타임스탬프 저장
+            const loadTimestamp = Date.now();
+            sessionStorage.setItem("loadTimestamp", loadTimestamp.toString());
+            sessionStorage.setItem("isInitialLoad", "true");
 
             const connect = () => {
-                // 재연결 시도 횟수 제한 -> 무한 연결 시도 방지
                 if (reconnCount >= 3) {
                     console.log("SSE 재연결 최대 시도 횟수 초과(3회)");
                     return;
@@ -123,50 +123,29 @@ function Main() {
 
                 eventSource.onmessage = (event) => {
                     try {
-                        const newData = JSON.parse(event.data); // 서버로부터 이미지 배열 전체가 옴
-                        const isInitialLoad =
-                            sessionStorage.getItem("initialLoad") === "true";
+                        const newData = JSON.parse(event.data);
+                        const isInitialLoad = sessionStorage.getItem("isInitialLoad") === "true";
 
                         setDumpingEvent((prev) => {
-                            // 중복되지 않는 새 이미지만 필터링하여 업데이트
-                            const existImage = new Set(
-                                prev.map((item) => item.imageId)
-                            );
-                            const newImage = newData.filter(
-                                (item) => !existImage.has(item.imageId)
-                            );
-                            console.log("newImage", newImage);
-                            console.log("newImage length:", newImage.length);
-                            console.log("isInitialLoad", isInitialLoad);
-                            console.log(
-                                "조건 통과 여부",
-                                !isInitialLoad &&
-                                    newImage.length > 0 &&
-                                    newImage[0]?.cctv?.cctvName &&
-                                    newImage[0]?.cctv?.location
-                            );
+                            const existImage = new Set(prev.map((item) => item.imageId));
+                            const newImage = newData.filter((item) => !existImage.has(item.imageId));
 
-                            // cctvName, location값이 존재하면 alert에 전달하기 위해 저장
+                            // 초기 로드 시 또는 데이터가 없으면 토스트를 띄우지 않음
                             if (
                                 !isInitialLoad &&
                                 newImage.length > 0 &&
-                                newImage[0].cctv?.cctvName &&
-                                newImage[0].cctv?.location
+                                newImage[0]?.cctv?.cctvName &&
+                                newImage[0]?.cctv?.location
                             ) {
                                 setAlertCCTVName(newImage[0].cctv.cctvName);
                                 setAlertCCTVLocation(newImage[0].cctv.location);
-                                setShowAlertToast(true); // 새 이벤트가 생기면 alert 띄우기
+                                setShowAlertToast(true);
                             }
                             return [...prev, ...newImage];
                         });
-                        // sessionStorage를 사용하여 탭당 상태 저장
-                        if (isInitialLoad) {
-                            sessionStorage.setItem("initialLoad", "false");
-                        }
-                        // console.log(
-                        //     "이미지 데이터 가져오기 성공(SSE) :",
-                        //     newData
-                        // );
+
+                        // 초기 로드 후 즉시 플래그를 false로 설정
+                        sessionStorage.setItem("isInitialLoad", "false");
                     } catch (error) {
                         console.error("SSE 데이터 파싱 오류:", error);
                     }
@@ -179,20 +158,121 @@ function Main() {
                     setTimeout(() => {
                         console.log("SSE 재연결 시도");
                         connect();
-                    }, 1000); // 1초 후 재연결 시도
+                    }, 1000);
                 };
             };
 
-            // 초기 연결
             connect();
 
-            // 컴포넌트 언마운트 시 SSE 연결 종료
             return () => {
                 eventSource.close();
                 console.log("SSE 연결 종료");
             };
         }
     }, [roleId]);
+
+    // useEffect(() => {
+    //     // image 데이터 요청(SSE)
+    //     if (roleId) {
+    //         const accessToken = localStorage.getItem("accessToken");
+    //         const sseUrl = `http://3.36.174.53:8080/cleanguard/image/sse/${roleId}`;
+    //         let eventSource;
+    //         let reconnCount = 0;
+
+    //         if (sessionStorage.getItem("initialLoad") === null) {
+    //             sessionStorage.setItem("initialLoad", "true");
+    //         }
+
+    //         const connect = () => {
+    //             // 재연결 시도 횟수 제한 -> 무한 연결 시도 방지
+    //             if (reconnCount >= 3) {
+    //                 console.log("SSE 재연결 최대 시도 횟수 초과(3회)");
+    //                 return;
+    //             }
+
+    //             eventSource = new EventSourcePolyfill(sseUrl, {
+    //                 headers: {
+    //                     Authorization: `Bearer ${accessToken}`,
+    //                 },
+    //             });
+
+    //             eventSource.onopen = () => {
+    //                 console.log("SSE 연결 성공");
+    //                 reconnCount = 0;
+    //             };
+
+    //             eventSource.onmessage = (event) => {
+    //                 try {
+    //                     const newData = JSON.parse(event.data); // 서버로부터 이미지 배열 전체가 옴
+    //                     const isInitialLoad =
+    //                         sessionStorage.getItem("initialLoad") === "true";
+
+    //                     setDumpingEvent((prev) => {
+    //                         // 중복되지 않는 새 이미지만 필터링하여 업데이트
+    //                         const existImage = new Set(
+    //                             prev.map((item) => item.imageId)
+    //                         );
+    //                         const newImage = newData.filter(
+    //                             (item) => !existImage.has(item.imageId)
+    //                         );
+    //                         console.log("newImage", newImage);
+    //                         console.log("newImage length:", newImage.length);
+    //                         console.log("isInitialLoad", isInitialLoad);
+    //                         console.log(
+    //                             "조건 통과 여부",
+    //                             !isInitialLoad &&
+    //                                 newImage.length > 0 &&
+    //                                 newImage[0]?.cctv?.cctvName &&
+    //                                 newImage[0]?.cctv?.location
+    //                         );
+
+    //                         // cctvName, location값이 존재하면 alert에 전달하기 위해 저장
+    //                         if (
+    //                             !isInitialLoad &&
+    //                             newImage.length > 0 &&
+    //                             newImage[0].cctv?.cctvName &&
+    //                             newImage[0].cctv?.location
+    //                         ) {
+    //                             setAlertCCTVName(newImage[0].cctv.cctvName);
+    //                             setAlertCCTVLocation(newImage[0].cctv.location);
+    //                             setShowAlertToast(true); // 새 이벤트가 생기면 alert 띄우기
+    //                         }
+    //                         return [...prev, ...newImage];
+    //                     });
+    //                     // sessionStorage를 사용하여 탭당 상태 저장
+    //                     if (isInitialLoad) {
+    //                         sessionStorage.setItem("initialLoad", "false");
+    //                     }
+    //                     // console.log(
+    //                     //     "이미지 데이터 가져오기 성공(SSE) :",
+    //                     //     newData
+    //                     // );
+    //                 } catch (error) {
+    //                     console.error("SSE 데이터 파싱 오류:", error);
+    //                 }
+    //             };
+
+    //             eventSource.onerror = (error) => {
+    //                 console.error("SSE 연결 오류:", error);
+    //                 eventSource.close();
+    //                 reconnCount += 1;
+    //                 setTimeout(() => {
+    //                     console.log("SSE 재연결 시도");
+    //                     connect();
+    //                 }, 1000); // 1초 후 재연결 시도
+    //             };
+    //         };
+
+    //         // 초기 연결
+    //         connect();
+
+    //         // 컴포넌트 언마운트 시 SSE 연결 종료
+    //         return () => {
+    //             eventSource.close();
+    //             console.log("SSE 연결 종료");
+    //         };
+    //     }
+    // }, [roleId]);
 
     useEffect(() => {
         if (roleId) {
