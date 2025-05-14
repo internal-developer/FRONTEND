@@ -99,6 +99,10 @@ function Main() {
             let eventSource;
             let reconnCount = 0;
 
+            if (sessionStorage.getItem("initialLoad") === null) {
+                sessionStorage.setItem("initialLoad", "true");
+            }
+
             const connect = () => {
                 // 재연결 시도 횟수 제한 -> 무한 연결 시도 방지
                 if (reconnCount >= 3) {
@@ -120,6 +124,9 @@ function Main() {
                 eventSource.onmessage = (event) => {
                     try {
                         const newData = JSON.parse(event.data); // 서버로부터 이미지 배열 전체가 옴
+                        const isInitialLoad =
+                            sessionStorage.getItem("initialLoad") === "true";
+
                         setDumpingEvent((prev) => {
                             // 중복되지 않는 새 이미지만 필터링하여 업데이트
                             const existImage = new Set(
@@ -128,17 +135,20 @@ function Main() {
                             const newImage = newData.filter(
                                 (item) => !existImage.has(item.imageId)
                             );
-                            // console.log("newImage", newImage);
-                            // console.log(
-                            //     "조건 통과 여부",
-                            //     newImage.length > 0 &&
-                            //         newImage[0]?.cctv?.cctvName &&
-                            //         newImage[0]?.cctv?.location
-                            // );
+                            console.log("newImage", newImage);
+                            console.log("newImage length:", newImage.length);
+                            console.log("isInitialLoad", isInitialLoad);
+                            console.log(
+                                "조건 통과 여부",
+                                !isInitialLoad &&
+                                    newImage.length > 0 &&
+                                    newImage[0]?.cctv?.cctvName &&
+                                    newImage[0]?.cctv?.location
+                            );
 
                             // cctvName, location값이 존재하면 alert에 전달하기 위해 저장
                             if (
-                                !initialLoad &&
+                                !isInitialLoad &&
                                 newImage.length > 0 &&
                                 newImage[0].cctv?.cctvName &&
                                 newImage[0].cctv?.location
@@ -149,9 +159,9 @@ function Main() {
                             }
                             return [...prev, ...newImage];
                         });
-                        // 최초 로딩 이후 초기 상태 변경
-                        if (initialLoad) {
-                            setInitialLoad(false);
+                        // sessionStorage를 사용하여 탭당 상태 저장
+                        if (isInitialLoad) {
+                            sessionStorage.setItem("initialLoad", "false");
                         }
                         // console.log(
                         //     "이미지 데이터 가져오기 성공(SSE) :",
