@@ -292,7 +292,7 @@ function Main() {
         return (
             <div className="loading-container">
                 <div className="loading-spinner"></div>
-                <p className="loading-message">CCTV 데이터를 불러오는 중입니다...</p>
+                <p className="loading-message">CCTV 데이터를 불러오는 중입니다</p>
             </div>
         );
     }

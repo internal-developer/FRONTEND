@@ -42,7 +42,7 @@ function CCTVSidemenu({
 
             // 부모 컴포넌트에 재접속 알림
             handleRestartStream(cctv.stream);
-            alert(`${cctv.cctvName} 재접속 요청이 완료되었습니다.`);
+            //alert(`${cctv.cctvName} 재접속 요청이 완료되었습니다.`);
 
         } catch (err) {
             alert(`재접속 실패: ${err.message}`);
