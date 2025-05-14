@@ -83,6 +83,9 @@ function AddModal({ setShowAddModal, setCctvList, roleId, userInfo }) {
             cctvDate: date,
             webcamId: webcam,
             stream: streamName,
+            ip: cameraIp,
+            id: cameraId,
+            passwd: cameraPassword,
         };
 
         const streamRequest = {
