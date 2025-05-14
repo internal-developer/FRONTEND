@@ -275,6 +275,13 @@ export const KinesisWebRTC = async ({ channelName, region, credentials, videoRef
     const reconnect = async () => {
         console.log(`Reconnecting WebRTC for channel: ${channelName}`);
         try {
+            // 기존 연결 명시적 클린업
+            cleanup(); // 기존 cleanup 함수 호출
+            currentStreamId = null; // 스트림 ID 초기화
+            isPlaying = false; // 재생 상태 초기화
+
+            // 짧은 지연 후 재연결 시도 (서버 준비 시간 확보)
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             await initializeWebRTC();
             console.log(`WebRTC reconnected for channel: ${channelName}`);
         } catch (err) {

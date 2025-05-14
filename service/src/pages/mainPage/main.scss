@@ -155,3 +155,73 @@
         }
     }
 }
+
+.loading-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(245, 247, 250, 0.264);
+    backdrop-filter: blur(5px); // 흐림 효과
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 200px;
+}
+
+.loading-spinner {
+    width: 64px;
+    height: 70px;
+    border: 6px solid rgba(200, 200, 200, 0.4);
+    border-top: 6px solid #6b58f7; 
+    border-radius: 50%;
+    animation: spin 1s ease-in-out infinite;
+}
+
+.loading-message {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+    letter-spacing: 0.5px;
+    position: relative;
+    text-align: center;
+
+    &::after {
+        content: "...";
+        animation: dots 1.2s infinite steps(4);
+        display: inline-block;
+        margin-left: 4px;
+    }
+}
+
+// 회전 애니메이션
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+// 점점점 애니메이션
+@keyframes dots {
+    0% {
+        content: "";
+    }
+    33% {
+        content: ".";
+    }
+    66% {
+        content: "..";
+    }
+    100% {
+        content: "...";
+    }
+}
+

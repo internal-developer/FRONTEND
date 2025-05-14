@@ -214,6 +214,9 @@ function VideoViewer({
             const response = await streamApi.post("/api/stream/restart", streamRequestDTO);
             console.log(`${stream} 스트림 재접속:`, response.data);
 
+            // 서버 스트림 재시작 후 1~2초 대기
+            await new Promise((resolve) => setTimeout(resolve, 1500));
+
             const instance = webRTCInstances.current[stream];
             if (instance && instance.reconnect) {
                 await instance.reconnect();

@@ -124,7 +124,8 @@ function Main() {
                 eventSource.onmessage = (event) => {
                     try {
                         const newData = JSON.parse(event.data);
-                        const isInitialLoad = sessionStorage.getItem("isInitialLoad") === "true";
+                        const isInitialLoad =
+                            sessionStorage.getItem("isInitialLoad") === "true";
 
                         setDumpingEvent((prev) => {
                             const existImage = new Set(prev.map((item) => item.imageId));
@@ -288,7 +289,12 @@ function Main() {
     }, [roleId]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <div className="loading-container">
+                <div className="loading-spinner"></div>
+                <p className="loading-message">CCTV 데이터를 불러오는 중입니다...</p>
+            </div>
+        );
     }
 
     return (
