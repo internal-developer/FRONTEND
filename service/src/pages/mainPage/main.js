@@ -68,7 +68,7 @@ function Main() {
     useEffect(() => {
         // cctv 데이터 요청
         if (roleId) {
-            api.get(`/cleanguard/cctv/${roleId}`)
+            api.get(`/cleanguard/cctv/select/${roleId}`)
                 .then((response) => {
                     setCctvList(response.data);
                     console.log("CCTV 데이터 가져오기 성공:", response.data);

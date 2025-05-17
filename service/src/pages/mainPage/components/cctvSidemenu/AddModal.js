@@ -103,18 +103,20 @@ function AddModal({ setShowAddModal, setCctvList, roleId, userInfo }) {
             console.log("스트림 시작 :", streamResponse.data);
 
             if (roleId) {
-                const currentStream = userInfo.role.stream || [];
+                const currentSelectStream = userInfo.role.selectStream || [];
+                const currentTotalStream = userInfo.role.totalStream || [];
                 const roleDTO = {
                     roleId: roleId,
                     roleName: userInfo.role.roleName,
-                    stream: [...currentStream, streamName],
+                    selectStream: [...currentSelectStream, streamName], 
+                    totalStream: [...new Set([...currentTotalStream, streamName])],
                 };
                 const roleResponse = await api.post(`/cleanguard/role/${roleId}`, roleDTO);
                 console.log("역할에 스트림 추가:", roleResponse.data);
             }
 
             // cctv 리스트에 새 cctv 추가
-            const cctvListResponse = await api.get(`/cleanguard/cctv/${roleId}`);
+            const cctvListResponse = await api.get(`/cleanguard/cctv/select/${roleId}`);
             setCctvList(cctvListResponse.data);
             setShowAddModal(false);
             alert("CCTV가 성공적으로 추가되었습니다.");

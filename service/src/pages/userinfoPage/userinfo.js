@@ -11,6 +11,7 @@ export default function UserInfoPage() {
     const [currentRoleId, setCurrentRoleId] = useState(null);
     const [selectedRole, setSelectedRole] = useState("");
     const [selectedCCTV, setSelectedCCTV] = useState([]);
+    const [totalCCTV, setTotalCCTV] = useState([]);
     const [initialCCTV, setInitialCCTV] = useState([]); // 초기 CCTV 상태 저장
     const navigate = useNavigate();
 
@@ -25,8 +26,9 @@ export default function UserInfoPage() {
                 if (role.roleId !== 1) {
                     setEditMode(true);
                     setSelectedRole(role.roleName);
-                    setSelectedCCTV(role.stream || []);
-                    setInitialCCTV(role.stream || []);
+                    setSelectedCCTV(role.selectStream || []);
+                    setTotalCCTV(role.totalStream || []);
+                    setInitialCCTV(role.selectStream || []);
                 }
             })
             .catch((error) => {
@@ -40,7 +42,7 @@ export default function UserInfoPage() {
 
         const cctvPromise = selectedRole == "admin"
             ? api.get("/cleanguard/cctv/")
-            : api.get(`/cleanguard/cctv/${currentRoleId}`);
+            : api.get(`/cleanguard/cctv/total/${currentRoleId}`);
 
         cctvPromise
             .then((response) => {
@@ -63,7 +65,8 @@ export default function UserInfoPage() {
         try {
             const roleDTO = {
                 roleName: selectedRole,
-                stream: selectedCCTV,
+                selectStream: selectedCCTV,
+                totalStream: totalCCTV,
             };
 
             if (editMode) {
@@ -84,8 +87,9 @@ export default function UserInfoPage() {
             console.log("역할 추가 후 업데이트된 사용자 정보:", userInfoRes.data);
             const updatedRole = userInfoRes.data.role;
             setSelectedRole(updatedRole.roleName);
-            setSelectedCCTV(updatedRole.stream || []);
-            setInitialCCTV(updatedRole.stream || []);
+            setSelectedCCTV(updatedRole.selectStream || []);
+            setInitialCCTV(updatedRole.selectStream || []);
+            setTotalCCTV(updatedRole.totalStream || []);
             //alert(editMode ? "역할이 성공적으로 수정되었습니다." : "역할이 성공적으로 추가되었습니다.");
             setStep(2);
         } catch (error) {
@@ -107,7 +111,8 @@ export default function UserInfoPage() {
             const roleDTO = {
                 roleId: currentRoleId,
                 roleName: selectedRole,
-                stream: selectedCCTV,
+                selectStream: selectedCCTV,
+                totalStream: selectedRole == "admin" ? selectedCCTV : totalCCTV,
             };
             await api.post(`/cleanguard/role/${currentRoleId}`, roleDTO);
             console.log("추가/수정된 stream :", roleDTO);
