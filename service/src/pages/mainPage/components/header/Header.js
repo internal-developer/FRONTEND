@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./Header.scss";
 import defaultProfileImage from "../../../../assets/images/default_profile_image.jpg";
-import { Link, useNavigate } from "react-router-dom";
-import { api } from "../../../../api/api";
+import { Link } from "react-router-dom";
+import { handleLogout } from "../../../../auth/auth";
 
 function Header({ userInfo }) {
     const [isOpen, setIsOpen] = useState(false);
-    const navigate = useNavigate();
 
     const handleMouseEnter = () => {
         setIsOpen(true);
@@ -28,18 +27,14 @@ function Header({ userInfo }) {
                 return "";
         }
     };
-    // 로그아웃 처리 함수
-    const handleLogout = async () => {
-        try {
-            await api.get("/cleanguard/logout");
+
+    useEffect(() => {
+        if (window.location.pathname === "/signup") {
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
-            console.log("로그아웃 완료");
-            navigate("/signup");
-        } catch (error) {
-            console.error("로그아웃 중 오류 발생:", error);
+            console.log("서비스 로그아웃 완료");
         }
-    };
+    }, []);
 
     return (
         <div className="header">
