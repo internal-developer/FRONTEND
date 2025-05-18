@@ -101,15 +101,13 @@ function AddModal({ setShowAddModal, setCctvList, roleId, userInfo }) {
 
             const streamResponse = await streamApi.post("/api/stream/start", streamRequest);
             console.log("스트림 시작 :", streamResponse.data);
-
             if (roleId) {
-                const currentSelectStream = userInfo.role.selectStream || [];
-                const currentTotalStream = userInfo.role.totalStream || [];
+                const getRoleResponse = await api.get(`/cleanguard/role/${roleId}`);
                 const roleDTO = {
                     roleId: roleId,
                     roleName: userInfo.role.roleName,
-                    selectStream: [...currentSelectStream, streamName], 
-                    totalStream: [...new Set([...currentTotalStream, streamName])],
+                    selectStream: [streamName],
+                    totalStream: [streamName],
                 };
                 const roleResponse = await api.post(`/cleanguard/role/${roleId}`, roleDTO);
                 console.log("역할에 스트림 추가:", roleResponse.data);

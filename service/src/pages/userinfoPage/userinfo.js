@@ -114,8 +114,10 @@ export default function UserInfoPage() {
                 selectStream: selectedCCTV,
                 totalStream: selectedRole == "admin" ? selectedCCTV : totalCCTV,
             };
-            await api.post(`/cleanguard/role/${currentRoleId}`, roleDTO);
+            const roleStreamResponse = await api.patch(`/cleanguard/role/${currentRoleId}`, roleDTO);
             console.log("추가/수정된 stream :", roleDTO);
+            console.log("stream 추가 후 응답:", roleStreamResponse.data);
+            
             alert("CCTV가 성공적으로 추가되었습니다.");
             setInitialCCTV(selectedCCTV); // 제출 후 초기 상태 업데이트
             setTimeout(() => navigate("/main"), 1000);
