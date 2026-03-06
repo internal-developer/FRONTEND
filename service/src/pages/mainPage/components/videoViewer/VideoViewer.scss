@@ -1,0 +1,394 @@
+@import "src/assets/styles/index.scss";
+@import "src/assets/styles/mixins.scss";
+
+.viewer {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+
+    @include mobile {
+        grid-column: 1 / 4;
+        grid-row: 1 / 3;
+    }
+
+    @include tabletToMobile {
+        width: 80%;
+        height: 100%;
+        grid-column: 2/5;
+        grid-row: 1/5;
+    }
+
+    @include tablet {
+        width: 95%;
+        height: 100%;
+        grid-column: 2 / 5;
+        grid-row: 1 / 5;
+    }
+
+    .multi-viewer-video-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1px;
+        height: 63.5%;
+        width: 100%;
+    }
+
+    .multi-viewer-video {
+        width: 100%;
+        // height: 100%;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        position: relative;
+        display: inline-block;
+    }
+
+    .multi-viewer-video img {
+        width: 100%;
+        height: 100%;
+        //object-fit: cover;
+    }
+
+    .multi-viewer-icon {
+        height: auto;
+        width: 100%;
+        display: inline-flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 5px;
+        gap: 8px;
+    }
+
+    .filter-icon {
+        transition: background-color 0.3s ease, border-color 0.3s ease,
+            transform 0.3s ease;
+        cursor: pointer;
+        border-radius: 50%;
+        position: relative;
+        width: 25px;
+        color: #383838;
+        height: 25px;
+    }
+
+    .filter-icon:hover {
+        background-color: #dcdcdc;
+        border-radius: 50%;
+    }
+
+    .fullscreen-icon {
+        height: 18px;
+        width: 18px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .multi-viewer-video:hover .fullscreen-icon {
+        opacity: 1;
+    }
+
+    .multi-viewer-title {
+        position: absolute;
+        bottom: 0px;
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        background-color: rgba(0, 0, 0, 0.428);
+        padding: 4px 5px;
+        height: auto;
+        z-index: 0;
+        cursor: pointer;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        display: flex;
+    }
+
+    .multi-dropdown {
+        position: absolute;
+        top: 106px;
+        width: auto;
+        height: auto;
+        max-height: 232px;
+        max-width: 200px;
+        background-color: white;
+        border-radius: 4px;
+        box-shadow: 0 1px 16px rgba(0, 0, 0, 0.1);
+        padding: 10px 10px 2px 10px;
+        z-index: 10;
+        overflow-y: auto;
+        scrollbar-width: thin;
+
+        &-toggle {
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            margin-bottom: 8px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #f1f1f1;
+            }
+
+            .multi-dropdown-toggle-switch {
+                appearance: none;
+                width: 36px;
+                height: 20px;
+                background-color: #ccc;
+                border-radius: 20px;
+                position: relative;
+                outline: none;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+
+                &:checked {
+                    background-color: #6c63ff;
+
+                    &::after {
+                        transform: translateX(16px);
+                    }
+                }
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    top: 2px;
+                    left: 2px;
+                    width: 16px;
+                    height: 16px;
+                    background-color: white;
+                    border-radius: 50%;
+                    transition: transform 0.3s ease;
+                }
+            }
+
+            .multi-dropdown-toggle-label {
+                margin: 0px 10px;
+                font-size: 14px;
+                color: #333;
+                flex: 1;
+            }
+        }
+    }
+
+    .viewer-title-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        height: auto;
+    }
+
+    .viewer-retry-btn {
+        height: auto;
+        width: auto;
+        border-radius: 3px;
+        border: none;
+        color: #fff;
+        font-size: 13px;
+        font-weight: bolder;
+        padding: 2px 10px;
+        cursor: pointer;
+        background: #A0A0A0;
+
+        &:hover {
+            background-color: darken(#A0A0A0, 10%);
+        }
+    }
+
+    &-title {
+        font-size: 18px;
+        font-weight: bolder;
+        height: auto;
+    }
+
+    &-video {
+        height: 65%;
+
+        &-error {
+            background-color: #2e2e2e;
+            color: #ffffff;
+            text-align: center;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+    }
+
+    &-count {
+        font-size: 15px;
+        height: auto;
+        text-align: right;
+    }
+
+    &-capture {
+        // slider 중앙 정렬 위해 추가
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        background-color: $container-secondary;
+        box-shadow: 0px 2px 16px 0px rgb(0 0 0 / 16%);
+
+        max-width: none;
+        // 부모 viewer의 너비 넘어섬.
+        width: 115%; // 이후 태블릿, 모바일에서도 각각 적절한 너비 측정 필요
+        height: 25%;
+        margin-left: -7.5%;
+        margin-top: 20px;
+        border-radius: 10px;
+        padding-bottom: 5px;
+
+        @include mobile {
+            width: 100%;
+            margin: 4% 0 0 0;
+        }
+
+        @include tabletToMobile {
+            // width: 100%;
+            // height: 10%;
+            margin: 4% 0 0 0;
+        }
+
+        @include tablet {
+            width: 100%;
+            height: 20%;
+            margin: 4% 0 0 0;
+        }
+
+        &-button {
+            position: relative;
+            left: 32%;
+            width: 19.5%;
+            height: 15%;
+            padding-bottom: 2px;
+            font-size: 13px;
+            border: none;
+            border-radius: 3px;
+            color: #fff;
+            font-weight: 400;
+            background-color: $primary-color;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+
+            @include mobile {
+                position: relative;
+                left: 23%;
+                width: 30%;
+                height: 25%;
+                font-size: 11px;
+            }
+
+            @include tabletToMobile {
+                position: relative;
+                left: 25%;
+                width: 27%;
+                height: 23%;
+                font-size: 12px;
+            }
+
+            @include tablet {
+                position: relative;
+                left: 27%;
+                width: 25%;
+                height: 20%;
+                font-size: 13px;
+            }
+
+            &:hover {
+                background-color: $primary-hover-color;
+            }
+        }
+
+        .slick-slider {
+            width: 100%;
+            max-height: 110px;
+            max-width: 700px; // 슬라이더는 최대 700px까지만 늘어나게 제한
+            margin: 0 auto;
+
+            @include mobile {
+                width: 75%;
+                height: 70%;
+            }
+
+            @include tabletToMobile {
+                width: 77%;
+                height: 67%;
+            }
+
+            @include tablet {
+                width: 80%;
+                height: 65%;
+            }
+        }
+
+        .slider-image-container {
+            position: relative;
+            display: inline-block;
+
+            .slider-image {
+                width: 95%;
+                height: 95%;
+                object-fit: cover;
+                // border-radius: 5px;
+                padding: 5% 0 0 5%;
+            }
+
+            .slider-error {
+                position: absolute;
+                top: 8%;
+                left: 5%;
+                width: 95%;
+                height: 88%;
+                color: #ffffff;
+                background-color: #2e2e2e;
+                text-align: center;
+                font-size: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .image-info {
+                position: absolute;
+                bottom: 5%;
+                left: 5%;
+                width: 45%;
+                height: auto;
+                background-color: rgba(0, 0, 0, 0.55);
+                color: #fff;
+                padding: 3px 5px 3px;
+                font-size: 9px;
+                border-radius: 0 8px 8px 0;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                max-width: 90%;
+                opacity: 0;
+                transition: opacity 0.5s ease-in-out;
+                pointer-events: none;
+
+                &.show {
+                    opacity: 1;
+                    pointer-events: auto;
+                }
+
+                @include mobile {
+                    display: none;
+                }
+            }
+        }
+
+        .slick-prev::before,
+        .slick-next::before {
+            color: #000;
+            font-size: 24px;
+        }
+    }
+}

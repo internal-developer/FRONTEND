@@ -1,0 +1,85 @@
+import React, { useState, useEffect } from "react";
+import "./Header.scss";
+import defaultProfileImage from "../../../../assets/images/default_profile_image.jpg";
+import { Link } from "react-router-dom";
+import { handleLogout } from "../../../../auth/auth";
+
+function Header({ userInfo }) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleMouseEnter = () => {
+        setIsOpen(true);
+    };
+
+    const handleMouseLeave = () => {
+        setIsOpen(false);
+    };
+
+    const getRoleLabel = (roleName) => {
+        switch (roleName) {
+            case "user":
+                return "사용자";
+            case "manager":
+                return "매니저";
+            case "admin":
+                return "관리자";
+            default:
+                return "";
+        }
+    };
+
+    useEffect(() => {
+        if (window.location.pathname === "/signup") {
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            console.log("서비스 로그아웃 완료");
+        }
+    }, []);
+
+    return (
+        <div className="header">
+            <div
+                className="header-profileBox"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+            >
+                <div className="header-profileBox-name">
+                    {userInfo?.name} ({getRoleLabel(userInfo?.role?.roleName)})
+                </div>
+                <div className="header-profileBox-image">
+                    <img src={defaultProfileImage} />
+                </div>
+
+                {/* profile 클릭 시 뜨는 dropdown 메뉴 */}
+                <div className={`dropdown ${isOpen ? "visible" : ""}`}>
+                    <div className="dropdown-profileBox">
+                        <div className="dropdown-profileBox-name">
+                            {userInfo?.name}
+                        </div>
+                        <div className="dropdown-profileBox-image">
+                            <img src={defaultProfileImage} />
+                        </div>
+                    </div>
+
+                    <div className="dropdown-linkBox">
+                        <Link to="/userinfo" className="dropdown-linkBox-text">
+                            {getRoleLabel(userInfo?.role?.roleName)}
+                        </Link>
+                        <span className="bar">|</span>
+                        <span
+                            onClick={handleLogout}
+                            className="dropdown-linkBox-text"
+                        >
+                            카카오로그인
+                        </span>
+                    </div>
+                    <button onClick={handleLogout} className="dropdown-button">
+                        로그아웃
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default Header;

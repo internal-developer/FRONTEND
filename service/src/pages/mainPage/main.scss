@@ -1,0 +1,227 @@
+@import "src/assets/styles/index.scss";
+
+.main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: $background;
+
+    &-container {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+        max-height: 90%;
+        max-width: 90%;
+        background-color: $container-primary;
+        box-shadow: 0px 2px 16px 0px rgb(0 0 0 / 16%);
+        overflow-x: auto;
+        overflow-y: auto;
+
+        @include mobile {
+            max-height: 95%;
+        }
+
+        @include tabletToMobile {
+            padding: 0px 3%;
+        }
+
+        @include tablet {
+            padding: 0px 3%;
+        }
+
+        @include laptopToTablet {
+            padding: 0px 1%;
+        }
+    }
+
+    &-content {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        // height: calc(100% - 71px);
+        height: calc(100% - 85px);
+
+        @include mobile {
+            height: 90%;
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2%;
+            justify-items: center;
+        }
+
+        @include tabletToMobile {
+            height: 90%;
+            display: grid;
+            grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+            grid-template-columns: 0.7fr 1fr 1fr;
+            gap: 2%;
+            justify-items: center;
+        }
+
+        @include tablet {
+            height: 90%;
+            display: grid;
+            grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+            grid-template-columns: 0.7fr 1fr 1fr;
+            gap: 2%;
+            justify-items: center;
+        }
+
+        .video-viewer {
+            height: 100%;
+
+            @include mobile {
+                width: 90%;
+                height: 100%;
+                margin: 5px;
+                grid-column: 1 / 4;
+                grid-row: 1 / 2;
+            }
+
+            @include tabletToMobile {
+                width: 95%;
+                height: 100%;
+                grid-column: 2 / 5;
+                grid-row: 1 / 4;
+            }
+
+            @include tablet {
+                width: 95%;
+                height: 100%;
+                grid-column: 2 / 5;
+                grid-row: 1 / 4;
+            }
+
+            @include laptopToTablet {
+                width: 50%;
+                height: 95%;
+            }
+        }
+
+        .sidemenu {
+            text-align: center;
+            width: auto;
+            align-items: flex-start;
+            display: flex;
+            justify-content: center;
+
+            @include mobile {
+                height: 100%;
+                grid-column: 1 / 2;
+                grid-row: 2 / 3;
+            }
+
+            @include tabletToMobile {
+                grid-column: 1 / 2;
+                grid-row: 1 / 2;
+            }
+
+            @include tablet {
+                grid-column: 1 / 2;
+                grid-row: 1 / 2;
+            }
+        }
+
+        .graph {
+            align-items: flex-start;
+            display: flex;
+            justify-content: center;
+            width: auto;
+
+            @include mobile {
+                height: 100%;
+                grid-column: 2 / 4;
+                grid-row: 2 / 3;
+            }
+
+            @include tabletToMobile {
+                width: 99%;
+                grid-column: 1 / 4;
+                grid-row: 4 / 6;
+                margin-left: 2%;
+            }
+
+            @include tablet {
+                width: 99%;
+                grid-column: 1 / 4;
+                grid-row: 4 / 6;
+                margin-left: 2%;
+            }
+        }
+    }
+}
+
+.loading-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(245, 247, 250, 0.264);
+    backdrop-filter: blur(5px); // 흐림 효과
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 200px;
+}
+
+.loading-spinner {
+    width: 64px;
+    height: 70px;
+    border: 6px solid rgba(200, 200, 200, 0.4);
+    border-top: 6px solid #6b58f7; 
+    border-radius: 50%;
+    animation: spin 1s ease-in-out infinite;
+}
+
+.loading-message {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+    letter-spacing: 0.5px;
+    position: relative;
+    text-align: center;
+
+    &::after {
+        content: "...";
+        animation: dots 1.2s infinite steps(4);
+        display: inline-block;
+        margin-left: 4px;
+    }
+}
+
+// 회전 애니메이션
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+// 점점점 애니메이션
+@keyframes dots {
+    0% {
+        content: "";
+    }
+    33% {
+        content: ".";
+    }
+    66% {
+        content: "..";
+    }
+    100% {
+        content: "...";
+    }
+}
+

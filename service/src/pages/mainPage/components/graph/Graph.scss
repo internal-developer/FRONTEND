@@ -1,0 +1,75 @@
+@import "src/assets/styles/index.scss";
+
+.Gmenu {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: auto;
+    height: auto;
+    background-color: $container-secondary;
+    box-shadow: 0px 2px 16px 0px rgb(0 0 0 / 16%);
+    border-radius: 10px;
+    margin: 20px;
+    padding: 10px 20px;
+
+    @include mobile {
+        width: 90%;
+        margin: 5% 0;
+    }
+
+    @include tabletToMobile {
+        width: 95%;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    @include tablet {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
+        margin: 0px;
+    }
+
+    &-container {
+        display: flex;
+        flex-direction: column;
+        width: auto;
+        padding: 10px 0;
+
+        .Gmenu-title {
+            font-size: 13px;
+            height: auto;
+            padding-bottom: 5px;
+
+            @include tablet {
+                font-size: 16px;
+            }
+        }
+
+        .Gmenu-graph {
+            width: 224px;
+            height: 137px;
+            border: 1px solid gray;
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+            display: flex;
+            align-items: center;
+
+            @include tabletToMobile {
+                width: 200px;
+                height: 130px;
+            }
+
+            @include tablet {
+                width: 270px;
+                height: 160px;
+            }
+
+            @include laptopToTablet {
+                width: 180px;
+                height: 110px;
+            }
+        }
+    }
+}

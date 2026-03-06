@@ -1,0 +1,123 @@
+@import "../../main.scss";
+@import "../videoViewer/VideoViewer.scss";
+@import "src/assets/styles/index.scss";
+
+.viewer-topbar {
+    width: 90%;
+    height: 5%;
+    display: flex;
+    position: relative;
+
+    @include tabletToMobile {
+        width: 100%;
+    }
+
+    @include tablet {
+        width: 100%;
+    }
+
+    @include mobile{
+        width: 80%;
+        height: 5%
+    }
+}
+.viewer-title {
+    width: auto;
+    margin-right: 10px;
+
+    @include tabletToMobile {
+        margin-top: 4px;
+        font-size: 13px;
+    }
+
+    @include mobile {
+        margin: 0 4% 0 4%;
+        font-size: 15px;
+    }
+}
+.viewer-main-button {
+    width: 75px;
+    height: 28px;
+    border: 1px solid;
+    border-radius: 45px;
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    font-weight: bolder;
+    font-family: "Poppins", sans-serif;
+    background-color: #fff;
+    cursor: pointer;
+
+    @include mobile {
+        position: absolute;
+        left: 4%;
+        top: -70%;
+        width: 65px;
+        height: 23px;
+        font-size: 13px;
+    }
+
+    @include tabletToMobile {
+        position: absolute;
+        top: -70%;
+        width: 65px;
+        height: 23px;
+        font-size: 13px;
+    }
+}
+.viewer-main-button-icon {
+    width: 16px;
+    height: 16px;
+    margin: 0px 2px 1px 6px;
+
+    @include mobile {
+        width: 13px;
+        height: 13px;
+    }
+}
+.viewer-button-group {
+    width: 150px;
+    display: flex;
+    gap: 10px;
+    position: absolute;
+    right: 0px;
+    z-index: 1;
+    @include mobile {
+        position: absolute;
+        left: 66%;
+    }
+}
+.viewer-button-group-action-error{
+    width: 68px;
+    height: 26px;
+    border-radius: 3px;
+    border: none;
+    font-family: "Poppins", sans-serif;
+    color: #fff;
+    font-size: 13.5px;
+    font-weight: bolder;
+    letter-spacing: -0.5px;
+    padding-right: 1px;
+    cursor: pointer;
+    background: #A0A0A0;
+    &:hover{
+         background-color: darken(#A0A0A0, 10%);
+    }
+}
+.viewer-button-group-action-delete{
+    width: 68px;
+    height: 26px;
+    border-radius: 3px;
+    border: none;
+    font-family: "Poppins", sans-serif;
+    color: #fff;
+    font-size: 13.5px;
+    font-weight: bolder;
+    letter-spacing: -0.5px;
+    padding-right: 1px;
+    cursor: pointer;
+    background: #AF0000;
+    &:hover{
+         background-color: darken(#AF0000, 10%);
+    }
+}
