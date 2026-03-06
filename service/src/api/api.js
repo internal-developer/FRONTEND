@@ -1,5 +1,6 @@
 import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
+import { handleLogout } from "../auth/auth";
 
 const api = axios.create({
     // process.env.REACT_APP_BASE_URL
@@ -146,27 +147,8 @@ const ResponseInterceptor = (instance) => {
 
 RequestInterceptor(api);
 ResponseInterceptor(api);
-RequestInterceptor(streamApi);
-ResponseInterceptor(streamApi);
-
-const handleLogout = async () => {
-    try {
-        // 예약된 갱신 타이머가 있으면 취소
-        if (refreshTimeoutId) {
-            clearTimeout(refreshTimeoutId);
-            refreshTimeoutId = null;
-        }
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        await api.get("/cleanguard/logout");
-        console.log("로그아웃 완료");
-        //window.location.href = "/signup";
-    } catch (error) {
-        console.error("로그아웃 중 오류 발생:", error);
-        // 로그아웃 요청 실패해도 클라이언트 측에서 강제 로그아웃 처리
-        window.location.href = "/signup";
-    }
-};
+// RequestInterceptor(streamApi);
+// ResponseInterceptor(streamApi);
 
 // 초기화 함수 ==> 앱 시작 시 호출
 const initAuth = () => {

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./CCTVSidemenu.scss";
+import { streamApi } from "../../../../api/api";
 
 function CCTVSidemenu({
     cctvList,
@@ -9,9 +10,11 @@ function CCTVSidemenu({
     setShowEditModal,
     setShowDeleteModal,
     setShowLog,
+    handleRestartStream,
 }) {
     const [hoveredCCTV, setHoveredCCTV] = useState(null);
     const [showPopup, setShowPopup] = useState(true);
+    const [restarting, setRestarting] = useState({});
 
     const handleMouseEnter = (cctv) => {
         setHoveredCCTV(cctv);
@@ -21,6 +24,32 @@ function CCTVSidemenu({
     const handleMouseLeave = () => {
         setHoveredCCTV(null);
         setShowPopup(false);
+    };
+
+    const handleRestart = async (cctv) => {
+        try {
+            setRestarting((prev) => ({ ...prev, [cctv.stream]: true }));
+
+            const streamRequestDTO = {
+                streamName: cctv.stream,
+                cameraId: cctv.id,
+                cameraPassword: cctv.passwd,
+                cameraIp: cctv.ip,
+            };
+
+            const response = await streamApi.post("/api/stream/restart", streamRequestDTO);
+            console.log(`${cctv.stream} 스트림 재접속:`, response.data);
+
+            // 부모 컴포넌트에 재접속 알림
+            handleRestartStream(cctv.stream);
+            //alert(`${cctv.cctvName} 재접속 요청이 완료되었습니다.`);
+
+        } catch (err) {
+            alert(`재접속 실패: ${err.message}`);
+            console.error(` ${cctv.stream} 재접속 실패:`, err);
+        } finally {
+            setRestarting((prev) => ({ ...prev, [cctv.stream]: false }));
+        }
     };
 
     return (
@@ -65,6 +94,12 @@ function CCTVSidemenu({
                                     </div>
                                     <div onClick={() => setShowLog(true)}>
                                         상세 기록
+                                    </div>
+                                    <div
+                                        onClick={() => handleRestart(cctv)}
+                                        disabled={restarting[cctv.stream]}
+                                    >
+                                        {restarting[cctv.stream] ? "재접속 중" : "재접속"}
                                     </div>
                                 </div>
                             </div>

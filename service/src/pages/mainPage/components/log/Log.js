@@ -3,12 +3,11 @@ import countryHouseIcon from "../../../../assets/images/country_house.png";
 import checkMark from "../../../../assets/images/check_mark.png";
 import trashCan from "../../../../assets/images/trash_can.png";
 import LogList from "./LogList";
-import FeedbackModal from "./FeedbackModal";
+import FeedbackToast from "./FeedbackToast";
 import ConfirmModal from "./ConfirmModal";
 import ImageModal from "./ImageModal";
 import { api } from "../../../../api/api";
 import "./Log.scss";
-
 
 export default function Log({
     selectedCCTV,
@@ -16,13 +15,14 @@ export default function Log({
     multiView,
     dumpingData,
     setSelectedCCTV,
-    roleName,
+    roleId,
+    setDumpingEvent,
 }) {
     const [checkedItems, setCheckedItems] = useState([]);
     const [filteredImages, setFilteredImages] = useState([]);
     const stream = selectedCCTV ? selectedCCTV.stream : null;
     // const [dumpingEvent, setDumpingEvent] = useState([]);
-    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+    const [showFeedbackToast, setShowFeedbackToast] = useState(false);
     const [text1, setText1] = useState("");
     const [text2, setText2] = useState("");
     const [imgSrc, setImgSrc] = useState("");
@@ -97,62 +97,57 @@ export default function Log({
             console.log("fail 삭제 응답:", deleteFailImages.data);
 
             // 성공한 이미지 post 요청
-
             if (successItems.length) {
-                try {
-                    const successResponse = await api.post(
-                        "/cleanguard/image/success",
-                        null, // body를 비워두고 params로 데이터를 전달
-                        {
-                            params: { imageIds: successItems },
-                            paramsSerializer: (params) => {
-                                return Object.keys(params)
-                                    .map((key) =>
-                                        []
-                                            .concat(params[key])
-                                            .map(
-                                                (val) =>
-                                                    `${key}=${encodeURIComponent(
-                                                        val
-                                                    )}`
-                                            )
-                                            .join("&")
-                                    )
-                                    .join("&");
-                            },
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                        }
-                    );
-                    console.log("success 저장 응답:", successResponse.data);
+                const successResponse = await api.post(
+                    "/cleanguard/image/success",
+                    null, // body를 비워두고 params로 데이터를 전달
+                    {
+                        params: { imageIds: successItems },
+                        paramsSerializer: (params) => {
+                            return Object.keys(params)
+                                .map((key) =>
+                                    []
+                                        .concat(params[key])
+                                        .map(
+                                            (val) =>
+                                                `${key}=${encodeURIComponent(
+                                                    val
+                                                )}`
+                                        )
+                                        .join("&")
+                                )
+                                .join("&");
+                        },
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+                console.log("success 저장 응답:", successResponse.data);
 
-                    // sentSuccessIds를 업데이트하고 localStorage에 저장
-                    setSentSuccessIds((prev) => {
-                        const updatedSet = new Set([...prev, ...successItems]);
-                        localStorage.setItem(
-                            "sentSuccessIds",
-                            JSON.stringify([...updatedSet])
-                        );
-                        return updatedSet;
-                    });
-                } catch (error) {
-                    console.error("Success 이미지 저장 실패:", error);
-                    alert(
-                        `Success 저장 실패: ${error.response?.data?.message || error.message
-                        }`
+                // sentSuccessIds를 업데이트하고 localStorage에 저장
+                setSentSuccessIds((prev) => {
+                    const updatedSet = new Set([...prev, ...successItems]);
+                    localStorage.setItem(
+                        "sentSuccessIds",
+                        JSON.stringify([...updatedSet])
                     );
-                }
+                    return updatedSet;
+                });
             }
+            // dumpingEvent 업데이트
+            setDumpingEvent((prev) =>
+                prev.filter((item) => !checkedItems.includes(item.imageId))
+            );
 
             setText1("정상적으로 처리되었습니다.");
             setText2("감사합니다 :)");
             setImgSrc(checkMark);
-            setShowFeedbackModal(true); // 성공 모달 표시
+            setShowFeedbackToast(true); // 성공 feedback 표시
 
             // 최신 데이터 다시 가져오기
-            if (roleName) {
-                const response = await api.get(`/cleanguard/image/${roleName}`);
+            if (roleId) {
+                const response = await api.get(`/cleanguard/image/${roleId}`);
                 setFilteredImages(response.data);
                 setCheckedItems([]); // 선택된 항목 초기화
                 console.log("목록 갱신 성공:", response.data);
@@ -190,15 +185,20 @@ export default function Log({
 
             console.log("영구 삭제 응답:", deleteResponse.data);
 
+            // dumpingEvent 업데이트
+            setDumpingEvent((prev) =>
+                prev.filter((item) => !checkedItems.includes(item.imageId))
+            );
+
             setText1("정상적으로 처리되었습니다.");
             setText2("감사합니다 :)");
             setImgSrc(trashCan);
 
-            setShowFeedbackModal(true);
+            setShowFeedbackToast(true);
 
             // 목록 갱신
-            if (roleName) {
-                const response = await api.get(`/cleanguard/image/${roleName}`);
+            if (roleId) {
+                const response = await api.get(`/cleanguard/image/${roleId}`);
                 setFilteredImages(response.data);
                 setCheckedItems([]);
                 console.log("목록 갱신 성공:", response.data);
@@ -225,9 +225,9 @@ export default function Log({
 
     return (
         <div className="viewer">
-            {showFeedbackModal && (
-                <FeedbackModal
-                    onClose={() => setShowFeedbackModal(false)}
+            {showFeedbackToast && (
+                <FeedbackToast
+                    onClose={() => setShowFeedbackToast(false)}
                     text1={text1}
                     text2={text2}
                     imgSrc={imgSrc}
@@ -263,15 +263,13 @@ export default function Log({
                 </button>
                 <div className="viewer-button-group">
                     <button
-                        className="viewer-button-group-action"
-                        style={{ backgroundColor: "#A0A0A0" }}
+                        className="viewer-button-group-action-error"
                         onClick={handleClassificationError}
                     >
                         분류 오류
                     </button>
                     <button
-                        className="viewer-button-group-action"
-                        style={{ backgroundColor: "#AF0000" }}
+                        className="viewer-button-group-action-delete"
                         // onClick={handlePermanentDelete}
                         onClick={handleConfirmModal}
                     >

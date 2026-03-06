@@ -14,8 +14,8 @@
 }
 
 .confirm-box {
-    width: 23%;
-    height: 23%;
+    width: 300px;
+    height: auto;
     background: white;
     padding: 20px;
     border-radius: 28px;
@@ -26,7 +26,7 @@
 .confirm-text {
     width: auto;
     height: auto;
-    margin-top: 10px;
+    margin-top: 16px;
     display: flex;
     flex-direction: column;
 
@@ -47,22 +47,30 @@
 
 .confirm-button {
     width: 35%;
-    height: 25%;
+    height: 28px;
     background: $edit-hover;
     color: white;
     border: none;
     border-radius: 3px;
     font-weight: 600;
     cursor: pointer;
+
+    &:hover {
+        background-color: darken($edit-hover, 10%);
+    }
 }
 
 .cancel-button {
     width: 35%;
-    height: 25%;
+    height: 28px;
     background: $delete-hover;
     color: white;
     border: none;
     border-radius: 3px;
     font-weight: 600;
     cursor: pointer;
+
+    &:hover {
+        background-color: darken($delete-hover, 10%);
+    }
 }

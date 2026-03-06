@@ -2,10 +2,16 @@ import React, { useEffect, useState } from "react";
 import "./Modal.scss";
 import { api, streamApi } from "../../../../api/api";
 
-function AddModal({ setShowAddModal, setCctvList }) {
+function AddModal({ setShowAddModal, setCctvList, roleId, userInfo }) {
     const [name, setName] = useState("");
     const [location, setLocation] = useState("");
-    const [date, setDate] = useState("");
+    const [date, setDate] = useState(() => {
+        // 디폴트 값: 오늘 날짜, 시간 
+        const now = new Date();
+        const kstOffset = 9 * 60; // KST는 UTC+9
+        const kstDate = new Date(now.getTime() + kstOffset * 60 * 1000);
+        return kstDate.toISOString().slice(0, 16);
+    });
     // const [cameraType, setCameraType] = useState(""); // 카메라 타입 (ip camera or webcam)
     // const [webcamList, setWebcamList] = useState([]); // 웹캠 목록 저장용 -> 하단 웹캠 선택 콤보박스에서 사용
     const [webcam, setWebcam] = useState(null); // webcam 기능 사용 x -> webcamid 값 null 값 넣음
@@ -77,6 +83,9 @@ function AddModal({ setShowAddModal, setCctvList }) {
             cctvDate: date,
             webcamId: webcam,
             stream: streamName,
+            ip: cameraIp,
+            id: cameraId,
+            passwd: cameraPassword,
         };
 
         const streamRequest = {
@@ -92,9 +101,21 @@ function AddModal({ setShowAddModal, setCctvList }) {
 
             const streamResponse = await streamApi.post("/api/stream/start", streamRequest);
             console.log("스트림 시작 :", streamResponse.data);
+            if (roleId) {
+                const getRoleResponse = await api.get(`/cleanguard/role/${roleId}`);
+                const roleDTO = {
+                    roleId: roleId,
+                    roleName: userInfo.role.roleName,
+                    selectStream: [streamName],
+                    totalStream: [streamName],
+                };
+                const roleResponse = await api.post(`/cleanguard/role/${roleId}`, roleDTO);
+                console.log("역할에 스트림 추가:", roleResponse.data);
+            }
 
             // cctv 리스트에 새 cctv 추가
-            setCctvList((prevList) => [...prevList, cctvResponse.data]);
+            const cctvListResponse = await api.get(`/cleanguard/cctv/select/${roleId}`);
+            setCctvList(cctvListResponse.data);
             setShowAddModal(false);
             alert("CCTV가 성공적으로 추가되었습니다.");
             console.log(newCCTV);
@@ -130,6 +151,7 @@ function AddModal({ setShowAddModal, setCctvList }) {
                             onClick={() => clearError("name")}
                             disabled={isLoading}
                             className={errors.name ? "error" : ""}
+                            placeholder="CCTV 이름을 입력하세요"
                         />
                     </div>
                     <div className="add-input-container">
@@ -142,6 +164,7 @@ function AddModal({ setShowAddModal, setCctvList }) {
                             onClick={() => clearError("location")}
                             disabled={isLoading}
                             className={errors.location ? "error" : ""}
+                            placeholder="설치 위치를 입력하세요"
                         />
                     </div>
                     {/* <div className="add-input-container">
@@ -189,7 +212,7 @@ function AddModal({ setShowAddModal, setCctvList }) {
                             name="camera-ip"
                             value={cameraIp}
                             onChange={(e) => setCameraIp(e.target.value)}
-                            placeholder="ex: 123.123.1.123"
+                            placeholder="ex) 123.123.1.123"
                             onClick={() => clearError("cameraIp")}
                             disabled={isLoading}
                             className={errors.cameraIp ? "error" : ""}
@@ -205,6 +228,7 @@ function AddModal({ setShowAddModal, setCctvList }) {
                             onClick={() => clearError("cameraId")}
                             disabled={isLoading}
                             className={errors.cameraId ? "error" : ""}
+                            placeholder="카메라 ID를 입력하세요"
                         />
                     </div>
                     <div className="add-input-container">
@@ -217,6 +241,7 @@ function AddModal({ setShowAddModal, setCctvList }) {
                             onClick={() => clearError("cameraPassword")}
                             disabled={isLoading}
                             className={errors.cameraPassword ? "error" : ""}
+                            placeholder="카메라 패스워드를 입력하세요"
                         />
                     </div>
                     <div className="add-input-container">
@@ -229,6 +254,7 @@ function AddModal({ setShowAddModal, setCctvList }) {
                             onClick={() => clearError("streamName")}
                             disabled={isLoading}
                             className={errors.streamName ? "error" : ""}
+                            placeholder="스트림 이름을 입력하세요"
                         />
                     </div>
 
